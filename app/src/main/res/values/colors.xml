@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Light theme. The dark theme is in values-night; Appearance picks which one applies. -->
 <resources>
-    <color name="bg">#0B0F14</color>
-    <color name="panel">#151B23</color>
-    <color name="tile">#1C242E</color>
-    <color name="text">#E6EDF3</color>
-    <color name="dim">#8B98A5</color>
-    <color name="accent">#F0A63A</color>
-    <color name="up">#3FB950</color>
-    <color name="down">#F85149</color>
-    <color name="unknown">#6E7681</color>
+    <color name="bg_top">#F7F9FC</color>
+    <color name="bg_bottom">#E4E9F2</color>
+    <color name="glow">#33F59E0B</color>
+    <color name="glow2">#1F0EA5E9</color>
+    <color name="card">#E6FFFFFF</color>
+    <color name="card_border">#14000000</color>
+    <color name="tile">#FFFFFF</color>
+    <color name="tile_focus">#FFFFFF</color>
+    <color name="icon_bg">#F1F4F9</color>
+    <color name="text">#0F172A</color>
+    <color name="dim">#5B667A</color>
+    <color name="faint">#A3ACBB</color>
+    <color name="accent">#D97706</color>
+    <color name="accent2">#0284C7</color>
+    <color name="good">#059669</color>
+    <color name="fair">#D97706</color>
+    <color name="poor">#DC2626</color>
+    <color name="up">#10B981</color>
+    <color name="down">#EF4444</color>
+    <color name="unknown">#A3ACBB</color>
 </resources>

@@ -29,7 +29,7 @@ final class Catalog {
             "https://raw.githubusercontent.com/" + Updater.REPO + "/main/app/src/main/assets/catalog.json";
 
     static final class Type {
-        final String id, name, url, health;
+        final String id, name, url, health, icon;
         final int port;          // default port for a self-hosted server, 0 if none
         final boolean token;     // the API needs a token (MeshMonitor)
         final boolean audio;     // plays sound, so autoplay is allowed in the viewer
@@ -41,6 +41,7 @@ final class Catalog {
             name = o.optString("name", id);
             url = o.optString("url", "");
             health = o.optString("health", "");
+            icon = o.optString("icon", "");
             port = o.optInt("port", 0);
             token = o.optBoolean("token");
             audio = o.optBoolean("audio");

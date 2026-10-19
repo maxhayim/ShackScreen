@@ -1,7 +1,6 @@
 package com.maxhayim.shackscreen;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,7 +20,7 @@ import android.widget.TextView;
  * One app, full-screen, meant to stay up on a wall for hours: the screen stays on, and a page
  * that fails to load is retried until the server is back.
  */
-public class ViewerActivity extends Activity {
+public class ViewerActivity extends BaseActivity {
 
     static final String EXTRA_ID = "id";
     private static final long RETRY_MS = 30_000;
@@ -111,18 +110,6 @@ public class ViewerActivity extends Activity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Updater.visible++;
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Updater.visible--;
     }
 
     @Override

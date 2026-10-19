@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A soft amber glow top-left and a blue one bottom-right over a vertical gradient. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient android:angle="270" android:startColor="@color/bg_top" android:endColor="@color/bg_bottom" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <gradient android:type="radial" android:gradientRadius="70%p" android:centerX="0.1" android:centerY="0.05"
+                android:startColor="@color/glow" android:endColor="#00000000" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <gradient android:type="radial" android:gradientRadius="60%p" android:centerX="0.95" android:centerY="1.0"
+                android:startColor="@color/glow2" android:endColor="#00000000" />
+        </shape>
+    </item>
+</layer-list>

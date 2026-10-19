@@ -27,6 +27,10 @@ public class UpdateReceiver extends BroadcastReceiver {
             case PackageInstaller.STATUS_SUCCESS:
                 Updater.setStatus(c, "Updated");
                 break;
+            case PackageInstaller.STATUS_FAILURE_ABORTED:
+                // Also what Android reports right after the user allows "install unknown apps".
+                Updater.setStatus(c, "Install cancelled. If you just allowed installs, press Install again.");
+                break;
             default:
                 String msg = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
                 Updater.setStatus(c, "Update failed" + (msg == null ? "" : ": " + msg));

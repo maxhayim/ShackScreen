@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.ShackScreen" parent="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
-        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:windowBackground">@drawable/bg_screen</item>
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:textColor">@color/text</item>
+        <item name="android:textColorHint">@color/faint</item>
     </style>
-    <style name="Dialog" parent="@android:style/Theme.DeviceDefault.Dialog.Alert">
+    <!-- Light dialogs here; values-night swaps in dark ones. -->
+    <style name="Dialog" parent="@android:style/Theme.DeviceDefault.Light.Dialog.Alert">
         <item name="android:colorAccent">@color/accent</item>
     </style>
-    <style name="PanelBox">
+
+    <style name="Card">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:background">@drawable/panel_bg</item>
-        <item name="android:padding">20dp</item>
+        <item name="android:background">@drawable/card_bg</item>
+        <item name="android:paddingStart">22dp</item>
+        <item name="android:paddingEnd">22dp</item>
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">16dp</item>
     </style>
-    <style name="PanelTitle">
-        <item name="android:textColor">@color/accent</item>
+    <style name="CardIcon">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:tint">@color/accent</item>
+    </style>
+    <style name="CardTitle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/text</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginBottom">8dp</item>
     </style>
-    <style name="PanelBody">
-        <item name="android:textColor">@color/text</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">monospace</item>
-        <item name="android:lineSpacingExtra">2dp</item>
+    <style name="CardSource">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/faint</item>
+        <item name="android:textSize">11sp</item>
     </style>
-    <style name="PanelSource">
+    <style name="Label">
         <item name="android:textColor">@color/dim</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:letterSpacing">0.15</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 </resources>

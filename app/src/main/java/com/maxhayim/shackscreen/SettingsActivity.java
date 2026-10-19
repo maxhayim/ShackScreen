@@ -1,6 +1,5 @@
 package com.maxhayim.shackscreen;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 import java.util.List;
 
 /** Add, edit and remove apps. Each one points at a public site or the user's own server. */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends BaseActivity {
 
     static final String EXTRA_ADD = "add", EXTRA_EDIT = "edit";
 
@@ -54,8 +53,15 @@ public class SettingsActivity extends Activity {
         add.setOnClickListener(v -> pickType());
         root.addView(add);
 
-        TextView updates = text(getString(R.string.updates), 20, R.color.accent);
-        updates.setPadding(0, dp(28), 0, dp(8));
+        root.addView(section(getString(R.string.appearance)));
+        Button theme = button(themeLabel());
+        theme.setOnClickListener(v -> {
+            Appearance.setMode(this, Appearance.next(Appearance.mode(this)));
+            recreate();
+        });
+        root.addView(theme);
+
+        TextView updates = section(getString(R.string.updates));
         root.addView(updates);
         modeButton = button("");
         modeButton.setOnClickListener(v -> {
@@ -80,6 +86,7 @@ public class SettingsActivity extends Activity {
         root.addView(updateStatus);
         root.addView(text(getString(R.string.version, BuildConfig.VERSION_NAME), 13, R.color.dim));
         setContentView(scroll);
+        Appearance.font(scroll);
 
         instances = Store.load(this);
         rebuild();
@@ -93,14 +100,12 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        Updater.visible++;
         ui.post(poll);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Updater.visible--;
         ui.removeCallbacks(poll);
     }
 
@@ -122,6 +127,7 @@ public class SettingsActivity extends Activity {
             b.setOnClickListener(v -> edit(in, false));
             list.addView(b);
         }
+        Appearance.font(list);
         if (list.getChildCount() > 0) list.getChildAt(0).requestFocus();
     }
 
@@ -175,6 +181,19 @@ public class SettingsActivity extends Activity {
     }
 
     // --- Small view helpers -----------------------------------------------------------------
+
+    private String themeLabel() {
+        String m = Appearance.mode(this);
+        return getString(Appearance.LIGHT.equals(m) ? R.string.theme_light
+                : Appearance.AUTO.equals(m) ? R.string.theme_auto : R.string.theme_dark);
+    }
+
+    private TextView section(String s) {
+        TextView t = text(s.toUpperCase(java.util.Locale.US), 12, R.color.accent);
+        t.setLetterSpacing(0.15f);
+        t.setPadding(0, dp(24), 0, dp(10));
+        return t;
+    }
 
     private TextView text(String s, int sp, int colorRes) {
         TextView t = new TextView(this);

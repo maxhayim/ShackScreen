@@ -2,14 +2,18 @@
 
 Radio dashboards on your TV. ShackScreen is a small Android TV / Google TV / Fire TV app for hams and
 mesh users: a live dashboard on top, and a row of radio web apps you open full-screen with the remote.
+Dark and light themes (or follow the TV), and each app tile shows the app's own icon, fetched from
+whichever server you point it at.
 
-![banner](app/src/main/res/drawable-xhdpi/banner.png)
+| Dark | Light |
+|---|---|
+| ![Dark theme](docs/dashboard-dark.png) | ![Light theme](docs/dashboard-light.png) |
 
 ## What's on the dashboard
 
 | Panel | Comes from |
 |---|---|
-| Space weather: SFI, sunspots, K/A index, X-ray, HF band conditions | OpenHamClock (`/api/n0nbh`) or ShackBoard (`/api/space-weather`) |
+| Space weather: SFI, sunspots, K/A index (coloured by storm level), X-ray, HF band conditions | OpenHamClock (`/api/n0nbh`) or ShackBoard (`/api/space-weather`) |
 | Latest POTA spots | OpenHamClock (`/api/pota/spots`) or ShackBoard (`/api/spots`, POTA only) |
 | Mesh: nodes heard today, latest messages | MeshMonitor (`/api/v1`, needs an API token) |
 
