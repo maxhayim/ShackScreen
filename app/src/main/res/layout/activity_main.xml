@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Margins leave room for TV overscan. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg"
+    android:paddingStart="48dp"
+    android:paddingEnd="48dp"
+    android:paddingTop="27dp"
+    android:paddingBottom="27dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textColor="@color/accent"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:fontFamily="monospace"
+            android:textColor="@color/text"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/tile_bg"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAllCaps="false"
+            android:textColor="@color/accent"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tile_bg"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/settings"
+            android:textAllCaps="false"
+            android:textColor="@color/text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <LinearLayout style="@style/PanelBox" android:layout_marginEnd="16dp">
+            <TextView style="@style/PanelTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/space" />
+            <TextView android:id="@+id/space_body" style="@style/PanelBody" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:text="@string/loading" />
+            <TextView android:id="@+id/space_src" style="@style/PanelSource" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/PanelBox" android:layout_marginEnd="16dp">
+            <TextView style="@style/PanelTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pota" />
+            <TextView android:id="@+id/pota_body" style="@style/PanelBody" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:text="@string/loading" />
+            <TextView android:id="@+id/pota_src" style="@style/PanelSource" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/PanelBox">
+            <TextView style="@style/PanelTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/mesh" />
+            <TextView android:id="@+id/mesh_body" style="@style/PanelBody" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:text="@string/loading" />
+            <TextView android:id="@+id/mesh_src" style="@style/PanelSource" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/apps"
+        style="@style/PanelTitle" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/apps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+</LinearLayout>

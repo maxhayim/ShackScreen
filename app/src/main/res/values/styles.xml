@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ShackScreen" parent="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+    <style name="Dialog" parent="@android:style/Theme.DeviceDefault.Dialog.Alert">
+        <item name="android:colorAccent">@color/accent</item>
+    </style>
+    <style name="PanelBox">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/panel_bg</item>
+        <item name="android:padding">20dp</item>
+    </style>
+    <style name="PanelTitle">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+    <style name="PanelBody">
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+    <style name="PanelSource">
+        <item name="android:textColor">@color/dim</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+</resources>

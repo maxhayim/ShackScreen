@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.maxhayim.shackscreen'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.maxhayim.shackscreen'
+        // 22 = Fire OS 5 / Android TV 5.1, so older sticks and TVs can still run it.
+        minSdk 22
+        targetSdk 35
+        versionCode 2
+        versionName '0.2.0'
+    }
+
+    // Release APKs must always carry the same key, or a downloaded update won't install over the old one.
+    // The key lives outside the repo; SHACKSCREEN_SIGNING points at its properties file. Without it
+    // (someone building from source) the debug key is used, which is fine for a personal build.
+    def signingFile = System.getenv('SHACKSCREEN_SIGNING')
+    signingConfigs {
+        if (signingFile && file(signingFile).exists()) {
+            release {
+                def p = new Properties()
+                file(signingFile).withInputStream { p.load(it) }
+                storeFile file(p.storeFile)
+                storePassword p.storePassword
+                keyAlias p.keyAlias
+                keyPassword p.keyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// No app dependencies: plain Android views and org.json keep the APK tiny for 1 GB TVs.
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}

@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "apps": [
+    {
+      "id": "openhamclock",
+      "name": "OpenHamClock",
+      "url": "https://openhamclock.com",
+      "port": 3000,
+      "health": "/api/health",
+      "feeds": ["space", "pota"],
+      "seed": true
+    },
+    {
+      "id": "shackboard",
+      "name": "ShackBoard",
+      "url": "https://shackboard.com",
+      "health": "/api/health",
+      "feeds": ["space", "pota"],
+      "seed": true
+    },
+    {
+      "id": "meshmonitor",
+      "name": "MeshMonitor",
+      "port": 8080,
+      "health": "/api/health",
+      "feeds": ["mesh"],
+      "token": true
+    },
+    {
+      "id": "websdr",
+      "name": "WebSDR",
+      "url": "http://websdr.org/",
+      "port": 8901,
+      "audio": true,
+      "seed": true
+    },
+    {
+      "id": "broadcastify",
+      "name": "Broadcastify",
+      "url": "https://www.broadcastify.com/listen/",
+      "audio": true,
+      "seed": true
+    },
+    {
+      "id": "repeaterbook",
+      "name": "RepeaterBook",
+      "url": "https://www.repeaterbook.com/",
+      "seed": true
+    },
+    {
+      "id": "custom",
+      "name": "Other web page"
+    }
+  ]
+}
