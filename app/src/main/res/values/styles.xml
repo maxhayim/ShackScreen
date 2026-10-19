@@ -24,7 +24,7 @@
     </style>
     <style name="PanelBody">
         <item name="android:textColor">@color/text</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">monospace</item>
         <item name="android:lineSpacingExtra">2dp</item>
     </style>

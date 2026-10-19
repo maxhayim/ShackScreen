@@ -92,10 +92,16 @@
         android:text="@string/apps"
         style="@style/PanelTitle" />
 
+    <!-- Negative margins plus padding: room for the focused tile to grow without being clipped,
+         while the tiles still line up with the panels above. -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="-12dp"
+        android:layout_marginEnd="-12dp"
         android:clipToPadding="false"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:scrollbars="none">

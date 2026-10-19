@@ -80,7 +80,8 @@ final class Feeds {
             if (s.has("source") && type.equals("shackboard") && !"POTA".equals(s.optString("source"))) continue;
             double khz = s.optDouble("frequency", Double.NaN);
             String freq = Double.isNaN(khz) ? s.optString("frequency") : String.format(Locale.US, "%.3f", khz / 1000);
-            sb.append(String.format(Locale.US, "%-8s %7s %-4s %s%n",
+            // Fits a 28-column panel: "AE0XJ   14.082 FT4 US-4825".
+            sb.append(String.format(Locale.US, "%-7s %6s %-4s%s%n",
                     s.optString("activator"), freq, s.optString("mode"), s.optString("reference")));
             shown++;
         }

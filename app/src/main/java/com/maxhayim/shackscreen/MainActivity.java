@@ -27,7 +27,8 @@ public class MainActivity extends Activity {
     private static final long CLOCK_MS = 1000, PANELS_MS = 120_000, HEALTH_MS = 60_000;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
-    private final ExecutorService bg = Executors.newFixedThreadPool(3);
+    // Enough threads that a server that hangs until its timeout can't hold up the other panels or the dots.
+    private final ExecutorService bg = Executors.newFixedThreadPool(8);
     private final SimpleDateFormat local = new SimpleDateFormat("HH:mm", Locale.US);
     private final SimpleDateFormat utc = new SimpleDateFormat("HH:mm", Locale.US);
 
@@ -94,10 +95,11 @@ public class MainActivity extends Activity {
         ui.post(tickHealth);
         showUpdateBadge();
         if (Updater.due(this)) {
-            bg.execute(() -> {
+            // Its own thread: a download can take minutes and must not hold up the panels.
+            new Thread(() -> {
                 Updater.run(getApplicationContext(), false);
                 ui.post(this::showUpdateBadge);
-            });
+            }, "shackscreen-update").start();
         }
     }
 
