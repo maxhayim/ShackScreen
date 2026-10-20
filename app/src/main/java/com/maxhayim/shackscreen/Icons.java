@@ -115,7 +115,16 @@ final class Icons {
     private static View frame(Activity a, ViewGroup parent, String label) {
         View t = LayoutInflater.from(a).inflate(R.layout.item_app, parent, false);
         ((TextView) t.findViewById(R.id.name)).setText(label);
-        ((View) t.findViewById(R.id.icon).getParent()).setClipToOutline(true); // rounded corners
+        // Rounded corners, clipped without a backing tile (one showed as a rim round dark icons).
+        View box = (View) t.findViewById(R.id.icon).getParent();
+        float r = 18 * a.getResources().getDisplayMetrics().density;
+        box.setOutlineProvider(new android.view.ViewOutlineProvider() {
+            @Override
+            public void getOutline(View v, android.graphics.Outline o) {
+                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), r);
+            }
+        });
+        box.setClipToOutline(true);
         t.setOnFocusChangeListener((v, f) -> v.animate().scaleX(f ? 1.08f : 1f).scaleY(f ? 1.08f : 1f).setDuration(140));
         Appearance.font(t);
         return t;
@@ -186,10 +195,14 @@ final class Icons {
         Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(b);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, w, h, top, bottom, Shader.TileMode.CLAMP));
+        // Drawn in the chosen icon style, like the icon set: colour, or black or white tiles.
+        String style = Appearance.iconStyle(c);
+        boolean dark = Appearance.ICONS_DARK.equals(style), light = Appearance.ICONS_LIGHT.equals(style);
+        if (dark || light) p.setColor(dark ? Color.BLACK : Color.WHITE);
+        else p.setShader(new LinearGradient(0, 0, w, h, top, bottom, Shader.TileMode.CLAMP));
         cv.drawRect(0, 0, w, h, p);
         Drawable d = c.getResources().getDrawable(symbolRes, null).mutate();
-        d.setTint(Color.WHITE);
+        d.setTint(light ? Color.BLACK : Color.WHITE);
         int s = Math.min(w, h) * 46 / 100;
         d.setBounds((w - s) / 2, (h - s) / 2, (w + s) / 2, (h + s) / 2);
         d.draw(cv);
