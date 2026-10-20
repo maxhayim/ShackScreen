@@ -16,30 +16,14 @@
 
 # ShackScreen
 
-**ShackScreen** is a free Android TV, Google TV and Fire TV app (it runs on tablets too) that turns the TV in your shack into a live radio dashboard, for people who love frequencies: hams, [**Meshtastic**](https://meshtastic.org/) and [**MeshCore**](https://meshcore.io) mesh users, satellite chasers, and ADS-B and AIS listeners.
+**ShackScreen** is a free Android (Android TV, Android Tablet Google TV and Fire TV) application that turns the TV or Tablet in your shack into a live radio dashboard, for people who love frequencies: hams, Meshtastic and MeshCore LoRa Mesh users, satellite chasers, and ADS-B and AIS listeners.
 
-Live **widgets** across the top: space weather, POTA and DX spots, satellite passes, mesh messages, aircraft and ships nearby, and the weather.  
-Your radio **web apps** along the bottom: [**OpenHamClock**](https://github.com/accius/openhamclock), [**ShackBoard**](https://shackboard.com), [**MeshMonitor**](https://github.com/Yeraze/MeshMonitor), WebSDR, Broadcastify, Flightradar24 and more, full-screen with the remote.
-
-No accounts.  
-No ads.  
-No paid services.
+Live **widgets** across the top: space weather, POTA and DX spots, satellite passes, mesh messages, aircraft and ships nearby, and the weather. Your radio web applications along the bottom: OpenHamClock, ShackBoard, MeshMonitor, WebSDR, Broadcastify, Flightradar24 and more, full-screen with the remote.
 
 <p align="center">
   <img src="docs/assets/home.png" alt="ShackScreen home screen" width="49%"/>
   <img src="docs/assets/all-apps.png" alt="All apps" width="49%"/>
 </p>
-
----
-
-## Update Notice (v0.5.x)
-
-v0.5 makes ShackScreen look and feel like a phone's home screen:
-
-- **Black background by default**, plus colour themes: Midnight, Ocean, Forest, Plum, Ember, Slate, and Light
-- **App icons with names**, made square like real app icons, and an **All apps** library by category
-- **Press and hold** any app or widget to move it, add or remove it from the home screen, or edit it
-- **Public site or your own server** for apps you can run yourself (OpenHamClock, WebSDR, KiwiSDR)
 
 ---
 
