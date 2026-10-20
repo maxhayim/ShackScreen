@@ -14,7 +14,7 @@ import android.widget.TextView;
 import io.nayuki.qrcodegen.QrCode;
 
 /**
- * "Request an app": opens a GitHub issue form for the app to be added to the catalog. On a TV,
+ * "Request an app" (or a new icon for one): opens a GitHub issue form for the app to be added to the catalog. On a TV,
  * the QR code lets the user finish it on their phone instead of typing with the remote.
  */
 final class Requests {
@@ -29,8 +29,25 @@ final class Requests {
         return b.build().toString();
     }
 
+    /** A new or better icon for an app, to be added to the catalog for everyone. */
+    static String iconUrl(String name, String address) {
+        Uri.Builder b = Uri.parse("https://github.com/" + Updater.REPO + "/issues/new").buildUpon()
+                .appendQueryParameter("template", "icon_request.yml")
+                .appendQueryParameter("title", "Icon request: " + (name == null ? "" : name));
+        if (name != null && !name.isEmpty()) b.appendQueryParameter("name", name);
+        if (address != null && !address.isEmpty()) b.appendQueryParameter("url", address);
+        return b.build().toString();
+    }
+
     static void show(Activity a, String name, String address) {
-        String link = url(name, address);
+        show(a, R.string.request_app, url(name, address));
+    }
+
+    static void showIcon(Activity a, String name, String address) {
+        show(a, R.string.icon_request, iconUrl(name, address));
+    }
+
+    private static void show(Activity a, int title, String link) {
         int dp = Math.round(a.getResources().getDisplayMetrics().density);
         LinearLayout box = new LinearLayout(a);
         box.setOrientation(LinearLayout.VERTICAL);
@@ -46,7 +63,7 @@ final class Requests {
         box.addView(hint);
         Appearance.font(box);
         new AlertDialog.Builder(a, R.style.Dialog)
-                .setTitle(R.string.request_app)
+                .setTitle(title)
                 .setView(box)
                 .setPositiveButton(R.string.open_here, (d, w) ->
                         a.startActivity(new Intent(a, ViewerActivity.class).putExtra(ViewerActivity.EXTRA_URL, link)))

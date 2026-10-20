@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 4,
+  "revision": 5,
   "categories": [
     "Ham radio",
     "GMRS",
@@ -68,6 +68,7 @@
       "name": "GMRS Hub",
       "category": "GMRS",
       "url": "https://gmrshub.com/access/home.php",
+      "zoom": 80,
       "home": true,
       "seed": 3,
       "pages": [

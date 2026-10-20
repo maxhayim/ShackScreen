@@ -1,6 +1,7 @@
 package com.maxhayim.shackscreen;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,7 +10,9 @@ import android.text.InputType;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -30,6 +33,12 @@ public class SettingsActivity extends BaseActivity {
     private List<Store.Instance> instances;
     private Button modeButton, installButton;
     private TextView updateStatus;
+
+    // The app whose icon is being picked from the device's files, while the picker is open.
+    private static final int PICK_ICON = 7;
+    private Store.Instance iconFor;
+    private boolean iconIsNew;
+    private Button iconButton;
 
     // The updater works on its own thread and reports through its saved status; show it as it changes.
     private final Runnable poll = new Runnable() {
@@ -288,6 +297,20 @@ public class SettingsActivity extends BaseActivity {
         LinearLayout.LayoutParams plp = (LinearLayout.LayoutParams) pagesButton.getLayoutParams();
         plp.topMargin = dp(10);
         form.addView(pagesButton);
+        Button zoomBtn = button(getString(R.string.zoom_value, ViewerActivity.zoom(this, in)));
+        zoomBtn.setOnClickListener(v -> ViewerActivity.pickZoom(this, in, z -> {
+            in.zoom = z;
+            if (!isNew) Store.save(this, instances);
+            zoomBtn.setText(getString(R.string.zoom_value, z));
+        }));
+        form.addView(zoomBtn);
+        Button iconBtn = button(iconLabel(in));
+        iconBtn.setOnClickListener(v -> editIcon(in, isNew, iconBtn));
+        form.addView(iconBtn);
+        Button loginsBtn = button(loginsLabel(in));
+        loginsBtn.setEnabled(Logins.supported());
+        loginsBtn.setOnClickListener(v -> editLogins(in, loginsBtn));
+        form.addView(loginsBtn);
         if (type.id.equals("custom")) {
             // A page someone adds by hand may be worth having in everyone's menu.
             Button ask = button(getString(R.string.request_it));
@@ -376,6 +399,196 @@ public class SettingsActivity extends BaseActivity {
     private void savePages(Store.Instance in, boolean isNew, Button label) {
         if (!isNew) Store.save(this, instances);
         label.setText(pagesLabel(in));
+    }
+
+    // --- Icon ----------------------------------------------------------------------------------
+
+    private String iconLabel(Store.Instance in) {
+        int v = in.icon.isEmpty() ? R.string.icon_auto : in.icon.equals("file") ? R.string.icon_custom : R.string.icon_symbol;
+        return getString(R.string.icon_value, getString(v));
+    }
+
+    /** The site's own icon, a symbol, the user's own image, or a request for a better one. */
+    private void editIcon(Store.Instance in, boolean isNew, Button label) {
+        List<String> items = new ArrayList<>();
+        List<Runnable> actions = new ArrayList<>();
+        items.add(getString(R.string.icon_use_auto));
+        actions.add(() -> setIcon(in, isNew, label, ""));
+        items.add(getString(R.string.icon_pick_symbol));
+        actions.add(() -> pickSymbol(in, isNew, label));
+        items.add(getString(R.string.icon_from_web));
+        actions.add(() -> iconFromWeb(in, isNew, label));
+        Intent pick = new Intent(Intent.ACTION_GET_CONTENT).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE);
+        if (pick.resolveActivity(getPackageManager()) != null) {
+            // Most TVs have no file picker; tablets do.
+            items.add(getString(R.string.icon_from_device));
+            actions.add(() -> {
+                iconFor = in;
+                iconIsNew = isNew;
+                iconButton = label;
+                startActivityForResult(pick, PICK_ICON);
+            });
+        }
+        items.add(getString(R.string.icon_request_item));
+        actions.add(() -> Requests.showIcon(this, in.name, in.url));
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.icon)
+                .setItems(items.toArray(new String[0]), (d, which) -> actions.get(which).run())
+                .show();
+    }
+
+    private void setIcon(Store.Instance in, boolean isNew, Button label, String icon) {
+        in.icon = icon;
+        if (!isNew) Store.save(this, instances);
+        label.setText(iconLabel(in));
+    }
+
+    /** The built-in symbols as tiles in the app's category colours. */
+    private void pickSymbol(Store.Instance in, boolean isNew, Button label) {
+        LinearLayout grid = new LinearLayout(this);
+        grid.setOrientation(LinearLayout.VERTICAL);
+        grid.setPadding(dp(20), dp(12), dp(20), 0);
+        AlertDialog[] dialog = new AlertDialog[1];
+        LinearLayout row = null;
+        for (int i = 0; i < Icons.SYMBOLS.length; i++) {
+            if (i % 7 == 0) {
+                row = new LinearLayout(this);
+                grid.addView(row);
+            }
+            ImageView v = new ImageView(this);
+            v.setImageBitmap(Icons.symbolFor(this, in, Icons.SYMBOLS[i]));
+            v.setBackgroundResource(R.drawable.icon_focus);
+            v.setPadding(dp(6), dp(6), dp(6), dp(6));
+            v.setFocusable(true);
+            v.setClickable(true);
+            v.setContentDescription(Icons.SYMBOL_NAMES[i]);
+            String name = Icons.SYMBOL_NAMES[i];
+            v.setOnClickListener(x -> {
+                setIcon(in, isNew, label, "symbol:" + name);
+                dialog[0].dismiss();
+            });
+            row.addView(v, new LinearLayout.LayoutParams(dp(64), dp(64)));
+        }
+        dialog[0] = new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.icon_pick_symbol)
+                .setView(grid)
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    private void iconFromWeb(Store.Instance in, boolean isNew, Button label) {
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(24), dp(8), dp(24), 0);
+        EditText url = field(getString(R.string.icon_web_hint), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        form.addView(url);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.icon_from_web)
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    String u = Store.normalise(url.getText().toString(), 0);
+                    if (u.isEmpty()) return;
+                    Icons.fetchCustom(this, in, u, ok -> customDone(in, isNew, label, ok));
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+    }
+
+    private void customDone(Store.Instance in, boolean isNew, Button label, boolean ok) {
+        if (ok) setIcon(in, isNew, label, "file");
+        android.widget.Toast.makeText(this, ok ? R.string.icon_saved : R.string.icon_failed, android.widget.Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request != PICK_ICON || result != RESULT_OK || data == null || data.getData() == null || iconFor == null) return;
+        Store.Instance in = iconFor;
+        boolean isNew = iconIsNew;
+        Button label = iconButton;
+        Uri uri = data.getData();
+        new Thread(() -> {
+            boolean ok;
+            try (java.io.InputStream is = getContentResolver().openInputStream(uri)) {
+                java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+                byte[] buf = new byte[16 * 1024];
+                for (int n; is != null && (n = is.read(buf)) > 0 && out.size() < 8 * 1024 * 1024; ) out.write(buf, 0, n);
+                ok = Icons.saveCustom(this, in, out.toByteArray());
+            } catch (Exception e) {
+                ok = false;
+            }
+            boolean done = ok;
+            ui.post(() -> customDone(in, isNew, label, done));
+        }).start();
+    }
+
+    // --- Saved logins ------------------------------------------------------------------------
+
+    private String loginsLabel(Store.Instance in) {
+        if (!Logins.supported()) return getString(R.string.logins_unsupported);
+        return getString(R.string.saved_logins, Logins.list(this, in.id).size());
+    }
+
+    /** The app's saved logins: select one to change or delete it, or add one by hand. */
+    private void editLogins(Store.Instance in, Button label) {
+        List<Logins.Login> logins = Logins.list(this, in.id);
+        String[] items = new String[logins.size() + 1];
+        for (int i = 0; i < logins.size(); i++) {
+            Logins.Login l = logins.get(i);
+            items[i] = l.host + (l.user.isEmpty() ? "" : "   ·   " + l.user);
+        }
+        items[logins.size()] = getString(R.string.add_login);
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.logins)
+                .setItems(items, (d, which) -> loginForm(in, which < logins.size() ? logins.get(which) : null, label))
+                .show();
+    }
+
+    private void loginForm(Store.Instance in, Logins.Login old, Button label) {
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(24), dp(8), dp(24), 0);
+        String host = old != null ? old.host : in.hasUrl() ? Uri.parse(in.url).getHost() : "";
+        EditText site = field(getString(R.string.login_site), host == null ? "" : host, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        EditText user = field(getString(R.string.login_user), old == null ? "" : old.user, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        EditText pass = field(getString(R.string.login_pass), old == null ? "" : old.pass, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        CheckBox auto = new CheckBox(this);
+        auto.setText(R.string.login_auto);
+        auto.setTextColor(color(R.color.text));
+        auto.setChecked(old == null || old.auto);
+        form.addView(text(getString(R.string.login_note), 13, R.color.dim));
+        form.addView(site);
+        form.addView(user);
+        form.addView(pass);
+        form.addView(auto);
+        Appearance.font(form);
+        AlertDialog.Builder b = new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(old == null ? R.string.add_login : R.string.edit_login)
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    // Typed as an address or a bare name: only the site's name is kept.
+                    String typed = site.getText().toString().trim();
+                    String h = Uri.parse(typed.contains("://") ? typed : "https://" + typed).getHost();
+                    if (h == null || h.isEmpty() || pass.getText().length() == 0) return;
+                    Logins.Login l = new Logins.Login();
+                    l.host = h.toLowerCase(java.util.Locale.US);
+                    l.user = user.getText().toString().trim();
+                    l.pass = pass.getText().toString();
+                    l.auto = auto.isChecked();
+                    if (old != null && !old.host.equals(l.host)) Logins.delete(this, in.id, old.host);
+                    if (!Logins.save(this, in.id, l)) {
+                        android.widget.Toast.makeText(this, R.string.login_failed, android.widget.Toast.LENGTH_LONG).show();
+                    }
+                    label.setText(loginsLabel(in));
+                })
+                .setNegativeButton(R.string.cancel, null);
+        if (old != null) {
+            b.setNeutralButton(R.string.delete, (d, w) -> {
+                Logins.delete(this, in.id, old.host);
+                label.setText(loginsLabel(in));
+            });
+        }
+        quiet(b.show());
     }
 
     /** On a TV the keyboard covers the form; it opens when a text field is selected instead. */

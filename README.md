@@ -163,9 +163,23 @@ The home row holds your favourites, with **All applications** at the end. Press 
 
 ### Pages inside an application
 
-Some applications have several pages. **GMRS Hub** opens on its home page; **Menu** on the remote (or the **Pages** button on a tablet) switches to the Live Node Map, Hub Status, Groups and Get On GMRS Hub, or reloads.
+Some applications have several pages. **GMRS Hub** opens on its home page; **Menu** on the remote (or the **Pages** button on a tablet) switches to the Live Node Map, Hub Status, Groups and Get On GMRS Hub.
 
 You can add your own pages to any application, such as more hub URLs or a hub status page for your own nodes: press and hold it, **Edit**, then **Your pages for this application**. To have a page as its own icon instead, add the application again with that address.
+
+### Page size
+
+Each application has its own page size, from 50% to 150%, so a site laid out large fits more on the TV. GMRS Hub starts at 80%. Change it with **Menu → Page size**, or in the application's settings.
+
+### Saved logins
+
+When you sign in to a site inside ShackScreen, it offers to save the login, like a password manager. Next time it fills it in and signs in for you.
+
+- Saved **encrypted** (AES-256-GCM) with a key kept in the Android Keystore, which never leaves it. Nothing is sent anywhere.
+- Filled in **only on the site it was saved for**.
+- If a saved login doesn't work, ShackScreen fills it in but stops pressing the sign-in button, so a wrong password isn't sent over and over.
+- Add, change or delete logins, or turn off signing in automatically: press and hold the application, **Edit**, then **Saved logins**.
+- Needs Android 6 or later.
 
 ### Public site or your own server
 
@@ -187,7 +201,10 @@ To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale]
 ## Themes and Icons
 
 - **Settings → Appearance**: Black (default), Midnight, Ocean, Forest, Plum, Ember, Slate, Light, or follow the TV.
-- Every app shows its **own icon**, fetched from the server you point it at and made square like a phone app icon. A site without a good one gets a coloured tile for its category.
+- Every application shows its **own icon**, fetched from the server you point it at and made square like a phone app icon. A site without a good one gets a coloured tile for its category.
+- **All applications** lists them by category, with a count for each, like a TV channel guide.
+- To change an icon: press and hold the application, **Edit**, then **Icon**. Choose a symbol, an image from a web address, or an image on the device (tablets and TVs with a file picker).
+- Have a better icon for everyone? **Icon → Suggest a new icon on GitHub** opens an [icon request](../../issues/new?template=icon_request.yml); on a TV, scan the QR code with your phone.
 
 ---
 
@@ -199,7 +216,7 @@ To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale]
 | Move, remove, edit | hold **OK** | press and hold |
 | Move a widget | arrows, then **OK** | on-screen arrows, then tap |
 | Back a page / home | **Back** | back |
-| Pages, reload | **Menu** | Pages button |
+| Pages, page size, reload | **Menu** | Pages button |
 
 An app that can't be reached is retried every 30 seconds, and the screen stays on while one is open.
 

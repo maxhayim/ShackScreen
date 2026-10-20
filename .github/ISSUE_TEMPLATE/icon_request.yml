@@ -1,0 +1,28 @@
+name: Icon request
+description: Suggest a new or better icon for an application in ShackScreen.
+title: "Icon request: "
+labels: ["icon request"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Application
+      placeholder: e.g. GMRS Hub
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Web address
+      placeholder: https://…
+  - type: textarea
+    id: icon
+    attributes:
+      label: Icon
+      description: Attach the image (square PNG, 192 px or larger) or link to it. Official logos are best; say where it came from.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else?

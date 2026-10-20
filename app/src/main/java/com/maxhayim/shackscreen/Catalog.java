@@ -29,11 +29,12 @@ final class Catalog {
             "https://raw.githubusercontent.com/" + Updater.REPO + "/main/app/src/main/assets/catalog.json";
 
     static final class Type {
-        final String id, name, url, health, icon, category;
+        final String id, name, url, icon, category;
         final int port;          // default port for a self-hosted server, 0 if none
         final boolean token;     // the API needs a token (MeshMonitor)
         final boolean audio;     // plays sound, so autoplay is allowed in the viewer
         final boolean home;      // starts on the home row when added as a default
+        final int zoom;          // page size in percent; under 100 shows more of a site laid out large
         final int seed;          // added to everyone's apps in this round of defaults; 0 = never
         final Set<String> feeds; // dashboard panels this app can supply: space, pota, mesh
         final List<String[]> pages; // {name, url}: the app's main pages, switched between in the viewer
@@ -42,12 +43,12 @@ final class Catalog {
             id = o.optString("id");
             name = o.optString("name", id);
             url = o.optString("url", "");
-            health = o.optString("health", "");
             icon = o.optString("icon", "");
             port = o.optInt("port", 0);
             token = o.optBoolean("token");
             audio = o.optBoolean("audio");
             home = o.optBoolean("home");
+            zoom = o.optInt("zoom", 100);
             // Older catalogs said "seed": true for the first round.
             Object sd = o.opt("seed");
             seed = sd instanceof Boolean ? ((Boolean) sd ? 1 : 0) : o.optInt("seed");

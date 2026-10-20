@@ -44,7 +44,8 @@ import java.util.regex.Pattern;
  * icon, favicon; for public sites also Google's favicon service) is fetched from the server the
  * app points at, so a self-hosted one shows its own, and made square: a solid icon fills the
  * tile, a transparent logo sits on a plain tile, and a site with only a tiny favicon, or none,
- * gets a coloured tile with a symbol for its category.
+ * gets a coloured tile with a symbol for its category. The user can pick a symbol instead, or
+ * their own image.
  */
 final class Icons {
 
@@ -72,6 +73,24 @@ final class Icons {
         }
     }
 
+    /** The symbol for a category, for the All apps sidebar. */
+    static int categorySymbol(String category) {
+        return look(category)[2];
+    }
+
+    /** The symbols a user can choose for an app, by the name stored in Store.Instance.icon. */
+    static final String[] SYMBOL_NAMES = {"antenna", "radio", "waves", "satellite", "mesh", "plane", "ship",
+            "cloud", "sun", "globe", "grid", "park", "trophy", "chat"};
+    static final int[] SYMBOLS = {R.drawable.ic_antenna, R.drawable.ic_radio, R.drawable.ic_waves, R.drawable.ic_satellite,
+            R.drawable.ic_mesh, R.drawable.ic_plane, R.drawable.ic_ship, R.drawable.ic_cloud, R.drawable.ic_sun,
+            R.drawable.ic_globe, R.drawable.ic_grid, R.drawable.ic_park, R.drawable.ic_trophy, R.drawable.ic_chat};
+
+    /** The tile for a symbol in an app's category colours. */
+    static Bitmap symbolFor(Context c, Store.Instance in, int symbolRes) {
+        int[] look = look(Catalog.get(c, in.type).category);
+        return symbolTile(c, symbolRes, look[0], look[1]);
+    }
+
     // --- Tiles -------------------------------------------------------------------------------
 
     /** An app's icon with its name underneath, for the home row and All apps. */
@@ -86,7 +105,6 @@ final class Icons {
     static View button(Activity a, ViewGroup parent, String label, int symbolRes, int top, int bottom) {
         View t = frame(a, parent, label);
         ((ImageView) t.findViewById(R.id.icon)).setImageBitmap(symbolTile(a, symbolRes, top, bottom));
-        t.findViewById(R.id.dot).setVisibility(View.GONE);
         return t;
     }
 
@@ -104,8 +122,18 @@ final class Icons {
         view.setTag(in.id);
         int[] look = look(t.category);
         int symbol = t.id.equals("custom") ? R.drawable.ic_globe : look[2];
+        if (in.icon.startsWith("symbol:")) {
+            for (int i = 0; i < SYMBOL_NAMES.length; i++) {
+                if (in.icon.equals("symbol:" + SYMBOL_NAMES[i])) symbol = SYMBOLS[i];
+            }
+        }
         view.setImageBitmap(symbolTile(c, symbol, look[0], look[1]));
-        if (!in.hasUrl()) return;
+        if (in.icon.equals("file")) {
+            Bitmap b = BitmapFactory.decodeFile(customFile(c, in).getPath());
+            if (b != null) view.setImageBitmap(b);
+            return;
+        }
+        if (!in.hasUrl() || !in.icon.isEmpty()) return;
         File cached = file(c, in);
         if (cached.exists()) {
             Bitmap b = BitmapFactory.decodeFile(cached.getPath());
@@ -142,15 +170,16 @@ final class Icons {
 
     /** A diagonal gradient with a white symbol in the middle, like a built-in phone app. */
     static Bitmap symbolTile(Context c, int symbolRes, int top, int bottom) {
-        Bitmap b = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888);
+        int w = SIZE, h = SIZE;
+        Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(b);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setShader(new LinearGradient(0, 0, SIZE, SIZE, top, bottom, Shader.TileMode.CLAMP));
-        cv.drawRect(0, 0, SIZE, SIZE, p);
+        p.setShader(new LinearGradient(0, 0, w, h, top, bottom, Shader.TileMode.CLAMP));
+        cv.drawRect(0, 0, w, h, p);
         Drawable d = c.getResources().getDrawable(symbolRes, null).mutate();
         d.setTint(Color.WHITE);
-        int inset = SIZE * 27 / 100;
-        d.setBounds(inset, inset, SIZE - inset, SIZE - inset);
+        int s = Math.min(w, h) * 46 / 100;
+        d.setBounds((w - s) / 2, (h - s) / 2, (w + s) / 2, (h + s) / 2);
         d.draw(cv);
         return b;
     }
@@ -214,6 +243,45 @@ final class Icons {
             }
         }
         return n > 0 && sum / n > 0.8;
+    }
+
+    /** The user's own image for an app. */
+    static File customFile(Context c, Store.Instance in) {
+        File dir = new File(c.getFilesDir(), "icons");
+        dir.mkdirs();
+        return new File(dir, in.id + "-custom.png");
+    }
+
+    /**
+     * Makes image bytes (from a web address or a file on the device) into the app's custom icon,
+     * drawn like a site's icon. Returns false when it isn't an image or is too small to look right.
+     */
+    static boolean saveCustom(Context c, Store.Instance in, byte[] data) {
+        Bitmap src = BitmapFactory.decodeByteArray(data, 0, data.length);
+        Bitmap b = src == null ? null : compose(c, src, look(Catalog.get(c, in.type).category));
+        if (b == null) return false;
+        try (OutputStream out = new FileOutputStream(customFile(c, in))) {
+            return b.compress(Bitmap.CompressFormat.PNG, 100, out);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    interface Done { void run(boolean ok); }
+
+    /** Downloads an image for saveCustom, off the main thread. */
+    static void fetchCustom(Context c, Store.Instance in, String url, Done done) {
+        Context app = c.getApplicationContext();
+        bg.execute(() -> {
+            boolean ok;
+            try {
+                ok = saveCustom(app, in, get(url, MAX_ICON));
+            } catch (IOException | RuntimeException e) {
+                ok = false;
+            }
+            boolean result = ok;
+            ui.post(() -> done.run(result));
+        });
     }
 
     /** Named after the instance, its address and the drawing style, so any change redraws it. */

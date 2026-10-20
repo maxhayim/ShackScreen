@@ -18,7 +18,4 @@
     <color name="good">#059669</color>
     <color name="fair">#D97706</color>
     <color name="poor">#DC2626</color>
-    <color name="up">#10B981</color>
-    <color name="down">#EF4444</color>
-    <color name="unknown">#A3ACBB</color>
 </resources>

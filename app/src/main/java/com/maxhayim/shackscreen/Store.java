@@ -19,13 +19,15 @@ final class Store {
 
     static final class Instance {
         String id, type, name, url, token;
+        String icon = ""; // "" for the site's own icon, "symbol:<drawable>", or "file" for a custom image
+        int zoom; // page size in percent, 0 for the catalog's
         boolean home; // on the home row; otherwise only in All apps
         List<String[]> pages = new ArrayList<>(); // {name, url}: extra pages the user added
 
         JSONObject toJson() throws Exception {
             return new JSONObject().put("id", id).put("type", type).put("name", name)
                     .put("url", url).put("token", token == null ? "" : token).put("home", home)
-                    .put("pages", pagesJson());
+                    .put("pages", pagesJson()).put("icon", icon).put("zoom", zoom);
         }
 
         private JSONArray pagesJson() throws Exception {
@@ -41,6 +43,10 @@ final class Store {
             i.name = o.optString("name");
             i.url = o.optString("url");
             i.token = o.optString("token");
+            i.icon = o.optString("icon");
+            i.zoom = o.optInt("zoom");
+            // Names the catalog has since shortened, still on apps added before.
+            if (i.type.equals("meshmap") && i.name.equals("MeshMap (Meshtastic)")) i.name = "MeshMap";
             // Lists saved before the home row existed: start with the usual favourites there.
             i.home = o.has("home") ? o.optBoolean("home") : DEFAULT_HOME.contains(i.type);
             JSONArray pg = o.optJSONArray("pages");
@@ -96,6 +102,9 @@ final class Store {
             throw new IllegalStateException(e);
         }
         c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, a.toString()).apply();
+        List<String> ids = new ArrayList<>();
+        for (Instance i : list) ids.add(i.id);
+        Logins.prune(c, ids); // a deleted app's logins go with it
     }
 
     /** The apps on the home row, in order. */

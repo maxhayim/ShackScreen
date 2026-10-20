@@ -1,7 +1,6 @@
 package com.maxhayim.shackscreen;
 
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,7 +35,7 @@ import java.util.concurrent.Executors;
  */
 public class MainActivity extends BaseActivity {
 
-    private static final long CLOCK_MS = 1000, TICK_MS = 15_000, HEALTH_MS = 60_000;
+    private static final long CLOCK_MS = 1000, TICK_MS = 15_000;
     private static final long IDLE_MS = 60_000, ROTATE_MS = 20_000;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -91,13 +90,6 @@ public class MainActivity extends BaseActivity {
         }
     };
 
-    private final Runnable tickHealth = new Runnable() {
-        @Override public void run() {
-            refreshHealth();
-            ui.postDelayed(this, HEALTH_MS);
-        }
-    };
-
     /** On a wall display nobody presses keys: page through the widgets that don't fit. */
     private final Runnable tickRotate = new Runnable() {
         @Override public void run() {
@@ -148,7 +140,6 @@ public class MainActivity extends BaseActivity {
         buildAppRow();
         ui.post(tickClock);
         ui.post(tickWidgets);
-        ui.post(tickHealth);
         ui.postDelayed(tickRotate, ROTATE_MS);
         showUpdateBadge();
         if (Updater.due(this)) {
@@ -548,7 +539,6 @@ public class MainActivity extends BaseActivity {
                     for (int i = 0; i < apps.getChildCount(); i++) {
                         if (tag.equals(apps.getChildAt(i).getTag())) apps.getChildAt(i).requestFocus();
                     }
-                    refreshHealth();
                 })
                 .show();
     }
@@ -565,27 +555,6 @@ public class MainActivity extends BaseActivity {
             return;
         }
         startActivity(new Intent(this, ViewerActivity.class).putExtra(ViewerActivity.EXTRA_ID, in.id));
-    }
-
-    // --- Status dots ----------------------------------------------------------------------
-
-    private void refreshHealth() {
-        for (View tile : tiles) {
-            Object id = tile.getTag();
-            Store.Instance in = null;
-            for (Store.Instance x : instances) if (x.id.equals(id)) in = x;
-            if (in == null || !in.hasUrl()) continue;
-            Catalog.Type t = Catalog.get(this, in.type);
-            String url = t.health.isEmpty() ? in.url : Store.join(in.url, t.health);
-            View dot = tile.findViewById(R.id.dot);
-            bg.execute(() -> {
-                boolean up = Net.up(url);
-                ui.post(() -> {
-                    GradientDrawable d = (GradientDrawable) dot.getBackground().mutate();
-                    d.setColor(Icons.color(this, up ? R.color.up : R.color.down));
-                });
-            });
-        }
     }
 
     private int dp(int v) {

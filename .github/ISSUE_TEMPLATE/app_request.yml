@@ -24,6 +24,8 @@ body:
       label: Category
       options:
         - Ham radio
+        - GMRS
+        - Satellites
         - Mesh
         - SDR & scanners
         - Aviation

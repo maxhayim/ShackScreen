@@ -5,12 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
 
-/** Hears back from Android's installer after Updater commits an update. */
+/** Hears back from Android's installer after Updater commits an update, and reopens ShackScreen after it. */
 public class UpdateReceiver extends BroadcastReceiver {
 
     @Override
     @SuppressWarnings("deprecation") // the typed getParcelableExtra needs API 33
     public void onReceive(Context c, Intent intent) {
+        if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) {
+            Updater.setStatus(c, "Updated");
+            if (Updater.takeReopen(c)) {
+                c.startActivity(new Intent(c, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+            return;
+        }
         int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE);
         switch (status) {
             case PackageInstaller.STATUS_PENDING_USER_ACTION:
