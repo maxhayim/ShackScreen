@@ -93,7 +93,7 @@ Needed for aircraft nearby, satellite passes and weather.
 
 ### 5) Add your call signs (optional)
 
-Select the box next to the clock (or **Settings → Call signs**) and add your **ham call sign**, **GMRS call sign** and **CB handle**. They show next to the clock, and stay on the device.
+Select your call signs next to the clock (or **Settings → Call Signs**) and add your **ham call sign**, **GMRS call sign** and **CB handle**. They show next to the clock, and stay on the device.
 
 ---
 

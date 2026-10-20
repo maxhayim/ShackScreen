@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tags on a Settings row for its name and value text. -->
+    <item name="row_title" type="id" />
+    <item name="row_value" type="id" />
+</resources>

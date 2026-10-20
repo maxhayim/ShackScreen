@@ -14,8 +14,7 @@
     <string name="add_app">+ Add app</string>
     <string name="needs_address">Set its address in Settings</string>
     <string name="viewer_error">Can\'t reach %1$s\nTrying again in 30 seconds. Press Back to leave.</string>
-    <string name="settings_title">Your apps</string>
-    <string name="settings_hint">Use a public site or your own server. Addresses and tokens stay on this TV.</string>
+        <string name="settings_hint">Use a public site or your own server. Addresses and tokens stay on this TV.</string>
     <string name="name">Name</string>
     <string name="address">Address (e.g. 192.168.1.50 or https://…)</string>
     <string name="token">API token (optional)</string>
@@ -25,9 +24,9 @@
     <string name="pick_app">Add which app?</string>
     <string name="version">ShackScreen %1$s</string>
     <string name="updates">Updates</string>
-    <string name="mode_off">Updates: Off (never contact GitHub)</string>
-    <string name="mode_notify">Updates: Tell me when there\'s a new version</string>
-    <string name="mode_auto">Updates: Install automatically</string>
+    <string name="mode_off">Off (never contact GitHub)</string>
+    <string name="mode_notify">Tell me when there\'s a new version</string>
+    <string name="mode_auto">Install automatically</string>
     <string name="check_now">Check for updates now</string>
     <string name="checking">Checking…</string>
     <string name="install_version">Install version %1$s</string>
@@ -60,11 +59,7 @@
     <string name="w_satnogs">Heard By SatNOGS</string>
     <string name="widgets">Widgets</string>
     <string name="widgets_hint">Move a widget on the dashboard: select it and press OK (or long-press it), move it with the arrows, then press OK again.</string>
-    <string name="rotate_on">Rotate widgets when idle: On</string>
-    <string name="rotate_off">Rotate widgets when idle: Off</string>
     <string name="location">Location</string>
-    <string name="location_value">Location: %1$s</string>
-    <string name="location_unset">Location: not set (needed for aircraft and weather)</string>
     <string name="location_hint">Grid square (FN31pr) or latitude, longitude (40.7, -74.0)</string>
     <string name="needs_location">Set your location in Settings</string>
     <string name="no_feed">Add an app that provides this in Settings</string>
@@ -86,7 +81,6 @@
     <string name="move_right">Move right</string>
     <string name="move">Move</string>
     <string name="edit">Edit…</string>
-    <string name="theme_value">Theme: %1$s</string>
     <string name="pick_theme">Theme</string>
     <string name="all_apps_hint">Press and hold an application (or long-press OK) to add it to the home row or take it off, edit or delete it.</string>
     <string name="use_public">Public site (%1$s)</string>
@@ -139,11 +133,20 @@
         <item quantity="one">%1$d application</item>
         <item quantity="other">%1$d applications</item>
     </plurals>
-    <string name="callsigns">Call signs</string>
+    <string name="callsigns">Call Signs</string>
     <string name="callsigns_add">Add your call signs</string>
     <string name="callsigns_value">Call signs: %1$s…</string>
     <string name="callsign_ham">Ham call sign (e.g. K1ABC)</string>
     <string name="callsign_gmrs">GMRS call sign (e.g. WRXX123)</string>
     <string name="cb_handle">CB handle</string>
     <string name="not_set">not set</string>
+    <string name="add_application_long">Add an application</string>
+    <string name="rotate">Rotate widgets when idle</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="callsigns_hint">Shown next to the clock. Kept on this device only.</string>
+    <string name="ham">Ham call sign</string>
+    <string name="gmrs">GMRS call sign</string>
+    <string name="cb">CB handle</string>
+    <string name="location_why">A grid square or latitude, longitude. Used for Aircraft Nearby, Satellite Passes and Weather.</string>
 </resources>

@@ -39,7 +39,7 @@ final class CallSigns {
     static void show(Context c, LinearLayout box) {
         box.removeAllViews();
         if (!any(c)) {
-            box.addView(row(c, "+", c.getString(R.string.callsigns_add), false));
+            box.addView(row(c, "", "+ " + c.getString(R.string.callsigns_add), false));
             return;
         }
         for (String[] f : FIELDS) {
@@ -48,24 +48,26 @@ final class CallSigns {
         }
     }
 
+    /** Like the clock: the value large, its label small after it, as LOCAL and UTC are. */
     private static LinearLayout row(Context c, String label, String value, boolean big) {
         float d = c.getResources().getDisplayMetrics().density;
         LinearLayout r = new LinearLayout(c);
-        r.setGravity(Gravity.CENTER_VERTICAL);
+        r.setBaselineAligned(true);
+        TextView v = new TextView(c);
+        v.setText(value);
+        v.setTextSize(TypedValue.COMPLEX_UNIT_SP, big ? 23 : 17);
+        v.setTextColor(Icons.color(c, big ? R.color.text : R.color.dim));
+        v.setSingleLine(true);
+        v.setIncludeFontPadding(false);
+        r.addView(v);
         TextView l = new TextView(c);
         l.setText(label);
         l.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         l.setLetterSpacing(0.15f);
+        l.setAllCaps(true);
         l.setTextColor(Icons.color(c, R.color.dim));
-        l.setMinWidth(Math.round(42 * d));
+        l.setPadding(Math.round(8 * d), 0, 0, 0);
         r.addView(l);
-        TextView v = new TextView(c);
-        v.setText(value);
-        v.setTextSize(TypedValue.COMPLEX_UNIT_SP, big ? 19 : 15);
-        v.setTextColor(Icons.color(c, big ? R.color.text : R.color.dim));
-        if (big) v.setTypeface(v.getTypeface(), android.graphics.Typeface.BOLD);
-        v.setSingleLine(true);
-        r.addView(v);
         return r;
     }
 

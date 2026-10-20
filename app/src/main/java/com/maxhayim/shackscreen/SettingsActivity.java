@@ -31,7 +31,7 @@ public class SettingsActivity extends BaseActivity {
     private final Handler ui = new Handler(Looper.getMainLooper());
     private LinearLayout list, widgetList;
     private List<Store.Instance> instances;
-    private Button modeButton, installButton;
+    private View modeButton, installButton;
     private TextView updateStatus;
 
     // The app whose icon is being picked from the device's files, while the picker is open.
@@ -48,90 +48,85 @@ public class SettingsActivity extends BaseActivity {
         }
     };
 
+    // The sections down the side: key, title, symbol.
+    private static final String APPS = "apps", WIDGETS = "widgets", CALLS = "calls", LOCATION = "location",
+            LOOK = "look", UPDATES = "updates";
+    private static final Object[][] SECTIONS = {
+            {APPS, R.string.applications, R.drawable.ic_grid},
+            {WIDGETS, R.string.widgets, R.drawable.ic_waves},
+            {CALLS, R.string.callsigns, R.drawable.ic_radio},
+            {LOCATION, R.string.location, R.drawable.ic_globe},
+            {LOOK, R.string.appearance, R.drawable.ic_theme},
+            {UPDATES, R.string.updates, R.drawable.ic_update}};
+
+    private String section = APPS;
+    private LinearLayout side, pane;
+    private TextView paneTitle, paneHint;
+    private ScrollView paneScroll;
+    private final List<View> sideItems = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        ScrollView scroll = new ScrollView(this);
+        if (state != null) section = state.getString("section", APPS);
         LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(48), dp(27), dp(48), dp(27));
-        scroll.addView(root);
 
-        root.addView(text(getString(R.string.settings_title), 26, R.color.accent));
-        root.addView(text(getString(R.string.settings_hint), 15, R.color.dim));
-        list = new LinearLayout(this);
-        list.setOrientation(LinearLayout.VERTICAL);
-        list.setPadding(0, dp(16), 0, dp(16));
-        root.addView(list);
-        Button add = button(getString(R.string.add_app));
-        add.setOnClickListener(v -> pickType());
-        root.addView(add);
+        // Sections down the left, like All applications.
+        ScrollView sideScroll = new ScrollView(this);
+        sideScroll.setBackgroundColor(color(R.color.card));
+        side = new LinearLayout(this);
+        side.setOrientation(LinearLayout.VERTICAL);
+        side.setPadding(dp(16), dp(24), dp(16), dp(24));
+        sideScroll.addView(side);
+        root.addView(sideScroll, new LinearLayout.LayoutParams(dp(236), LinearLayout.LayoutParams.MATCH_PARENT));
+        LinearLayout brand = new LinearLayout(this);
+        brand.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        brand.setPadding(dp(6), 0, 0, dp(18));
+        android.widget.ImageView logo = new android.widget.ImageView(this);
+        logo.setImageResource(R.drawable.ic_settings);
+        logo.setColorFilter(color(R.color.accent));
+        brand.addView(logo, new LinearLayout.LayoutParams(dp(28), dp(28)));
+        TextView name = text(getString(R.string.settings), 21, R.color.text);
+        name.setTypeface(name.getTypeface(), android.graphics.Typeface.BOLD);
+        name.setPadding(dp(12), 0, 0, 0);
+        brand.addView(name);
+        side.addView(brand);
+        for (Object[] sec : SECTIONS) side.addView(sideItem((String) sec[0], getString((Integer) sec[1]), (Integer) sec[2]));
 
-        root.addView(section(getString(R.string.widgets)));
-        TextView hint = text(getString(R.string.widgets_hint), 13, R.color.dim);
-        hint.setPadding(0, 0, 0, dp(10));
-        root.addView(hint);
-        widgetList = new LinearLayout(this);
-        widgetList.setOrientation(LinearLayout.VERTICAL);
-        root.addView(widgetList);
-        Button rotate = button("");
-        rotate.setText(Widgets.rotate(this) ? R.string.rotate_on : R.string.rotate_off);
-        rotate.setOnClickListener(v -> {
-            Widgets.setRotate(this, !Widgets.rotate(this));
-            rotate.setText(Widgets.rotate(this) ? R.string.rotate_on : R.string.rotate_off);
-        });
-        root.addView(rotate);
-
-        root.addView(section(getString(R.string.callsigns)));
-        Button calls = button(CallSigns.summary(this));
-        calls.setOnClickListener(v -> CallSigns.edit(this, () -> calls.setText(CallSigns.summary(this))));
-        root.addView(calls);
-
-        root.addView(section(getString(R.string.location)));
-        Button location = button(locationLabel());
-        location.setOnClickListener(v -> editLocation(location));
-        root.addView(location);
-
-        root.addView(section(getString(R.string.appearance)));
-        Button theme = button(themeLabel());
-        theme.setOnClickListener(v -> pickTheme());
-        root.addView(theme);
-
-        TextView updates = section(getString(R.string.updates));
-        root.addView(updates);
-        modeButton = button("");
-        modeButton.setOnClickListener(v -> {
-            String m = Updater.mode(this);
-            Updater.setMode(this, Updater.OFF.equals(m) ? Updater.NOTIFY : Updater.NOTIFY.equals(m) ? Updater.AUTO : Updater.OFF);
-            showUpdates();
-        });
-        root.addView(modeButton);
-        Button check = button(getString(R.string.check_now));
-        check.setOnClickListener(v -> {
-            Updater.setStatus(this, getString(R.string.checking));
-            new Thread(() -> Updater.run(getApplicationContext(), true)).start();
-        });
-        root.addView(check);
-        installButton = button("");
-        installButton.setOnClickListener(v -> {
-            Updater.Release r = Updater.available(this);
-            if (r != null) new Thread(() -> Updater.install(getApplicationContext(), r)).start();
-        });
-        root.addView(installButton);
-        updateStatus = text("", 15, R.color.text);
-        root.addView(updateStatus);
-        root.addView(text(getString(R.string.version, BuildConfig.VERSION_NAME), 13, R.color.dim));
-        setContentView(scroll);
-        Appearance.font(scroll);
+        // The chosen section's settings on the right.
+        LinearLayout main = new LinearLayout(this);
+        main.setOrientation(LinearLayout.VERTICAL);
+        main.setPadding(dp(32), dp(24), dp(40), 0);
+        paneTitle = text("", 28, R.color.text);
+        paneTitle.setTypeface(paneTitle.getTypeface(), android.graphics.Typeface.BOLD);
+        main.addView(paneTitle);
+        paneHint = text("", 13, R.color.dim);
+        paneHint.setPadding(0, dp(4), 0, dp(14));
+        main.addView(paneHint);
+        paneScroll = new ScrollView(this);
+        paneScroll.setClipToPadding(false);
+        paneScroll.setPadding(0, 0, 0, dp(24));
+        pane = new LinearLayout(this);
+        pane.setOrientation(LinearLayout.VERTICAL);
+        paneScroll.addView(pane);
+        main.addView(paneScroll, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1));
+        root.addView(main, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
+        setContentView(root);
 
         instances = Store.load(this);
-        rebuild();
-        rebuildWidgets();
+        buildPane();
+        for (View v : sideItems) if (section.equals(v.getTag())) v.requestFocus();
         if (getIntent().getBooleanExtra(EXTRA_ADD, false)) pickType();
         String editId = getIntent().getStringExtra(EXTRA_EDIT);
         if (editId != null) {
             for (Store.Instance in : instances) if (in.id.equals(editId)) edit(in, false);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle out) {
+        super.onSaveInstanceState(out);
+        out.putString("section", section); // a theme change recreates the screen
     }
 
     @Override
@@ -146,26 +141,247 @@ public class SettingsActivity extends BaseActivity {
         ui.removeCallbacks(poll);
     }
 
+    // --- Sections -----------------------------------------------------------------------------
+
+    private View sideItem(String key, String label, int symbol) {
+        LinearLayout row = new LinearLayout(this);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(14), dp(11), dp(14), dp(11));
+        row.setFocusable(true);
+        row.setClickable(true);
+        row.setTag(key);
+        android.widget.ImageView icon = new android.widget.ImageView(this);
+        icon.setImageResource(symbol);
+        row.addView(icon, new LinearLayout.LayoutParams(dp(20), dp(20)));
+        TextView t = text(label, 16, R.color.text);
+        t.setPadding(dp(14), 0, 0, 0);
+        t.setSingleLine(true);
+        row.addView(t);
+        // Moving through the list shows each section, as in All applications.
+        row.setOnFocusChangeListener((v, f) -> {
+            if (f) select(key);
+        });
+        row.setOnClickListener(v -> select(key));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.bottomMargin = dp(4);
+        row.setLayoutParams(lp);
+        sideItems.add(row);
+        return row;
+    }
+
+    private void select(String key) {
+        if (key.equals(section) && pane.getChildCount() > 0) return;
+        section = key;
+        buildPane();
+    }
+
+    /** The chosen section is a solid pill; the focused one also gets the usual amber outline. */
+    private void styleSide() {
+        int text = color(R.color.text), dim = color(R.color.dim), ink = color(R.color.bg_bottom);
+        for (View v : sideItems) {
+            boolean on = section.equals(v.getTag());
+            android.graphics.drawable.StateListDrawable bg = new android.graphics.drawable.StateListDrawable();
+            android.graphics.drawable.GradientDrawable focused = pill(on ? text : color(R.color.tile_focus));
+            focused.setStroke(dp(2), color(R.color.accent));
+            bg.addState(new int[]{android.R.attr.state_focused}, focused);
+            bg.addState(new int[]{}, pill(on ? text : 0));
+            v.setBackground(bg);
+            LinearLayout row = (LinearLayout) v;
+            ((android.widget.ImageView) row.getChildAt(0)).setColorFilter(on ? ink : dim);
+            TextView t = (TextView) row.getChildAt(1);
+            t.setTextColor(on ? ink : text);
+            t.setTypeface(android.graphics.Typeface.create(t.getTypeface(), on ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL));
+        }
+    }
+
+    private android.graphics.drawable.GradientDrawable pill(int c) {
+        android.graphics.drawable.GradientDrawable d = new android.graphics.drawable.GradientDrawable();
+        d.setColor(c);
+        d.setCornerRadius(dp(14));
+        return d;
+    }
+
+    private void buildPane() {
+        styleSide();
+        pane.removeAllViews();
+        modeButton = null;
+        installButton = null;
+        updateStatus = null;
+        list = null;
+        widgetList = null;
+        switch (section) {
+            case APPS: appsPane(); break;
+            case WIDGETS: widgetsPane(); break;
+            case CALLS: callsPane(); break;
+            case LOCATION: locationPane(); break;
+            case LOOK: lookPane(); break;
+            default: updatesPane();
+        }
+        Appearance.font(pane);
+        Appearance.font(side);
+        paneScroll.scrollTo(0, 0);
+    }
+
+    private void head(int title, String hint) {
+        paneTitle.setText(title);
+        paneHint.setText(hint);
+        paneHint.setVisibility(hint.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    private void appsPane() {
+        head(R.string.applications, getString(R.string.settings_hint));
+        list = new LinearLayout(this);
+        list.setOrientation(LinearLayout.VERTICAL);
+        pane.addView(list);
+        rebuild();
+        View add = row(R.drawable.ic_plus, getString(R.string.add_application_long), "");
+        add.setOnClickListener(v -> pickType());
+        pane.addView(add);
+    }
+
+    private void widgetsPane() {
+        head(R.string.widgets, getString(R.string.widgets_hint));
+        widgetList = new LinearLayout(this);
+        widgetList.setOrientation(LinearLayout.VERTICAL);
+        pane.addView(widgetList);
+        rebuildWidgets();
+        View rotate = row(0, getString(R.string.rotate), getString(Widgets.rotate(this) ? R.string.on : R.string.off));
+        rotate.setOnClickListener(v -> {
+            Widgets.setRotate(this, !Widgets.rotate(this));
+            setValue(rotate, getString(Widgets.rotate(this) ? R.string.on : R.string.off));
+        });
+        pane.addView(rotate);
+    }
+
+    private void callsPane() {
+        head(R.string.callsigns, getString(R.string.callsigns_hint));
+        int[] titles = {R.string.ham, R.string.gmrs, R.string.cb};
+        for (int i = 0; i < CallSigns.FIELDS.length; i++) {
+            String v = CallSigns.get(this, CallSigns.FIELDS[i][0]);
+            View r = row(0, getString(titles[i]), v.isEmpty() ? getString(R.string.not_set) : v);
+            r.setOnClickListener(x -> CallSigns.edit(this, this::buildPane));
+            pane.addView(r);
+        }
+    }
+
+    private void locationPane() {
+        head(R.string.location, getString(R.string.location_why));
+        View r = row(R.drawable.ic_globe, getString(R.string.location), locationValue());
+        r.setOnClickListener(v -> editLocation(() -> setValue(r, locationValue())));
+        pane.addView(r);
+    }
+
+    private void lookPane() {
+        head(R.string.appearance, "");
+        View r = row(R.drawable.ic_theme, getString(R.string.pick_theme), Appearance.label(this, Appearance.mode(this)));
+        r.setOnClickListener(v -> pickTheme());
+        pane.addView(r);
+    }
+
+    private void updatesPane() {
+        head(R.string.updates, getString(R.string.version, BuildConfig.VERSION_NAME));
+        View mode = row(R.drawable.ic_update, getString(R.string.updates), "");
+        mode.setOnClickListener(v -> {
+            String m = Updater.mode(this);
+            Updater.setMode(this, Updater.OFF.equals(m) ? Updater.NOTIFY : Updater.NOTIFY.equals(m) ? Updater.AUTO : Updater.OFF);
+            showUpdates();
+        });
+        pane.addView(mode);
+        modeButton = mode;
+        View check = row(0, getString(R.string.check_now), "");
+        check.setOnClickListener(v -> {
+            Updater.setStatus(this, getString(R.string.checking));
+            new Thread(() -> Updater.run(getApplicationContext(), true)).start();
+        });
+        pane.addView(check);
+        installButton = row(0, "", "");
+        installButton.setOnClickListener(v -> {
+            Updater.Release r = Updater.available(this);
+            if (r != null) new Thread(() -> Updater.install(getApplicationContext(), r)).start();
+        });
+        pane.addView(installButton);
+        updateStatus = text("", 15, R.color.dim);
+        updateStatus.setPadding(dp(4), dp(8), 0, 0);
+        pane.addView(updateStatus);
+        showUpdates();
+    }
+
     private void showUpdates() {
+        if (modeButton == null) return;
         String m = Updater.mode(this);
-        modeButton.setText(getString(Updater.AUTO.equals(m) ? R.string.mode_auto
+        setValue(modeButton, getString(Updater.AUTO.equals(m) ? R.string.mode_auto
                 : Updater.NOTIFY.equals(m) ? R.string.mode_notify : R.string.mode_off));
         Updater.Release r = Updater.available(this);
         installButton.setVisibility(r == null ? View.GONE : View.VISIBLE);
-        if (r != null) installButton.setText(getString(R.string.install_version, r.version));
+        if (r != null) ((TextView) installButton.getTag(R.id.row_title)).setText(getString(R.string.install_version, r.version));
         updateStatus.setText(Updater.status(this));
     }
 
+    /**
+     * A settings row: optional symbol, the setting's name, and its current value on the right.
+     * Its value is changed with setValue.
+     */
+    private LinearLayout row(int symbol, String title, String value) {
+        LinearLayout r = new LinearLayout(this);
+        r.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        r.setPadding(dp(18), dp(14), dp(20), dp(14));
+        r.setBackgroundResource(R.drawable.tile_bg);
+        r.setFocusable(true);
+        r.setClickable(true);
+        if (symbol != 0) {
+            android.widget.ImageView icon = new android.widget.ImageView(this);
+            icon.setImageResource(symbol);
+            icon.setColorFilter(color(R.color.dim));
+            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(22), dp(22));
+            ip.setMarginEnd(dp(16));
+            r.addView(icon, ip);
+        }
+        TextView t = text(title, 17, R.color.text);
+        t.setSingleLine(true);
+        t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        r.addView(t, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        r.setTag(R.id.row_title, t);
+        TextView v = text(value, 15, R.color.dim);
+        v.setSingleLine(true);
+        v.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+        v.setGravity(android.view.Gravity.END);
+        v.setPadding(dp(16), 0, 0, 0);
+        r.addView(v, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.9f));
+        r.setTag(R.id.row_value, v);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.bottomMargin = dp(8);
+        r.setLayoutParams(lp);
+        return r;
+    }
+
+    private static void setValue(View row, String value) {
+        ((TextView) row.getTag(R.id.row_value)).setText(value);
+    }
+
+    /** The user's apps, each with its icon and address. Called again after one is added, changed or deleted. */
     private void rebuild() {
+        if (list == null) return;
         list.removeAllViews();
         for (Store.Instance in : instances) {
             String where = in.hasUrl() ? in.url : getString(R.string.needs_address);
-            Button b = button(in.name + "   ·   " + where);
-            b.setOnClickListener(v -> edit(in, false));
-            list.addView(b);
+            LinearLayout r = row(0, in.name, where);
+            android.widget.FrameLayout frame = new android.widget.FrameLayout(this);
+            android.graphics.drawable.GradientDrawable shape = pill(color(R.color.icon_bg));
+            shape.setCornerRadius(dp(9)); // a rounded square, like the icons everywhere else
+            frame.setBackground(shape);
+            frame.setClipToOutline(true);
+            android.widget.ImageView icon = new android.widget.ImageView(this);
+            icon.setScaleType(android.widget.ImageView.ScaleType.FIT_XY);
+            frame.addView(icon, new android.widget.FrameLayout.LayoutParams(dp(34), dp(34)));
+            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(34), dp(34));
+            ip.setMarginEnd(dp(16));
+            r.addView(frame, 0, ip);
+            Icons.show(this, in, icon);
+            r.setPadding(dp(12), dp(10), dp(20), dp(10));
+            r.setOnClickListener(v -> edit(in, false));
+            list.addView(r);
         }
         Appearance.font(list);
-        if (list.getChildCount() > 0) list.getChildAt(0).requestFocus();
     }
 
     /**
@@ -203,6 +419,7 @@ public class SettingsActivity extends BaseActivity {
 
     /** Shown widgets first, in dashboard order, then the hidden ones. Selecting one shows or hides it. */
     private void rebuildWidgets() {
+        if (widgetList == null) return;
         widgetList.removeAllViews();
         List<String> shown = Widgets.shown(this);
         List<Widgets.Def> ordered = new ArrayList<>();
@@ -210,8 +427,9 @@ public class SettingsActivity extends BaseActivity {
         for (Widgets.Def d : Widgets.ALL) if (!shown.contains(d.id)) ordered.add(d);
         for (Widgets.Def d : ordered) {
             boolean on = shown.contains(d.id);
-            Button b = button(getString(d.title) + "   ·   " + d.category + "   ·   " + getString(on ? R.string.shown : R.string.hidden));
-            if (!on) b.setTextColor(color(R.color.dim));
+            LinearLayout b = row(d.icon, getString(d.title), getString(on ? R.string.shown : R.string.hidden));
+            ((TextView) b.getTag(R.id.row_value)).setTextColor(color(on ? R.color.good : R.color.dim));
+            if (!on) ((TextView) b.getTag(R.id.row_title)).setTextColor(color(R.color.dim));
             b.setOnClickListener(v -> {
                 List<String> now = Widgets.shown(this);
                 if (now.contains(d.id)) now.remove(d.id);
@@ -229,12 +447,12 @@ public class SettingsActivity extends BaseActivity {
         Appearance.font(widgetList);
     }
 
-    private String locationLabel() {
+    private String locationValue() {
         String loc = Widgets.location(this);
-        return loc.isEmpty() ? getString(R.string.location_unset) : getString(R.string.location_value, loc);
+        return loc.isEmpty() ? getString(R.string.not_set) : loc;
     }
 
-    private void editLocation(Button label) {
+    private void editLocation(Runnable done) {
         LinearLayout form = new LinearLayout(this);
         form.setOrientation(LinearLayout.VERTICAL);
         form.setPadding(dp(24), dp(8), dp(24), 0);
@@ -250,7 +468,7 @@ public class SettingsActivity extends BaseActivity {
                         return;
                     }
                     Widgets.setLocation(this, s);
-                    label.setText(locationLabel());
+                    done.run();
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show());
@@ -612,10 +830,6 @@ public class SettingsActivity extends BaseActivity {
 
     // --- Small view helpers -----------------------------------------------------------------
 
-    private String themeLabel() {
-        return getString(R.string.theme_value, Appearance.label(this, Appearance.mode(this)));
-    }
-
     private void pickTheme() {
         int n = Appearance.THEMES.length;
         String[] names = new String[n + 1];
@@ -635,13 +849,6 @@ public class SettingsActivity extends BaseActivity {
                     recreate();
                 })
                 .show();
-    }
-
-    private TextView section(String s) {
-        TextView t = text(s.toUpperCase(java.util.Locale.US), 12, R.color.accent);
-        t.setLetterSpacing(0.15f);
-        t.setPadding(0, dp(24), 0, dp(10));
-        return t;
     }
 
     private TextView text(String s, int sp, int colorRes) {
