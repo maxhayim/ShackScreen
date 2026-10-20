@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- The location picker's map. MapActivity fills in the placeholders and drives it with the remote. -->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  html, body, #map { margin: 0; height: 100%; background: #111; }
+  #cross { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px;
+           z-index: 1000; pointer-events: none; filter: drop-shadow(0 0 2px #000); }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<svg id="cross" viewBox="0 0 40 40">
+  <circle cx="20" cy="20" r="8" fill="none" stroke="#F5A524" stroke-width="3"/>
+  <path d="M20 0v12M20 28v12M0 20h12M28 20h12" stroke="#F5A524" stroke-width="3"/>
+</svg>
+<script>
+  var map = L.map('map', { zoomControl: false }).setView([__LAT__, __LON__], __ZOOM__);
+  L.tileLayer(__TILES__, { maxZoom: 19, subdomains: 'abc', attribution: __ATTRIBUTION__ }).addTo(map);
+  if (__LABELS__) L.tileLayer(__LABELS__, { maxZoom: 19 }).addTo(map);
+  function report() { var c = map.getCenter(); Picker.moved(c.lat, c.lng, map.getZoom()); }
+  map.on('moveend', report);
+  // On a touch screen, tapping a place moves it under the crosshair.
+  map.on('click', function (e) { map.panTo(e.latlng); });
+  function pan(dx, dy) { map.panBy([dx * window.innerWidth / 5, dy * window.innerHeight / 5]); }
+  function zoom(by) { map.setZoom(map.getZoom() + by); }
+  function goTo(lat, lon, z) { map.setView([lat, lon], z); }
+  report();
+</script>
+</body>
+</html>

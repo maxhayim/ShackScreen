@@ -123,6 +123,15 @@ final class Widgets {
         return new double[]{lat, lon};
     }
 
+    /** The 6-character Maidenhead locator for a position, such as "EL95tt". */
+    static String toGrid(double lat, double lon) {
+        double x = lon + 180, y = lat + 90;
+        char a = (char) ('A' + (int) (x / 20)), b = (char) ('A' + (int) (y / 10));
+        char c = (char) ('0' + (int) (x % 20 / 2)), d = (char) ('0' + (int) (y % 10));
+        char e = (char) ('a' + (int) (x % 2 * 12)), f = (char) ('a' + (int) (y % 1 * 24));
+        return "" + a + b + c + d + e + f;
+    }
+
     /** Great-circle distance in nautical miles. */
     static double nm(double lat1, double lon1, double lat2, double lon2) {
         double p1 = Math.toRadians(lat1), p2 = Math.toRadians(lat2);

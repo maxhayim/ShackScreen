@@ -60,6 +60,7 @@ public class SettingsActivity extends BaseActivity {
             {UPDATES, R.string.updates, R.drawable.ic_update}};
 
     private String section = APPS;
+    private boolean building;
     private LinearLayout side, pane;
     private TextView paneTitle, paneHint;
     private ScrollView paneScroll;
@@ -136,6 +137,12 @@ public class SettingsActivity extends BaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (LOCATION.equals(section) && pane != null) buildPane(); // back from the map
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         ui.removeCallbacks(poll);
@@ -170,6 +177,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void select(String key) {
+        if (building) return; // focus moving while the pane is redrawn, not the user
         if (key.equals(section) && pane.getChildCount() > 0) return;
         section = key;
         buildPane();
@@ -202,6 +210,10 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void buildPane() {
+        // Redrawing removes the focused row, and Android would hand focus to the first section.
+        building = true;
+        View had = getCurrentFocus();
+        boolean inPane = had != null && isIn(had, pane);
         styleSide();
         pane.removeAllViews();
         modeButton = null;
@@ -220,6 +232,31 @@ public class SettingsActivity extends BaseActivity {
         Appearance.font(pane);
         Appearance.font(side);
         paneScroll.scrollTo(0, 0);
+        View keep = null;
+        if (inPane) {
+            keep = firstFocusable(pane);
+        } else {
+            for (View v : sideItems) if (section.equals(v.getTag())) keep = v;
+        }
+        if (keep != null) keep.requestFocus();
+        ui.post(() -> building = false);
+    }
+
+    private static boolean isIn(View v, View parent) {
+        for (android.view.ViewParent p = v.getParent(); p != null; p = p.getParent()) if (p == parent) return true;
+        return false;
+    }
+
+    private static View firstFocusable(android.view.ViewGroup g) {
+        for (int i = 0; i < g.getChildCount(); i++) {
+            View c = g.getChildAt(i);
+            if (c.isFocusable() && c.getVisibility() == View.VISIBLE) return c;
+            if (c instanceof android.view.ViewGroup) {
+                View f = firstFocusable((android.view.ViewGroup) c);
+                if (f != null) return f;
+            }
+        }
+        return null;
     }
 
     private void head(int title, String hint) {
@@ -266,9 +303,101 @@ public class SettingsActivity extends BaseActivity {
 
     private void locationPane() {
         head(R.string.location, getString(R.string.location_why));
-        View r = row(R.drawable.ic_globe, getString(R.string.location), locationValue());
-        r.setOnClickListener(v -> editLocation(() -> setValue(r, locationValue())));
-        pane.addView(r);
+        View map = row(R.drawable.ic_globe, getString(R.string.pick_on_map), locationValue());
+        map.setOnClickListener(v -> startActivity(new Intent(this, MapActivity.class)));
+        pane.addView(map);
+        View typed = row(0, getString(R.string.type_location), "");
+        typed.setOnClickListener(v -> editLocation(this::buildPane));
+        pane.addView(typed);
+        View style = row(0, getString(R.string.map_style), Maps.current(this).name);
+        style.setOnClickListener(v -> MapActivity.pickStyle(this, this::buildPane));
+        pane.addView(style);
+        // The user's own maps: select one to remove it.
+        for (Maps.Style m : Maps.custom(this)) {
+            View r = row(0, m.name, Maps.describe(m));
+            r.setOnClickListener(v -> new AlertDialog.Builder(this, R.style.Dialog)
+                    .setTitle(getString(R.string.remove_map, m.name))
+                    .setPositiveButton(R.string.delete, (d, w) -> {
+                        Maps.removeCustom(this, m);
+                        buildPane();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show());
+            pane.addView(r);
+        }
+        View keyed = row(R.drawable.ic_plus, getString(R.string.add_keyed_map), "");
+        keyed.setOnClickListener(v -> addKeyedMap());
+        pane.addView(keyed);
+        View add = row(R.drawable.ic_plus, getString(R.string.add_map), "");
+        add.setOnClickListener(v -> addMap());
+        pane.addView(add);
+    }
+
+    /** A provider, then one of its styles, then the user's own key for it. */
+    private void addKeyedMap() {
+        String[] names = new String[Maps.PROVIDERS.length];
+        for (int i = 0; i < names.length; i++) names[i] = Maps.PROVIDERS[i].name;
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.add_keyed_map)
+                .setItems(names, (d, which) -> {
+                    Maps.Provider p = Maps.PROVIDERS[which];
+                    String[] styles = new String[p.styles.length];
+                    for (int i = 0; i < styles.length; i++) styles[i] = p.styles[i][0];
+                    new AlertDialog.Builder(this, R.style.Dialog)
+                            .setTitle(p.name)
+                            .setItems(styles, (d2, w2) -> askKey(p, p.styles[w2]))
+                            .show();
+                })
+                .show();
+    }
+
+    private void askKey(Maps.Provider p, String[] style) {
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(24), dp(8), dp(24), 0);
+        form.addView(text(getString(R.string.map_key_note), 13, R.color.dim));
+        EditText key = field(getString(R.string.map_key, p.name), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        form.addView(key);
+        Appearance.font(form);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(p.name + " " + style[0])
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    String k = key.getText().toString().trim();
+                    if (k.isEmpty()) return;
+                    if (!Maps.addKeyed(this, p, style, k)) {
+                        android.widget.Toast.makeText(this, R.string.logins_unsupported, android.widget.Toast.LENGTH_LONG).show();
+                    }
+                    buildPane();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+    }
+
+    /** A map from any tile server, by its {z}/{x}/{y} address. */
+    private void addMap() {
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(24), dp(8), dp(24), 0);
+        EditText name = field(getString(R.string.map_name), "", InputType.TYPE_CLASS_TEXT);
+        EditText url = field(getString(R.string.map_url), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        form.addView(name);
+        form.addView(url);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.add_map)
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    String u = url.getText().toString().trim();
+                    if (!Maps.valid(u)) {
+                        android.widget.Toast.makeText(this, R.string.map_bad_url, android.widget.Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    String n = name.getText().toString().trim();
+                    Maps.addCustom(this, n.isEmpty() ? Uri.parse(u).getHost() : n, u);
+                    buildPane();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
     }
 
     private void lookPane() {
@@ -449,7 +578,9 @@ public class SettingsActivity extends BaseActivity {
 
     private String locationValue() {
         String loc = Widgets.location(this);
-        return loc.isEmpty() ? getString(R.string.not_set) : loc;
+        double[] at = Widgets.parseLocation(loc);
+        if (at == null) return getString(R.string.not_set);
+        return loc + "   ·   " + Widgets.toGrid(at[0], at[1]);
     }
 
     private void editLocation(Runnable done) {

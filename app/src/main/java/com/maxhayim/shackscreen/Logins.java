@@ -122,6 +122,26 @@ final class Logins {
 
     // --- Encryption ---------------------------------------------------------------------------
 
+    /** Encrypts any secret (a map provider's API key too); null if this device can't. */
+    static String seal(String plain) {
+        if (!supported()) return null;
+        try {
+            return encrypt(plain);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** The secret sealed by seal, or "" if it can't be read (no keystore, or app data was cleared). */
+    static String unseal(String sealed) {
+        if (!supported() || sealed == null || sealed.isEmpty()) return "";
+        try {
+            return decrypt(sealed);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
     @TargetApi(23)
     private static SecretKey key() throws Exception {
         KeyStore ks = KeyStore.getInstance("AndroidKeyStore");

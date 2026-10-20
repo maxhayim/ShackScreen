@@ -86,8 +86,10 @@ Space weather and POTA spots show up straight away, from the public OpenHamClock
 
 ### 4) Set your location
 
-**Settings → Location**: a grid square (`FN31pr`) or latitude, longitude (`40.7, -74.0`).  
-Needed for aircraft nearby, satellite passes and weather.
+**Settings → Location → Pick on a map**: the arrows move the map under the crosshair and **OK** sets it. **Menu** zooms, finds a place by name, or changes the map style. On a tablet, drag and tap. Or type a grid square (`FN31pr`) or latitude, longitude (`40.7, -74.0`).  
+Needed for Aircraft Nearby, Satellite Passes and Weather.
+
+**Map styles**: Dark (default), OpenStreetMap, Streets, OpenTopoMap, Humanitarian and Satellite, all free. You can also use **your own API key** for CARTO, Google Maps (Map Tiles API), Mapbox, MapTiler, Thunderforest or Stadia Maps (**Add a map with your API key**), or any tile server by its `{z}/{x}/{y}` address (**Add a custom map**). Keys are encrypted and stay on the device.
 
 ---
 

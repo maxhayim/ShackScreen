@@ -149,4 +149,26 @@
     <string name="gmrs">GMRS call sign</string>
     <string name="cb">CB handle</string>
     <string name="location_why">A grid square or latitude, longitude. Used for Aircraft Nearby, Satellite Passes and Weather.</string>
+    <string name="map_hint">Arrows move the map · OK sets this as your location · Menu: zoom, find a place, map style</string>
+    <string name="map_options">Options</string>
+    <string name="map_zoom_in">Zoom in</string>
+    <string name="map_zoom_out">Zoom out</string>
+    <string name="map_search">Find a place…</string>
+    <string name="map_search_hint">City, address or landmark</string>
+    <string name="map_find">Find</string>
+    <string name="map_not_found">Nothing found for that</string>
+    <string name="map_style">Map style</string>
+    <string name="map_style_value">Map style: %1$s…</string>
+    <string name="map_saved">Location set: %1$s</string>
+    <string name="pick_on_map">Pick on a map</string>
+    <string name="type_location">Type a grid square or coordinates</string>
+    <string name="add_map">Add a custom map…</string>
+    <string name="map_name">Name (e.g. My topo map)</string>
+    <string name="map_url">Tile address with {z}, {x} and {y}</string>
+    <string name="map_bad_url">The address needs {z}, {x} and {y}, like https://tile.example.com/{z}/{x}/{y}.png</string>
+    <string name="remove_map">Remove %1$s?</string>
+    <string name="add_keyed_map">Add a map with your API key…</string>
+    <string name="map_key">Your %1$s API key</string>
+    <string name="map_key_note">Your key is encrypted and kept on this device only. The provider may charge for use past its free allowance.</string>
+    <string name="map_google_failed">Google didn\'t accept the key; showing the default map. Check that the Map Tiles API is enabled for it.</string>
 </resources>
