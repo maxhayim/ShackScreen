@@ -210,6 +210,8 @@ To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale]
 
 - **Settings → Appearance**: Black (default), Midnight, Ocean, Forest, Plum, Ember, Slate, Light, or follow the TV.
 - Every application shows its **own icon**, fetched from the server you point it at and made square like a phone app icon. A site without a good one gets a coloured tile for its category.
+- **Settings → Appearance → Application icons**: colour or black and white.
+- ShackScreen's own icon set lives in [`icons/`](icons) (512 × 512 PNG, colour and black and white, with sizes and naming in its README). The app loads it from this repo, so new icons arrive without an update.
 - **All applications** lists them by category, with a count for each, like a TV channel guide.
 - To change an icon: press and hold the application, **Edit**, then **Icon**. Choose a symbol, an image from a web address, or an image on the device (tablets and TVs with a file picker).
 - Have a better icon for everyone? **Icon → Suggest a new icon on GitHub** opens an [icon request](../../issues/new?template=icon_request.yml); on a TV, scan the QR code with your phone.
@@ -221,6 +223,7 @@ To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale]
 | | Remote | Touch |
 |---|---|---|
 | Open an app or widget | **OK** | tap |
+| Choose what a widget opens | hold **OK** → **Opens** | press and hold → **Opens** |
 | Move, remove, edit | hold **OK** | press and hold |
 | Move a widget | arrows, then **OK** | on-screen arrows, then tap |
 | Back a page / home | **Back** | back |

@@ -76,6 +76,11 @@ final class Widgets {
         prefs(c).edit().putString("shown", new JSONArray(ids).toString()).apply();
     }
 
+    /** The app a widget opens when selected: an app's id, or "" for the app its data comes from. */
+    static String opens(Context c, String widget) { return prefs(c).getString("opens_" + widget, ""); }
+
+    static void setOpens(Context c, String widget, String appId) { prefs(c).edit().putString("opens_" + widget, appId).apply(); }
+
     static boolean rotate(Context c) { return prefs(c).getBoolean("rotate", true); }
 
     static void setRotate(Context c, boolean on) { prefs(c).edit().putBoolean("rotate", on).apply(); }

@@ -40,7 +40,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * App icons that look like app icons. The sharpest icon a site offers (web app manifest, touch
+ * App icons that look like app icons. ShackScreen's own set in the repo's icons/ folder comes
+ * first; otherwise the sharpest icon a site offers (web app manifest, touch
  * icon, favicon; for public sites also Google's favicon service) is fetched from the server the
  * app points at, so a self-hosted one shows its own, and made square: a solid icon fills the
  * tile, a transparent logo sits on a plain tile, and a site with only a tiny favicon, or none,
@@ -56,7 +57,10 @@ final class Icons {
     /** Output size, and the smallest source worth showing rather than a category tile. */
     private static final int SIZE = 192, MIN_SOURCE = 40, FULL_BLEED = 96;
     /** Bumped when the way icons are drawn changes, so cached ones are redrawn. */
-    private static final int STYLE = 3;
+    private static final int STYLE = 4;
+    /** ShackScreen's own icon set, one PNG per catalog app, in colour and in black and white. */
+    static final String REPO_ICONS = "https://raw.githubusercontent.com/" + Updater.REPO + "/main/icons/";
+    private static final long REFRESH_MS = 7 * 24 * 60 * 60 * 1000L;
 
     /** Tile colours (top-left, bottom-right) and symbol for each category. */
     private static int[] look(String category) {
@@ -120,6 +124,14 @@ final class Icons {
     static void show(Context c, Store.Instance in, ImageView view) {
         Catalog.Type t = Catalog.get(c, in.type);
         view.setTag(in.id);
+        boolean mono = Appearance.mono(c);
+        if (mono) {
+            android.graphics.ColorMatrix gray = new android.graphics.ColorMatrix();
+            gray.setSaturation(0);
+            view.setColorFilter(new android.graphics.ColorMatrixColorFilter(gray));
+        } else {
+            view.clearColorFilter();
+        }
         int[] look = look(t.category);
         int symbol = t.id.equals("custom") ? R.drawable.ic_globe : look[2];
         if (in.icon.startsWith("symbol:")) {
@@ -134,7 +146,9 @@ final class Icons {
             return;
         }
         if (!in.hasUrl() || !in.icon.isEmpty()) return;
-        File cached = file(c, in);
+        File cached = file(c, in, mono);
+        // Icons are fetched again after a week, so new ones in the repo reach everyone.
+        if (cached.exists() && System.currentTimeMillis() - cached.lastModified() > REFRESH_MS) cached.delete();
         if (cached.exists()) {
             Bitmap b = BitmapFactory.decodeFile(cached.getPath());
             if (b != null) {
@@ -147,7 +161,7 @@ final class Icons {
         if (miss.exists() && System.currentTimeMillis() - miss.lastModified() < 24 * 60 * 60 * 1000L) return;
         Context app = c.getApplicationContext();
         bg.execute(() -> {
-            Bitmap src = fetch(t, in);
+            Bitmap src = fetch(t, in, mono);
             Bitmap b = src == null ? null : compose(app, src, look);
             try {
                 if (b == null) {
@@ -285,11 +299,12 @@ final class Icons {
     }
 
     /** Named after the instance, its address and the drawing style, so any change redraws it. */
-    private static File file(Context c, Store.Instance in) {
+    private static File file(Context c, Store.Instance in, boolean mono) {
         File dir = new File(c.getFilesDir(), "icons");
         dir.mkdirs();
         Uri u = Uri.parse(in.url);
-        return new File(dir, in.id + "-" + Integer.toHexString((u.getScheme() + u.getEncodedAuthority()).hashCode()) + "-v" + STYLE + ".png");
+        return new File(dir, in.id + "-" + Integer.toHexString((u.getScheme() + u.getEncodedAuthority()).hashCode())
+                + "-v" + STYLE + (mono ? "-mono" : "") + ".png");
     }
 
     // --- Finding the icon ------------------------------------------------------------------
@@ -298,7 +313,20 @@ final class Icons {
      * The largest of the site's own icons; Google's copy only when the site offers nothing usable,
      * since for some sites it's the logo of the software they run on (RepeaterBook got Joomla's).
      */
-    private static Bitmap fetch(Catalog.Type t, Store.Instance in) {
+    private static Bitmap fetch(Catalog.Type t, Store.Instance in, boolean mono) {
+        // ShackScreen's own icon for the app comes first: black and white, then colour.
+        List<String> repo = new ArrayList<>();
+        if (mono) repo.add(REPO_ICONS + "mono/" + t.id + ".png");
+        repo.add(REPO_ICONS + "color/" + t.id + ".png");
+        for (String url : repo) {
+            try {
+                byte[] data = get(url, MAX_ICON);
+                Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+                if (b != null && Math.min(b.getWidth(), b.getHeight()) >= FULL_BLEED) return b;
+            } catch (IOException | RuntimeException ignored) {
+                // Not in the set yet; the site's own icon is used.
+            }
+        }
         Bitmap best = null;
         for (String url : candidates(t, in)) {
             boolean google = url.startsWith("https://t1.gstatic.com/");

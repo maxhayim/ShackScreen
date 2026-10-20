@@ -171,4 +171,11 @@
     <string name="map_key">Your %1$s API key</string>
     <string name="map_key_note">Your key is encrypted and kept on this device only. The provider may charge for use past its free allowance.</string>
     <string name="map_google_failed">Google didn\'t accept the key; showing the default map. Check that the Map Tiles API is enabled for it.</string>
+    <string name="opens_value">Opens: %1$s…</string>
+    <string name="opens_title">%1$s opens</string>
+    <string name="opens_source">The application its data comes from</string>
+    <string name="opens_nothing">nothing yet</string>
+    <string name="icon_style">Application icons</string>
+    <string name="icons_color">Colour</string>
+    <string name="icons_mono">Black and white</string>
 </resources>

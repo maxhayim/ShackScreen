@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -284,8 +285,15 @@ public class MainActivity extends BaseActivity {
         // OK or a tap opens the app behind the widget; holding it offers Move and Remove.
         // While moving, OK or a tap puts it down.
         root.setOnClickListener(v -> {
-            if (d.id.equals(moving)) stopMove();
-            else if (moving == null && c.from != null) open(c.from);
+            if (d.id.equals(moving)) {
+                stopMove();
+                return;
+            }
+            if (moving != null) return;
+            Store.Instance target = chosenApp(d);
+            if (target == null) target = c.from;
+            if (target != null) open(target);
+            else widgetOpens(d); // nothing to open yet (Weather): ask which app
         });
         root.setOnLongClickListener(v -> {
             if (moving == null) widgetMenu(d);
@@ -305,13 +313,57 @@ public class MainActivity extends BaseActivity {
         return c;
     }
 
+    /** The app the user chose for this widget to open, if it still exists. */
+    private Store.Instance chosenApp(Widgets.Def d) {
+        String id = Widgets.opens(this, d.id);
+        if (id.isEmpty()) return null;
+        for (Store.Instance in : instances) if (in.id.equals(id)) return in;
+        return null;
+    }
+
+    /** Choose the app a widget opens: the one its data comes from, or any of the user's apps. */
+    private void widgetOpens(Widgets.Def d) {
+        List<Store.Instance> apps = new ArrayList<>();
+        for (Store.Instance in : instances) if (in.hasUrl()) apps.add(in);
+        Collections.sort(apps, (a, b) -> a.name.compareToIgnoreCase(b.name));
+        String[] items = new String[apps.size() + 1];
+        items[0] = getString(R.string.opens_source);
+        int checked = 0;
+        String current = Widgets.opens(this, d.id);
+        for (int i = 0; i < apps.size(); i++) {
+            items[i + 1] = apps.get(i).name;
+            if (apps.get(i).id.equals(current)) checked = i + 1;
+        }
+        new android.app.AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(getString(R.string.opens_title, getString(d.title)))
+                .setSingleChoiceItems(items, checked, (dlg, which) -> {
+                    dlg.dismiss();
+                    Widgets.setOpens(this, d.id, which == 0 ? "" : apps.get(which - 1).id);
+                })
+                // Back on the widget, not wherever Android puts focus after a dialog.
+                .setOnDismissListener(x -> {
+                    Card c = cards.get(d.id);
+                    if (c != null) c.root.requestFocus();
+                })
+                .show();
+    }
+
+    private String opensLabel(Widgets.Def d) {
+        Store.Instance in = chosenApp(d);
+        Card c = cards.get(d.id);
+        String name = in != null ? in.name : c != null && c.from != null ? c.from.name : getString(R.string.opens_nothing);
+        return getString(R.string.opens_value, name);
+    }
+
     private void widgetMenu(Widgets.Def d) {
-        String[] items = {getString(R.string.move), getString(R.string.remove_home)};
+        String[] items = {getString(R.string.move), opensLabel(d), getString(R.string.remove_home)};
         new android.app.AlertDialog.Builder(this, R.style.Dialog)
                 .setTitle(d.title)
                 .setItems(items, (dlg, which) -> {
                     if (which == 0) {
                         startMove(d.id);
+                    } else if (which == 1) {
+                        widgetOpens(d);
                     } else {
                         shown.remove(d.id);
                         Widgets.setShown(this, shown);

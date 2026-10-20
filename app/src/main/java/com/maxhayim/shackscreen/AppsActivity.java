@@ -97,7 +97,7 @@ public class AppsActivity extends BaseActivity {
         brand.setGravity(Gravity.CENTER_VERTICAL);
         brand.setPadding(dp(6), 0, 0, dp(18));
         ImageView logo = new ImageView(this);
-        logo.setImageResource(R.drawable.ic_launcher);
+        logo.setImageResource(R.drawable.logo_tower);
         brand.addView(logo, new LinearLayout.LayoutParams(dp(34), dp(34)));
         TextView name = text(getString(R.string.applications), 21, R.color.text);
         name.setTypeface(name.getTypeface(), Typeface.BOLD);

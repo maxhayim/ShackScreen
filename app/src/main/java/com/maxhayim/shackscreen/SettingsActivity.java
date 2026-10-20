@@ -405,6 +405,12 @@ public class SettingsActivity extends BaseActivity {
         View r = row(R.drawable.ic_theme, getString(R.string.pick_theme), Appearance.label(this, Appearance.mode(this)));
         r.setOnClickListener(v -> pickTheme());
         pane.addView(r);
+        View icons = row(R.drawable.ic_grid, getString(R.string.icon_style), getString(Appearance.mono(this) ? R.string.icons_mono : R.string.icons_color));
+        icons.setOnClickListener(v -> {
+            Appearance.setMono(this, !Appearance.mono(this));
+            setValue(icons, getString(Appearance.mono(this) ? R.string.icons_mono : R.string.icons_color));
+        });
+        pane.addView(icons);
     }
 
     private void updatesPane() {

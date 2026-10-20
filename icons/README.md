@@ -62,7 +62,8 @@ In [`app/`](app):
 
 | File | Size | Used for |
 |---|---|---|
-| `shackscreen-color.png` / `-mono.png` | 512 × 512 px | App icon, the logo on the dashboard and in All applications, the README |
+| `shackscreen-color.png` / `-mono.png` | 512 × 512 px | App icon and the README |
+| `shackscreen-tower.png` | 512 × 512 px, transparent | The tower alone, next to SHACKSCREEN on the dashboard and in All applications |
 | `tv-banner-color.png` / `-mono.png` | 640 × 360 px (1280 × 720 for a sharper master) | The banner in the Android TV / Google TV / Fire TV app row |
 
 The app icon can have rounded corners (it's shown as is). These are copied into the app when it's built, so a new one needs a new release.

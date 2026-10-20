@@ -28,12 +28,12 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- The tower from the app icon and GitHub logo, without its background. -->
                 <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_marginEnd="8dp"
-                    android:src="@drawable/ic_antenna"
-                    android:tint="@color/accent"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginEnd="9dp"
+                    android:src="@drawable/logo_tower"
                     android:importantForAccessibility="no" />
 
                 <TextView

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 6,
+  "revision": 7,
   "categories": [
     "Ham radio",
     "GMRS",
@@ -243,7 +243,9 @@
       "id": "flightaware",
       "name": "FlightAware",
       "category": "Aviation",
-      "url": "https://www.flightaware.com/live/map"
+      "url": "https://www.flightaware.com/live/map",
+      "seed": 5,
+      "home": true
     },
     {
       "id": "adsbexchange",

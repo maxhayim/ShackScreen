@@ -53,6 +53,15 @@ final class Appearance {
         c.getSharedPreferences("appearance", Context.MODE_PRIVATE).edit().putString("theme", mode).apply();
     }
 
+    /** Application icons in black and white instead of colour. */
+    static boolean mono(Context c) {
+        return c.getSharedPreferences("appearance", Context.MODE_PRIVATE).getBoolean("mono_icons", false);
+    }
+
+    static void setMono(Context c, boolean on) {
+        c.getSharedPreferences("appearance", Context.MODE_PRIVATE).edit().putBoolean("mono_icons", on).apply();
+    }
+
     static String label(Context c, String mode) {
         if (AUTO.equals(mode)) return "Follow the TV (Black or Light)";
         for (Theme t : THEMES) if (t.id.equals(mode)) return t.name;
