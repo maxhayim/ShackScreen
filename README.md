@@ -27,23 +27,23 @@ Live **widgets** across the top: space weather, POTA and DX spots, satellite pas
 
 ## Screenshots
 
-**Home**: widgets on top, your applications along the bottom
+**Home**: the clock and your call signs, widgets in the middle, your applications along the bottom
 
 ![Home](docs/screenshots/home.png)
 
-**All applications**, by category
+**All applications**: categories with counts down the side
 
 ![All applications](docs/screenshots/all-applications.png)
 
-**Widgets**: space weather, POTA spots, aircraft nearby
+**Widgets**: Space Weather, POTA Spots, Aircraft Nearby
 
-![Space weather, POTA spots and aircraft nearby](docs/screenshots/widgets-space-weather-pota-aircraft.png)
+![Space Weather, POTA Spots and Aircraft Nearby](docs/screenshots/widgets-space-weather-pota-aircraft.png)
 
-**Widgets**: mesh messages, satellites heard by SatNOGS, satellite passes
+**Widgets**: Mesh Messages, Heard By SatNOGS, Satellite Passes
 
-![Mesh messages, SatNOGS and satellite passes](docs/screenshots/widgets-mesh-satnogs-satellite-passes.png)
+![Mesh Messages, Heard By SatNOGS and Satellite Passes](docs/screenshots/widgets-mesh-satnogs-satellite-passes.png)
 
-**Widget**: weather
+**Widget**: Weather
 
 <img src="docs/screenshots/widget-weather.png" alt="Weather widget" width="33%"/>
 
