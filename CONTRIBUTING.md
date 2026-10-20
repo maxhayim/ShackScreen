@@ -6,6 +6,7 @@ Thank you for your interest in contributing to ShackScreen! We welcome contribut
 
 - Report bugs or request features using [GitHub Issues](../../issues).
 - **Request an app or widget** with the [app request form](../../issues/new?template=app_request.yml) (or from inside ShackScreen: **+ Add app → Request an app…**).
+- **Design icons**: see [Contributing Icons](docs/ICONS.md) for sizes, shape and file names, or send one with the [icon request form](../../issues/new?template=icon_request.yml).
 - Improve documentation (README, code comments, examples).
 - Submit Pull Requests (PRs) with bug fixes, improvements, or new features.
 
@@ -26,7 +27,8 @@ and bump its `"revision"`. Installed copies of ShackScreen pick up the new catal
 ```
 
 - `port`: set it if people also run the app themselves; ShackScreen then offers **Public site or My own server**.
-- `health`: an endpoint that answers when the server is up (for the green/red dot).
+- `health`: an endpoint that answers when the server is up.
+- Add its icon to [`icons/`](icons) too: see [Contributing Icons](docs/ICONS.md).
 - `feeds`: which widgets the app can supply (`space`, `pota`, `dx`, `contests`, `dxpeditions`, `satellites`, `satnogs`, `mesh`, `aircraft`, `ships`). A new feed needs code in `Feeds.java`.
 
 ## Code Style

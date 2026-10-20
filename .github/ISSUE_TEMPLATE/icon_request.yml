@@ -1,5 +1,5 @@
 name: Icon request
-description: Suggest a new or better icon for an application in ShackScreen.
+description: Suggest or contribute a new or better icon for an application in ShackScreen. Specs are in docs/ICONS.md.
 title: "Icon request: "
 labels: ["icon request"]
 body:
@@ -19,7 +19,7 @@ body:
     id: icon
     attributes:
       label: Icon
-      description: Attach the image (square PNG, 192 px or larger) or link to it. Official logos are best; say where it came from.
+      description: Attach the PNG (512 × 512, rounded corners, see docs/ICONS.md) or link to it. Colour, black and white, or both. Say where the logo came from.
     validations:
       required: true
   - type: textarea

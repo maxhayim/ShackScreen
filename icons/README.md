@@ -1,5 +1,7 @@
 # Icons
 
+> **Want to contribute an icon?** Read [Contributing Icons](../docs/ICONS.md): sizes, shape, a template and how to send it in.
+
 ShackScreen's icons. The app loads the application icons straight from this folder, so a new or better icon here reaches every TV and tablet within a week, with no new APK.
 
 ## Application icons
