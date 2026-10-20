@@ -92,15 +92,26 @@ final class Store {
         return out;
     }
 
-    /** Swaps an app with its neighbour on the home row (delta -1 or 1); the full list keeps the rest in place. */
-    static void moveOnHome(Context c, List<Instance> all, Instance in, int delta) {
-        List<Instance> home = home(all);
-        int at = home.indexOf(in), to = at + delta;
-        if (at < 0 || to < 0 || to >= home.size()) return;
-        int a = all.indexOf(in), b = all.indexOf(home.get(to));
-        all.set(a, home.get(to));
-        all.set(b, in);
+    /** Where All apps sits on the home row: a slot index, or -1 for the end (where new apps go before it). */
+    static int allAppsAt(Context c) {
+        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt("allAppsAt", -1);
+    }
+
+    /**
+     * Saves a new home row order. slots is the row as shown, with null standing for All apps; the
+     * home apps keep their places in the full list, just in the new order.
+     */
+    static void saveHome(Context c, List<Instance> all, List<Instance> slots) {
+        List<Integer> places = new ArrayList<>();
+        for (int i = 0; i < all.size(); i++) if (all.get(i).home) places.add(i);
+        int k = 0, allApps = -1;
+        for (int i = 0; i < slots.size(); i++) {
+            if (slots.get(i) == null) allApps = i;
+            else all.set(places.get(k++), slots.get(i));
+        }
         save(c, all);
+        c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putInt("allAppsAt", allApps == slots.size() - 1 ? -1 : allApps).apply();
     }
 
     static Instance find(Context c, String id) {

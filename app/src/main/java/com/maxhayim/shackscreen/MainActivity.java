@@ -228,6 +228,13 @@ public class MainActivity extends BaseActivity {
 
     private void layoutCards() {
         for (int i = 0; i < widgetRow.getChildCount(); i++) {
+            View v = widgetRow.getChildAt(i);
+            if (v.getId() == View.NO_ID) v.setId(View.generateViewId());
+            v.setNextFocusLeftId(View.NO_ID);
+            v.setNextFocusRightId(View.NO_ID);
+        }
+        stopAtEnds(widgetRow);
+        for (int i = 0; i < widgetRow.getChildCount(); i++) {
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(cardWidth(), ViewGroup.LayoutParams.MATCH_PARENT);
             lp.setMarginEnd(i == widgetRow.getChildCount() - 1 ? 0 : gap());
             widgetRow.getChildAt(i).setLayoutParams(lp);
@@ -460,51 +467,87 @@ public class MainActivity extends BaseActivity {
         return panels.rows((Feeds.Rows) data);
     }
 
-    // --- Home row: the All apps button, then the user's favourite apps ----------------------
+    // --- Home row: the user's favourite apps and the All apps button ---------------------------
+
+    /** The row as shown: home apps with null standing for All apps (at the end unless moved). */
+    private List<Store.Instance> slots() {
+        List<Store.Instance> slots = new ArrayList<>(Store.home(instances));
+        int at = Store.allAppsAt(this);
+        slots.add(at < 0 || at > slots.size() ? slots.size() : at, null);
+        return slots;
+    }
 
     private void buildAppRow() {
         View focused = getCurrentFocus();
         Object focusedId = focused == null ? null : focused.getTag();
         apps.removeAllViews();
         tiles.clear();
-        View all = Icons.tile(this, apps, null, getString(R.string.all_apps), R.drawable.ic_grid);
-        all.setOnClickListener(v -> startActivity(new Intent(this, AppsActivity.class)));
-        apps.addView(all);
         View focusTarget = null;
-        for (Store.Instance in : Store.home(instances)) {
-            View tile = Icons.tile(this, apps, in, in.name, 0);
-            tile.setOnClickListener(v -> open(in));
+        for (Store.Instance in : slots()) {
+            View tile;
+            if (in == null) {
+                tile = Icons.button(this, apps, getString(R.string.all_apps), R.drawable.ic_grid, 0xFF4B5563, 0xFF111827);
+                tile.setTag("all");
+                tile.setOnClickListener(v -> startActivity(new Intent(this, AppsActivity.class)));
+            } else {
+                tile = Icons.tile(this, apps, in);
+                tile.setOnClickListener(v -> open(in));
+                tiles.add(tile);
+            }
             tile.setOnLongClickListener(v -> {
                 dockMenu(in);
                 return true;
             });
             apps.addView(tile);
-            tiles.add(tile);
-            if (in.id.equals(focusedId)) focusTarget = tile;
+            if (tile.getTag().equals(focusedId)) focusTarget = tile;
         }
-        if (focusTarget == null) focusTarget = tiles.isEmpty() ? all : tiles.get(0);
-        if (moving == null) focusTarget.requestFocus();
+        stopAtEnds(apps);
+        if (focusTarget == null) focusTarget = apps.getChildAt(0);
+        if (moving == null && focusTarget != null) focusTarget.requestFocus();
     }
 
+    /** Left on the first item and Right on the last stay put, instead of jumping to another row. */
+    private static void stopAtEnds(ViewGroup row) {
+        int n = row.getChildCount();
+        if (n == 0) return;
+        View first = row.getChildAt(0), last = row.getChildAt(n - 1);
+        if (first.getId() == View.NO_ID) first.setId(View.generateViewId());
+        if (last.getId() == View.NO_ID) last.setId(View.generateViewId());
+        first.setNextFocusLeftId(first.getId());
+        last.setNextFocusRightId(last.getId());
+    }
+
+    /** Move left and right for any icon (All apps included); remove and edit for apps. */
     private void dockMenu(Store.Instance in) {
-        String[] items = {getString(R.string.move_left), getString(R.string.move_right),
-                getString(R.string.remove_home), getString(R.string.edit)};
+        List<String> items = new ArrayList<>();
+        items.add(getString(R.string.move_left));
+        items.add(getString(R.string.move_right));
+        if (in != null) {
+            items.add(getString(R.string.remove_home));
+            items.add(getString(R.string.edit));
+        }
         new android.app.AlertDialog.Builder(this, R.style.Dialog)
-                .setTitle(in.name)
-                .setItems(items, (d, which) -> {
-                    switch (which) {
-                        case 0: Store.moveOnHome(this, instances, in, -1); break;
-                        case 1: Store.moveOnHome(this, instances, in, 1); break;
-                        case 2:
-                            in.home = false;
-                            Store.save(this, instances);
-                            break;
-                        default:
-                            startActivity(new Intent(this, SettingsActivity.class).putExtra(SettingsActivity.EXTRA_EDIT, in.id));
-                            return;
+                .setTitle(in == null ? getString(R.string.all_apps) : in.name)
+                .setItems(items.toArray(new String[0]), (d, which) -> {
+                    if (which <= 1) {
+                        List<Store.Instance> slots = slots();
+                        int from = slots.indexOf(in), to = from + (which == 0 ? -1 : 1);
+                        if (to < 0 || to >= slots.size()) return;
+                        slots.set(from, slots.get(to));
+                        slots.set(to, in);
+                        Store.saveHome(this, instances, slots);
+                    } else if (which == 2) {
+                        in.home = false;
+                        Store.save(this, instances);
+                    } else {
+                        startActivity(new Intent(this, SettingsActivity.class).putExtra(SettingsActivity.EXTRA_EDIT, in.id));
+                        return;
                     }
                     buildAppRow();
-                    for (View t : tiles) if (in.id.equals(t.getTag())) t.requestFocus();
+                    String tag = in == null ? "all" : in.id;
+                    for (int i = 0; i < apps.getChildCount(); i++) {
+                        if (tag.equals(apps.getChildAt(i).getTag())) apps.getChildAt(i).requestFocus();
+                    }
                     refreshHealth();
                 })
                 .show();

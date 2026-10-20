@@ -39,7 +39,9 @@ next if a server is down.
 
 ## Apps
 
-The home row holds your favourites; **All apps** has everything, by category. Press and hold an app (long-press
+The home row holds your favourites, with **All apps** at the end (it can be moved too); All apps has everything,
+by category. Icons are each site's own, made square like phone app icons; a site without a good one gets a
+coloured tile for its category. Press and hold an app (long-press
 OK on a remote) to add it to the home row or take it off, move it, edit it or delete it. Press and hold a
 widget to move it or remove it; selecting a widget opens the app its data comes from.
 

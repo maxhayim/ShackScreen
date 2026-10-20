@@ -58,8 +58,7 @@ public class AppsActivity extends BaseActivity {
             List<View> tiles = new ArrayList<>();
             for (Store.Instance in : instances) {
                 if (!Catalog.get(this, in.type).category.equals(cat)) continue;
-                View t = Icons.tile(this, root, in, in.name, 0);
-                if (!in.home) t.setAlpha(0.7f); // dimmer when it's not on the home row
+                View t = Icons.tile(this, root, in);
                 t.findViewById(R.id.dot).setVisibility(View.GONE); // status is checked on the home row only
                 t.setOnClickListener(v -> open(in));
                 t.setOnLongClickListener(v -> {
@@ -73,10 +72,10 @@ public class AppsActivity extends BaseActivity {
             section(cat, tiles, cols);
         }
         List<View> more = new ArrayList<>();
-        View add = Icons.tile(this, root, null, getString(R.string.add_app).replace("+ ", ""), R.drawable.ic_plus);
+        View add = Icons.button(this, root, getString(R.string.add_app).replace("+ ", ""), R.drawable.ic_plus, 0xFF6B7280, 0xFF374151);
         add.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class).putExtra(SettingsActivity.EXTRA_ADD, true)));
         more.add(add);
-        View ask = Icons.tile(this, root, null, getString(R.string.request_app), R.drawable.ic_chat);
+        View ask = Icons.button(this, root, getString(R.string.request_app), R.drawable.ic_chat, 0xFFF472B6, 0xFFBE185D);
         ask.setOnClickListener(v -> Requests.show(this, "", ""));
         more.add(ask);
         section(" ", more, cols);

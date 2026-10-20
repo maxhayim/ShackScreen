@@ -88,7 +88,7 @@
     <string name="edit">Edit…</string>
     <string name="theme_value">Theme: %1$s</string>
     <string name="pick_theme">Theme</string>
-    <string name="all_apps_hint">Press and hold an app (or long-press OK) to add it to the home row or take it off.</string>
+    <string name="all_apps_hint">Press and hold an app (or long-press OK) to add it to the home row or take it off, edit or delete it.</string>
     <string name="use_public">Public site (%1$s)</string>
     <string name="use_own">My own server</string>
     <string name="port_hint">Type just the IP or name; port %1$d is added if you leave it out.</string>
