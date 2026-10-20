@@ -196,7 +196,7 @@ public class SettingsActivity extends BaseActivity {
         for (Widgets.Def d : Widgets.ALL) if (!shown.contains(d.id)) ordered.add(d);
         for (Widgets.Def d : ordered) {
             boolean on = shown.contains(d.id);
-            Button b = button((on ? "✓   " : "+   ") + getString(d.title) + "   ·   " + d.category);
+            Button b = button(getString(d.title) + "   ·   " + d.category + "   ·   " + getString(on ? R.string.shown : R.string.hidden));
             if (!on) b.setTextColor(color(R.color.dim));
             b.setOnClickListener(v -> {
                 List<String> now = Widgets.shown(this);

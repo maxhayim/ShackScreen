@@ -14,7 +14,7 @@
   </a>
 </p>
 
-# 📡 ShackScreen
+# ShackScreen
 
 **ShackScreen** is a free Android TV, Google TV and Fire TV app (it runs on tablets too) that turns the TV in your shack into a live radio dashboard, for people who love frequencies: hams, [**Meshtastic**](https://meshtastic.org/) and [**MeshCore**](https://meshcore.io) mesh users, satellite chasers, and ADS-B and AIS listeners.
 
@@ -32,14 +32,14 @@ No paid services.
 
 ---
 
-## ✅ Update Notice (v0.5.x)
+## Update Notice (v0.5.x)
 
 v0.5 makes ShackScreen look and feel like a phone's home screen:
 
-- ⚫ **Black background by default**, plus colour themes: Midnight, Ocean, Forest, Plum, Ember, Slate, and Light
-- 📱 **App icons with names**, made square like real app icons, and an **All apps** library by category
-- ✋ **Press and hold** any app or widget to move it, add or remove it from the home screen, or edit it
-- 🏠 **Public site or your own server** for apps you can run yourself (OpenHamClock, WebSDR, KiwiSDR)
+- **Black background by default**, plus colour themes: Midnight, Ocean, Forest, Plum, Ember, Slate, and Light
+- **App icons with names**, made square like real app icons, and an **All apps** library by category
+- **Press and hold** any app or widget to move it, add or remove it from the home screen, or edit it
+- **Public site or your own server** for apps you can run yourself (OpenHamClock, WebSDR, KiwiSDR)
 
 ---
 
@@ -82,100 +82,100 @@ Needed for aircraft nearby, satellite passes and weather.
 
 ---
 
-## 🧩 Widgets
+## Widgets
 
 Pick them in **Settings → Widgets**. Press and hold a widget to **move** or **remove** it; select it to open the app its data comes from. Three fit across a TV, two on a portrait tablet, one on a phone. When nobody touches the remote for a minute, the dashboard pages through the rest on its own.
 
-### 📻 Ham radio
+### Ham radio
 
 | Widget | Data from |
 |---|---|
-| ☀️ Space weather: SFI, sunspots, K and A index, X-ray, HF band conditions | OpenHamClock or ShackBoard |
-| 🌲 POTA spots | OpenHamClock or ShackBoard |
-| 📡 DX cluster spots | OpenHamClock |
-| 🏆 Contests, on now and coming up | OpenHamClock |
-| 🌍 DXpeditions on the air | OpenHamClock |
+| Space weather: SFI, sunspots, K and A index, X-ray, HF band conditions | OpenHamClock or ShackBoard |
+| POTA spots | OpenHamClock or ShackBoard |
+| DX cluster spots | OpenHamClock |
+| Contests, on now and coming up | OpenHamClock |
+| DXpeditions on the air | OpenHamClock |
 
-### 🛰️ Satellites
-
-| Widget | Data from |
-|---|---|
-| 🛰️ Satellite passes over you: time, max elevation, downlink | OpenHamClock's orbital data, predicted on the device |
-| 📶 Satellites just heard, with frequency and mode | [SatNOGS](https://network.satnogs.org) |
-
-### 🕸️ Mesh (via MeshMonitor)
+### Satellites
 
 | Widget | Data from |
 |---|---|
-| 🔌 Mesh sources: Meshtastic, MeshCore, MQTT, connected or not | MeshMonitor |
-| 📍 Mesh nodes heard today | MeshMonitor |
-| 💬 Mesh messages | MeshMonitor |
+| Satellite passes over you: time, max elevation, downlink | OpenHamClock's orbital data, predicted on the device |
+| Satellites just heard, with frequency and mode | [SatNOGS](https://network.satnogs.org) |
+
+### Mesh (via MeshMonitor)
+
+| Widget | Data from |
+|---|---|
+| Mesh sources: Meshtastic, MeshCore, MQTT, connected or not | MeshMonitor |
+| Mesh nodes heard today | MeshMonitor |
+| Mesh messages | MeshMonitor |
 
 In MeshMonitor's settings, create an API token and paste it into the MeshMonitor app in ShackScreen. The token acts as your user, so it only sees what you can see.
 
-### ✈️ 🛥️ Aviation and marine
+### Aviation and marine
 
 | Widget | Data from |
 |---|---|
-| ✈️ Aircraft within 25 nm | **your own** tar1090 / readsb / dump1090, or [ADSB.lol](https://www.adsb.lol), [adsb.fi](https://adsb.fi) |
-| 🛥️ Ships nearby | **your own** [AIS-catcher](https://github.com/jvde-github/AIS-catcher) |
+| Aircraft within 25 nm | **your own** tar1090 / readsb / dump1090, or [ADSB.lol](https://www.adsb.lol), [adsb.fi](https://adsb.fi) |
+| Ships nearby | **your own** [AIS-catcher](https://github.com/jvde-github/AIS-catcher) |
 
-### 🌦️ Local
+### Local
 
 | Widget | Data from |
 |---|---|
-| 🌦️ Weather | [Open-Meteo](https://open-meteo.com) |
+| Weather | [Open-Meteo](https://open-meteo.com) |
 
 Each widget uses the first of your apps that can supply it, and moves on to the next if a server is down.
 
 ---
 
-## 📱 Apps
+## Apps
 
 The home row holds your favourites, with **All apps** at the end. Press and hold an app (long-press OK on a remote) to move it, add it to the home row or take it off, edit it or delete it.
 
 | Category | Apps |
 |---|---|
-| 📻 Ham radio | OpenHamClock, ShackBoard, APRS.fi, PSKReporter, RepeaterBook |
-| 🛰️ Satellites | N2YO, Heavens-Above, AMSAT status, SatNOGS, TinyGS, Satellite map, ISS Tracker |
-| 🕸️ Mesh | MeshMonitor, MeshMap (Meshtastic), MeshCore Map, your Meshtastic node |
-| 🎧 SDR & scanners | WebSDR, KiwiSDR map, Broadcastify |
-| ✈️ Aviation | Flightradar24, FlightAware, ADS-B Exchange, ADSB.lol, adsb.fi, your tar1090 |
-| 🛥️ Marine | MarineTraffic, VesselFinder, MyShipTracking, your AIS-catcher |
-| 🌦️ Weather | Windy, Lightning map |
-| 🌐 Other | any web page |
+| Ham radio | OpenHamClock, ShackBoard, APRS.fi, PSKReporter, RepeaterBook |
+| Satellites | N2YO, Heavens-Above, AMSAT status, SatNOGS, TinyGS, Satellite map, ISS Tracker |
+| Mesh | MeshMonitor, MeshMap (Meshtastic), MeshCore Map, your Meshtastic node |
+| SDR & scanners | WebSDR, KiwiSDR map, Broadcastify |
+| Aviation | Flightradar24, FlightAware, ADS-B Exchange, ADSB.lol, adsb.fi, your tar1090 |
+| Marine | MarineTraffic, VesselFinder, MyShipTracking, your AIS-catcher |
+| Weather | Windy, Lightning map |
+| Other | any web page |
 
-### 🏠 Public site or your own server
+### Public site or your own server
 
 - Apps you can also run yourself (**OpenHamClock, WebSDR, KiwiSDR**) ask **Public site or My own server** when you add them.
 - **MeshMonitor, tar1090, AIS-catcher** and a **Meshtastic node** are always your own server.
 - Type just the IP and the default port is added. You can add the same app more than once (say, the public OpenHamClock and the one on your shack Pi).
 - Addresses and tokens are stored **only on the device**.
 
-### 🌍 Remote access (VPN)
+### Remote access (VPN)
 
 To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale](https://tailscale.com): no port forwarding, encrypted, works behind NAT.
 
-### ➕ Missing an app?
+### Missing an app?
 
 **All apps → Request an app…** opens an [app request](../../issues/new?template=app_request.yml) here. On a TV, scan the QR code with your phone. The app list lives in [`catalog.json`](app/src/main/assets/catalog.json) and refreshes from this repo, so new apps arrive without a new APK.
 
 ---
 
-## 🎨 Themes and Icons
+## Themes and Icons
 
 - **Settings → Appearance**: Black (default), Midnight, Ocean, Forest, Plum, Ember, Slate, Light, or follow the TV.
 - Every app shows its **own icon**, fetched from the server you point it at and made square like a phone app icon. A site without a good one gets a coloured tile for its category.
 
 ---
 
-## 🎮 Remote and Touch
+## Remote and Touch
 
 | | Remote | Touch |
 |---|---|---|
 | Open an app or widget | **OK** | tap |
 | Move, remove, edit | hold **OK** | press and hold |
-| Move a widget | arrows, then **OK** | ◀ ▶, then tap |
+| Move a widget | arrows, then **OK** | on-screen arrows, then tap |
 | Back a page / home | **Back** | back |
 | Reload a page | **Menu** | |
 
@@ -183,7 +183,7 @@ An app that can't be reached is retried every 30 seconds, and the screen stays o
 
 ---
 
-## 🔄 Updates
+## Updates
 
 **Settings → Updates**:
 
@@ -209,7 +209,7 @@ No subscriptions.
 
 ---
 
-## 🛠️ Build from Source
+## Build from Source
 
 Needs JDK 17 and the Android SDK (platform 35). Turn on developer options and network debugging on the TV, then:
 

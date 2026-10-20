@@ -12,7 +12,7 @@
     <string name="offline">Can\'t reach %1$s</string>
     <string name="via">via %1$s</string>
     <string name="add_app">+ Add app</string>
-    <string name="needs_address">Set its address in ⚙ Settings</string>
+    <string name="needs_address">Set its address in Settings</string>
     <string name="viewer_error">Can\'t reach %1$s\nTrying again in 30 seconds. Press Back to leave.</string>
     <string name="settings_title">Your apps</string>
     <string name="settings_hint">Use a public site or your own server. Addresses and tokens stay on this TV.</string>
