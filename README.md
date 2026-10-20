@@ -19,7 +19,7 @@
 
 # ShackScreen
 
-**ShackScreen** is a free Android (Android TV, Android Tablet Google TV and Fire TV) application that turns the TV or Tablet in your shack into a live radio dashboard, for people who love frequencies: hams, LoRa Mesh (Meshtastic and MeshCore) users, satellite chasers, and ADS-B and AIS listeners.
+**ShackScreen** is a free **launcher dashboard** for Android (Android TV, Google TV, Fire TV and Android tablets) that turns the TV or tablet in your shack into a live radio dashboard, for people who love frequencies: hams, LoRa Mesh (Meshtastic and MeshCore) users, satellite chasers, and ADS-B and AIS listeners.
 
 Live **widgets** across the top: space weather, POTA and DX spots, satellite passes, mesh messages, aircraft and ships nearby, and the weather. Your radio web applications along the bottom: [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [MeshMonitor](https://github.com/Yeraze/meshmonitor), [WebSDR](http://websdr.org), [Broadcastify](https://www.broadcastify.com), [Flightradar24](https://www.flightradar24.com) and more, full-screen with the remote.
 
