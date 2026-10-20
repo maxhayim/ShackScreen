@@ -57,7 +57,7 @@ final class Icons {
     /** Output size, and the smallest source worth showing rather than a category tile. */
     private static final int SIZE = 192, MIN_SOURCE = 40, FULL_BLEED = 96;
     /** Bumped when the way icons are drawn changes, so cached ones are redrawn. */
-    private static final int STYLE = 7;
+    private static final int STYLE = 8;
     /** ShackScreen's own icon set, one PNG per catalog app, in colour, dark and light. */
     static final String REPO_ICONS = "https://raw.githubusercontent.com/" + Updater.REPO + "/main/icons/";
     private static final long REFRESH_MS = 7 * 24 * 60 * 60 * 1000L;
