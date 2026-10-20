@@ -10,7 +10,7 @@ ShackScreen's icons. The app loads the application icons straight from this fold
 | [`mono/`](mono) | Settings → Appearance → Application icons: **Black and white** |
 
 - **Size:** 512 × 512 px PNG (the app draws them at 192 px; 512 keeps them sharp on 4K screens).
-- **Shape:** square and **full-bleed**: fill the whole canvas, edge to edge. No rounded corners, no transparent border, no drop shadow. The app rounds the corners itself.
+- **Shape:** cropped exactly as the app shows them: a 512 × 512 square with **rounded corners of 136 px radius** (the app's 18 dp corner on a 68 dp tile), transparent outside the corners. Fill everything inside, edge to edge; no extra border or drop shadow. Edit the files here and keep that shape: the app shows them as they are.
 - **Name:** the application's id from [`catalog.json`](../app/src/main/assets/catalog.json), such as `gmrshub.png`.
 - **Black and white:** greys only. If an app has no `mono/` icon, its colour one is shown in grey.
 - **Smallest accepted:** 96 × 96 px. Anything smaller is ignored.
