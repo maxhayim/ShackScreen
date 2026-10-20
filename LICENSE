@@ -24,6 +24,10 @@ SOFTWARE.
 
 Third-party components
 
+Application names, and the logos and marks shown in the application icons under icons/color,
+icons/dark and icons/light, are trademarks of their respective owners. They are not covered by
+the MIT License above; see TRADEMARKS.md.
+
 The Outfit font (app/src/main/assets/fonts/outfit.ttf) is licensed separately under the
 SIL Open Font License, Version 1.1, reproduced below.
 

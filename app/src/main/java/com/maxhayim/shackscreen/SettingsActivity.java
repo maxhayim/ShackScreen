@@ -870,6 +870,9 @@ public class SettingsActivity extends BaseActivity {
         updateStatus.setPadding(dp(4), dp(8), 0, 0);
         pane.addView(updateStatus);
         showUpdates();
+        TextView marks = text(getString(R.string.trademarks), 13, R.color.dim);
+        marks.setPadding(dp(4), dp(28), 0, 0);
+        pane.addView(marks);
     }
 
     private void showUpdates() {
