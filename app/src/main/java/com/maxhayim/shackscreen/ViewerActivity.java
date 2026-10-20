@@ -19,7 +19,8 @@ import android.widget.TextView;
 
 /**
  * One app, full-screen, meant to stay up on a wall for hours: the screen stays on, and a page
- * that fails to load is retried until the server is back.
+ * that fails to load is retried until the server is back. An app with several pages (GMRS Hub's
+ * map and hub status, or pages the user added) switches between them from Menu or the Pages button.
  */
 public class ViewerActivity extends BaseActivity {
 
@@ -30,6 +31,7 @@ public class ViewerActivity extends BaseActivity {
     private WebView web;
     private TextView error;
     private Store.Instance in;
+    private final java.util.List<String[]> pages = new java.util.ArrayList<>(); // {name, url}
 
     private final Runnable retry = () -> {
         error.setVisibility(View.GONE);
@@ -97,9 +99,49 @@ public class ViewerActivity extends BaseActivity {
         FrameLayout root = new FrameLayout(this);
         root.addView(web);
         root.addView(error);
+
+        // The app's own address first, then its built-in pages, then the user's.
+        pages.add(new String[]{in.name, in.url});
+        for (String[] p : type.pages) if (!p[1].equals(in.url)) pages.add(p);
+        if (type.pages.size() > 0 && type.pages.get(0)[1].equals(in.url)) pages.set(0, type.pages.get(0));
+        pages.addAll(in.pages);
+        if (pages.size() > 1) root.addView(pagesButton());
+
         setContentView(root);
         web.requestFocus();
         web.loadUrl(in.url);
+    }
+
+    /** A small Pages button in the corner for touch screens; on a remote, Menu does the same. */
+    private View pagesButton() {
+        TextView b = new TextView(this);
+        b.setText(R.string.pages);
+        b.setTextSize(15);
+        b.setTextColor(0xFFFFFFFF);
+        b.setBackgroundResource(R.drawable.pages_button);
+        int pad = Math.round(14 * getResources().getDisplayMetrics().density);
+        b.setPadding(pad, pad / 2, pad, pad / 2);
+        b.setOnClickListener(v -> showPages());
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT,
+                android.view.Gravity.TOP | android.view.Gravity.END);
+        lp.setMargins(0, pad, pad, 0);
+        b.setLayoutParams(lp);
+        return b;
+    }
+
+    private void showPages() {
+        String[] items = new String[pages.size() + 1];
+        for (int i = 0; i < pages.size(); i++) items[i] = pages.get(i)[0];
+        items[pages.size()] = getString(R.string.reload);
+        new android.app.AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(in.name)
+                .setItems(items, (d, which) -> {
+                    error.setVisibility(View.GONE);
+                    if (which == pages.size()) web.reload();
+                    else web.loadUrl(pages.get(which)[1]);
+                })
+                .show();
     }
 
     private void showError() {
@@ -115,7 +157,11 @@ public class ViewerActivity extends BaseActivity {
             web.goBack();
             return true;
         }
-        // Menu or the remote's refresh key reloads the page.
+        // Menu lists the app's pages (with Reload) when it has several, and reloads otherwise.
+        if (keyCode == KeyEvent.KEYCODE_MENU && pages.size() > 1) {
+            showPages();
+            return true;
+        }
         if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_REFRESH) {
             retry.run();
             return true;

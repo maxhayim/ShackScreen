@@ -61,6 +61,7 @@ final class Icons {
     private static int[] look(String category) {
         switch (category) {
             case "Ham radio": return new int[]{0xFFF5A524, 0xFFC2410C, R.drawable.ic_antenna};
+            case "GMRS": return new int[]{0xFFFB923C, 0xFFB91C1C, R.drawable.ic_radio};
             case "Satellites": return new int[]{0xFF8B5CF6, 0xFF4C1D95, R.drawable.ic_satellite};
             case "Mesh": return new int[]{0xFF34D399, 0xFF047857, R.drawable.ic_mesh};
             case "SDR & scanners": return new int[]{0xFF2DD4BF, 0xFF0F766E, R.drawable.ic_waves};

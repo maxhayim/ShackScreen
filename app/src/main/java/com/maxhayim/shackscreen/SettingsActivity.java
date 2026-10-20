@@ -282,6 +282,12 @@ public class SettingsActivity extends BaseActivity {
         if (type.port > 0) {
             form.addView(text(getString(R.string.port_hint, type.port), 13, R.color.dim));
         }
+        // Extra pages: more hub URLs, a second dashboard, anything to switch to from inside the app.
+        Button pagesButton = button(pagesLabel(in));
+        pagesButton.setOnClickListener(v -> editPages(in, isNew, pagesButton));
+        LinearLayout.LayoutParams plp = (LinearLayout.LayoutParams) pagesButton.getLayoutParams();
+        plp.topMargin = dp(10);
+        form.addView(pagesButton);
         if (type.id.equals("custom")) {
             // A page someone adds by hand may be worth having in everyone's menu.
             Button ask = button(getString(R.string.request_it));
@@ -316,6 +322,60 @@ public class SettingsActivity extends BaseActivity {
             });
         }
         quiet(b.show());
+    }
+
+    private String pagesLabel(Store.Instance in) {
+        return getString(R.string.extra_pages, in.pages.size());
+    }
+
+    /** The user's own pages for an app: select one to remove it, or add a new one. */
+    private void editPages(Store.Instance in, boolean isNew, Button label) {
+        String[] items = new String[in.pages.size() + 1];
+        for (int i = 0; i < in.pages.size(); i++) items[i] = in.pages.get(i)[0] + "   ·   " + in.pages.get(i)[1];
+        items[in.pages.size()] = getString(R.string.add_page);
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.pages)
+                .setItems(items, (d, which) -> {
+                    if (which < in.pages.size()) {
+                        String[] page = in.pages.get(which);
+                        new AlertDialog.Builder(this, R.style.Dialog)
+                                .setTitle(page[0])
+                                .setMessage(page[1])
+                                .setPositiveButton(R.string.delete, (d2, w2) -> {
+                                    in.pages.remove(page);
+                                    savePages(in, isNew, label);
+                                })
+                                .setNegativeButton(R.string.cancel, null)
+                                .show();
+                        return;
+                    }
+                    LinearLayout form = new LinearLayout(this);
+                    form.setOrientation(LinearLayout.VERTICAL);
+                    form.setPadding(dp(24), dp(8), dp(24), 0);
+                    EditText name = field(getString(R.string.page_name), "", InputType.TYPE_CLASS_TEXT);
+                    EditText url = field(getString(R.string.page_url), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+                    form.addView(name);
+                    form.addView(url);
+                    quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                            .setTitle(R.string.add_page)
+                            .setView(form)
+                            .setPositiveButton(R.string.save, (d2, w2) -> {
+                                String u = Store.normalise(url.getText().toString(), 0);
+                                if (u.isEmpty()) return;
+                                String n = name.getText().toString().trim();
+                                in.pages.add(new String[]{n.isEmpty() ? Uri.parse(u).getHost() : n, u});
+                                savePages(in, isNew, label);
+                            })
+                            .setNegativeButton(R.string.cancel, null)
+                            .show());
+                })
+                .show();
+    }
+
+    /** A saved app's pages are stored right away; a new app's go with it when it's saved. */
+    private void savePages(Store.Instance in, boolean isNew, Button label) {
+        if (!isNew) Store.save(this, instances);
+        label.setText(pagesLabel(in));
     }
 
     /** On a TV the keyboard covers the form; it opens when a text field is selected instead. */

@@ -20,10 +20,18 @@ final class Store {
     static final class Instance {
         String id, type, name, url, token;
         boolean home; // on the home row; otherwise only in All apps
+        List<String[]> pages = new ArrayList<>(); // {name, url}: extra pages the user added
 
         JSONObject toJson() throws Exception {
             return new JSONObject().put("id", id).put("type", type).put("name", name)
-                    .put("url", url).put("token", token == null ? "" : token).put("home", home);
+                    .put("url", url).put("token", token == null ? "" : token).put("home", home)
+                    .put("pages", pagesJson());
+        }
+
+        private JSONArray pagesJson() throws Exception {
+            JSONArray a = new JSONArray();
+            for (String[] p : pages) a.put(new JSONObject().put("name", p[0]).put("url", p[1]));
+            return a;
         }
 
         static Instance fromJson(JSONObject o) {
@@ -35,6 +43,11 @@ final class Store {
             i.token = o.optString("token");
             // Lists saved before the home row existed: start with the usual favourites there.
             i.home = o.has("home") ? o.optBoolean("home") : DEFAULT_HOME.contains(i.type);
+            JSONArray pg = o.optJSONArray("pages");
+            for (int k = 0; pg != null && k < pg.length(); k++) {
+                JSONObject p = pg.optJSONObject(k);
+                if (p != null) i.pages.add(new String[]{p.optString("name"), p.optString("url")});
+            }
             return i;
         }
 

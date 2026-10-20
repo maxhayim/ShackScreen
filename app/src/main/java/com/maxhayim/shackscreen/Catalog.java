@@ -36,6 +36,7 @@ final class Catalog {
         final boolean home;      // starts on the home row when added as a default
         final int seed;          // added to everyone's apps in this round of defaults; 0 = never
         final Set<String> feeds; // dashboard panels this app can supply: space, pota, mesh
+        final List<String[]> pages; // {name, url}: the app's main pages, switched between in the viewer
 
         Type(JSONObject o) {
             id = o.optString("id");
@@ -51,6 +52,12 @@ final class Catalog {
             Object sd = o.opt("seed");
             seed = sd instanceof Boolean ? ((Boolean) sd ? 1 : 0) : o.optInt("seed");
             category = o.optString("category", "Other");
+            pages = new ArrayList<>();
+            JSONArray pg = o.optJSONArray("pages");
+            for (int i = 0; pg != null && i < pg.length(); i++) {
+                JSONObject page = pg.optJSONObject(i);
+                if (page != null) pages.add(new String[]{page.optString("name"), page.optString("url")});
+            }
             feeds = new HashSet<>();
             JSONArray f = o.optJSONArray("feeds");
             for (int i = 0; f != null && i < f.length(); i++) feeds.add(f.optString(i));

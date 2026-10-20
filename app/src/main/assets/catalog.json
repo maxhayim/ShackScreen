@@ -1,8 +1,9 @@
 {
   "version": 1,
-  "revision": 3,
+  "revision": 4,
   "categories": [
     "Ham radio",
+    "GMRS",
     "Satellites",
     "Mesh",
     "SDR & scanners",
@@ -61,6 +62,36 @@
       "name": "RepeaterBook",
       "category": "Ham radio",
       "url": "https://www.repeaterbook.com/"
+    },
+    {
+      "id": "gmrshub",
+      "name": "GMRS Hub",
+      "category": "GMRS",
+      "url": "https://gmrshub.com/access/home.php",
+      "home": true,
+      "seed": 3,
+      "pages": [
+        {
+          "name": "Home",
+          "url": "https://gmrshub.com/access/home.php"
+        },
+        {
+          "name": "Live Node Map",
+          "url": "https://gmrshub.com/access/map.php"
+        },
+        {
+          "name": "Hub Status",
+          "url": "https://gmrshub.com/access/hub_status.php"
+        },
+        {
+          "name": "Groups",
+          "url": "https://gmrshub.com/access/groups_list.php"
+        },
+        {
+          "name": "Get On GMRS Hub",
+          "url": "https://gmrshub.com/access/get_on_gmrshub.php"
+        }
+      ]
     },
     {
       "id": "n2yo",

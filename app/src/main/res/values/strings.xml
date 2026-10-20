@@ -92,4 +92,10 @@
     <string name="use_public">Public site (%1$s)</string>
     <string name="use_own">My own server</string>
     <string name="port_hint">Type just the IP or name; port %1$d is added if you leave it out.</string>
+    <string name="pages">Pages</string>
+    <string name="reload">Reload</string>
+    <string name="extra_pages">Your pages for this application (%1$d)…</string>
+    <string name="add_page">Add a page…</string>
+    <string name="page_name">Name (e.g. My hub status)</string>
+    <string name="page_url">Web address</string>
 </resources>
