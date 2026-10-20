@@ -185,7 +185,7 @@ public class MainActivity extends BaseActivity {
     @SuppressWarnings("deprecation") // onBackPressed is what API 22-32 call
     public void onBackPressed() {
         if (moving != null) stopMove();
-        else super.onBackPressed();
+        else if (!Launcher.isHome(this)) super.onBackPressed(); // as the home screen there's nowhere to go back to
     }
 
     private void showUpdateBadge() {
@@ -571,7 +571,7 @@ public class MainActivity extends BaseActivity {
         items.add(getString(R.string.move_right));
         if (in != null) {
             items.add(getString(R.string.remove_home));
-            items.add(getString(R.string.edit));
+            if (!Launcher.is(in)) items.add(getString(R.string.edit)); // an Android app has nothing to edit
         }
         new android.app.AlertDialog.Builder(this, R.style.Dialog)
                 .setTitle(in == null ? getString(R.string.all_apps) : in.name)
@@ -584,7 +584,9 @@ public class MainActivity extends BaseActivity {
                         slots.set(to, in);
                         Store.saveHome(this, instances, slots);
                     } else if (which == 2) {
-                        in.home = false;
+                        // An Android app off the home row is just gone; it's still in Android apps.
+                        if (Launcher.is(in)) instances.remove(in);
+                        else in.home = false;
                         Store.save(this, instances);
                     } else {
                         startActivity(new Intent(this, SettingsActivity.class).putExtra(SettingsActivity.EXTRA_EDIT, in.id));
@@ -606,6 +608,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void open(Store.Instance in) {
+        if (Launcher.is(in)) {
+            Launcher.launch(this, Launcher.pkg(in));
+            return;
+        }
         if (!in.hasUrl()) {
             startActivity(new Intent(this, SettingsActivity.class).putExtra(SettingsActivity.EXTRA_EDIT, in.id));
             return;

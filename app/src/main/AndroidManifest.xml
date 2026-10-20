@@ -13,10 +13,19 @@
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <!-- To offer "An image on this device" for an icon only where there's a file picker. -->
+    <!-- Installed apps are listed only in launcher mode. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.GET_CONTENT" />
             <data android:mimeType="image/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
         </intent>
     </queries>
 
@@ -32,6 +41,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:configChanges="keyboard|keyboardHidden|navigation|uiMode">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,6 +49,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Launcher mode: off until turned on in Settings (Launcher.java). -->
+        <activity-alias
+            android:name=".HomeAlias"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
 
         <activity
             android:name=".ViewerActivity"

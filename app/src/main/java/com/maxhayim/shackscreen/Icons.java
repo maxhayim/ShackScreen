@@ -140,6 +140,11 @@ final class Icons {
             }
         }
         view.setImageBitmap(symbolTile(c, symbol, look[0], look[1]));
+        if (Launcher.is(in)) {
+            Bitmap b = Launcher.icon(c, Launcher.pkg(in), SIZE);
+            if (b != null) view.setImageBitmap(b);
+            return;
+        }
         if (in.icon.equals("file")) {
             Bitmap b = BitmapFactory.decodeFile(customFile(c, in).getPath());
             if (b != null) view.setImageBitmap(b);

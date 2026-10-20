@@ -113,6 +113,11 @@ public class AppsActivity extends BaseActivity {
             known |= cat.equals(category);
             side.addView(sideItem(cat, cat, Icons.categorySymbol(cat), n));
         }
+        if (Launcher.enabled(this)) {
+            // Launcher mode: the device's own apps, plus Android's settings.
+            known |= Launcher.CATEGORY.equals(category);
+            side.addView(sideItem(Launcher.CATEGORY, Launcher.CATEGORY, R.drawable.ic_grid, Launcher.apps(this).size() + 1));
+        }
         if (!known) category = ALL; // its last app was deleted
         styleSide();
         Appearance.font(side);
@@ -192,14 +197,15 @@ public class AppsActivity extends BaseActivity {
 
     private void buildGrid() {
         grid.removeAllViews();
+        if (Launcher.CATEGORY.equals(category)) {
+            buildAndroidGrid();
+            return;
+        }
         List<Store.Instance> apps = inCategory(category);
         heading.setText(category.equals(ALL) ? getString(R.string.all) : category);
         count.setText(getResources().getQuantityString(R.plurals.application_count, apps.size(), apps.size()));
 
-        int width = getResources().getDisplayMetrics().widthPixels - dp(SIDE + PAD_LEFT + PAD_RIGHT);
-        int cols = Math.max(2, width / dp(104)), gap = dp(12);
-        int cardW = (width - gap * (cols - 1)) / cols;
-        int logoH = cardW - dp(28); // square, with room either side for the focus outline
+        int logoH = logoSize();
 
         List<View> cards = new ArrayList<>();
         View focus = null;
@@ -227,6 +233,35 @@ public class AppsActivity extends BaseActivity {
             cards.add(ask);
         }
 
+        layout(cards);
+        Appearance.font(grid);
+        gridScroll.scrollTo(0, 0);
+        if (focus != null) {
+            focus.requestFocus();
+            focusId = null;
+        } else if (getCurrentFocus() == null) {
+            for (View v : sideItems) if (category.equals(v.getTag())) v.requestFocus();
+        }
+    }
+
+    private int cols() {
+        int width = getResources().getDisplayMetrics().widthPixels - dp(SIDE + PAD_LEFT + PAD_RIGHT);
+        return Math.max(2, width / dp(104));
+    }
+
+    private int cardWidth() {
+        int width = getResources().getDisplayMetrics().widthPixels - dp(SIDE + PAD_LEFT + PAD_RIGHT);
+        return (width - dp(12) * (cols() - 1)) / cols();
+    }
+
+    /** Square, with room either side for the focus outline. */
+    private int logoSize() {
+        return cardWidth() - dp(28);
+    }
+
+    /** Cards into rows of cols(). */
+    private void layout(List<View> cards) {
+        int cols = cols(), gap = dp(12), cardW = cardWidth();
         LinearLayout row = null;
         for (int i = 0; i < cards.size(); i++) {
             if (i % cols == 0) {
@@ -239,13 +274,52 @@ public class AppsActivity extends BaseActivity {
             lp.bottomMargin = dp(10);
             row.addView(cards.get(i), lp);
         }
+    }
+
+    /** Launcher mode: Android's settings, then every installed app. Hold one to put it on the home row. */
+    private void buildAndroidGrid() {
+        List<Launcher.App> installed = Launcher.apps(this);
+        heading.setText(Launcher.CATEGORY);
+        count.setText(getResources().getQuantityString(R.plurals.application_count, installed.size(), installed.size()));
+        int logoH = logoSize();
+        List<View> cards = new ArrayList<>();
+        View settings = card(getString(R.string.android_settings), logoH);
+        ((ImageView) settings.findViewById(R.id.icon)).setImageBitmap(
+                Icons.symbolTile(this, R.drawable.ic_settings, 0xFF64748B, 0xFF1E293B));
+        settings.setOnClickListener(v -> Launcher.openSettings(this));
+        cards.add(settings);
+        View focus = null;
+        for (Launcher.App app : installed) {
+            Store.Instance pinned = null;
+            for (Store.Instance in : instances) if (Launcher.is(in) && Launcher.pkg(in).equals(app.pkg)) pinned = in;
+            Store.Instance shown = pinned != null ? pinned : Launcher.instance(Catalog.get(this, Launcher.TYPE), app);
+            View card = card(app.label, logoH);
+            Icons.show(this, shown, card.findViewById(R.id.icon));
+            card.setOnClickListener(v -> Launcher.launch(this, app.pkg));
+            Store.Instance on = pinned;
+            card.setOnLongClickListener(v -> {
+                new AlertDialog.Builder(this, R.style.Dialog)
+                        .setTitle(app.label)
+                        .setItems(new String[]{getString(on != null ? R.string.remove_home : R.string.add_home)}, (d, w) -> {
+                            if (on != null) instances.remove(on);
+                            else instances.add(Launcher.instance(Catalog.get(this, Launcher.TYPE), app));
+                            Store.save(this, instances);
+                            focusId = app.pkg;
+                            buildGrid();
+                        })
+                        .show();
+                return true;
+            });
+            card.setTag(app.pkg);
+            cards.add(card);
+            if (app.pkg.equals(focusId)) focus = card;
+        }
+        layout(cards);
         Appearance.font(grid);
         gridScroll.scrollTo(0, 0);
         if (focus != null) {
             focus.requestFocus();
             focusId = null;
-        } else if (getCurrentFocus() == null) {
-            for (View v : sideItems) if (category.equals(v.getTag())) v.requestFocus();
         }
     }
 
@@ -282,6 +356,19 @@ public class AppsActivity extends BaseActivity {
     }
 
     private void menu(Store.Instance in) {
+        if (Launcher.is(in)) {
+            // An Android app pinned to the home row: the only thing to do is take it off.
+            new AlertDialog.Builder(this, R.style.Dialog)
+                    .setTitle(in.name)
+                    .setItems(new String[]{getString(R.string.remove_home)}, (d, w) -> {
+                        instances.remove(in);
+                        Store.save(this, instances);
+                        buildSide();
+                        buildGrid();
+                    })
+                    .show();
+            return;
+        }
         String[] items = {
                 getString(in.home ? R.string.remove_home : R.string.add_home),
                 getString(R.string.edit),
@@ -308,6 +395,10 @@ public class AppsActivity extends BaseActivity {
     }
 
     private void open(Store.Instance in) {
+        if (Launcher.is(in)) {
+            Launcher.launch(this, Launcher.pkg(in));
+            return;
+        }
         if (!in.hasUrl()) {
             startActivity(new Intent(this, SettingsActivity.class).putExtra(SettingsActivity.EXTRA_EDIT, in.id));
             return;

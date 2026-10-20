@@ -50,13 +50,14 @@ public class SettingsActivity extends BaseActivity {
 
     // The sections down the side: key, title, symbol.
     private static final String APPS = "apps", WIDGETS = "widgets", CALLS = "calls", LOCATION = "location",
-            LOOK = "look", UPDATES = "updates";
+            LOOK = "look", LAUNCHER = "launcher", UPDATES = "updates";
     private static final Object[][] SECTIONS = {
             {APPS, R.string.applications, R.drawable.ic_grid},
             {WIDGETS, R.string.widgets, R.drawable.ic_waves},
             {CALLS, R.string.callsigns, R.drawable.ic_radio},
             {LOCATION, R.string.location, R.drawable.ic_globe},
             {LOOK, R.string.appearance, R.drawable.ic_theme},
+            {LAUNCHER, R.string.launcher, R.drawable.ic_grid},
             {UPDATES, R.string.updates, R.drawable.ic_update}};
 
     private String section = APPS;
@@ -139,7 +140,8 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (LOCATION.equals(section) && pane != null) buildPane(); // back from the map
+        // Back from the map, or from Android's home app setting.
+        if ((LOCATION.equals(section) || LAUNCHER.equals(section)) && pane != null) buildPane();
     }
 
     @Override
@@ -227,6 +229,7 @@ public class SettingsActivity extends BaseActivity {
             case CALLS: callsPane(); break;
             case LOCATION: locationPane(); break;
             case LOOK: lookPane(); break;
+            case LAUNCHER: launcherPane(); break;
             default: updatesPane();
         }
         Appearance.font(pane);
@@ -413,6 +416,28 @@ public class SettingsActivity extends BaseActivity {
         pane.addView(icons);
     }
 
+    /** Launcher mode: off by default; on, ShackScreen can be the home screen and lists the device's apps. */
+    private void launcherPane() {
+        head(R.string.launcher, getString(R.string.launcher_hint));
+        boolean on = Launcher.enabled(this);
+        View mode = row(R.drawable.ic_grid, getString(R.string.launcher_mode), getString(on ? R.string.on : R.string.off));
+        mode.setOnClickListener(v -> {
+            boolean now = !Launcher.enabled(this);
+            Launcher.setEnabled(this, now);
+            buildPane();
+            if (now) Launcher.chooseHome(this);
+        });
+        pane.addView(mode);
+        if (on) {
+            View home = row(0, getString(R.string.launcher_home), getString(Launcher.isHome(this) ? R.string.launcher_is_home : R.string.launcher_not_home));
+            home.setOnClickListener(v -> Launcher.chooseHome(this));
+            pane.addView(home);
+            View settings = row(R.drawable.ic_settings, getString(R.string.android_settings), "");
+            settings.setOnClickListener(v -> Launcher.openSettings(this));
+            pane.addView(settings);
+        }
+    }
+
     private void updatesPane() {
         head(R.string.updates, getString(R.string.version, BuildConfig.VERSION_NAME));
         View mode = row(R.drawable.ic_update, getString(R.string.updates), "");
@@ -498,6 +523,7 @@ public class SettingsActivity extends BaseActivity {
         if (list == null) return;
         list.removeAllViews();
         for (Store.Instance in : instances) {
+            if (Launcher.is(in)) continue; // Android apps are managed in All applications
             String where = in.hasUrl() ? in.url : getString(R.string.needs_address);
             LinearLayout r = row(0, in.name, where);
             android.widget.FrameLayout frame = new android.widget.FrameLayout(this);

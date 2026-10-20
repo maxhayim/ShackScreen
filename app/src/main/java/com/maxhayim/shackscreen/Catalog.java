@@ -178,7 +178,20 @@ final class Catalog {
         return max;
     }
 
+    private static Type android;
+
     static Type get(Context c, String id) {
+        if (Launcher.TYPE.equals(id)) {
+            // Android apps on the home row in launcher mode: built in, never in catalog.json.
+            if (android == null) {
+                try {
+                    android = new Type(new JSONObject().put("id", Launcher.TYPE).put("name", "Android app").put("category", Launcher.CATEGORY));
+                } catch (org.json.JSONException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+            return android;
+        }
         for (Type t : all(c)) if (t.id.equals(id)) return t;
         for (Type t : all(c)) if (t.id.equals("custom")) return t;
         throw new IllegalStateException("catalog.json has no custom type");

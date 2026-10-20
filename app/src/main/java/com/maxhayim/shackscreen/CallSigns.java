@@ -47,7 +47,8 @@ final class CallSigns {
             if (!v.isEmpty()) {
                 // Rows sit close together so three of them stay within the clock's height.
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                lp.bottomMargin = -Math.round(3 * c.getResources().getDisplayMetrics().density);
+                // Pulled up under the row above, never the last row down, or "Night Owl" loses its g.
+                if (box.getChildCount() > 0) lp.topMargin = -Math.round(3 * c.getResources().getDisplayMetrics().density);
                 box.addView(row(c, f[1], v, true), lp);
             }
         }

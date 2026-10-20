@@ -178,4 +178,14 @@
     <string name="icon_style">Application icons</string>
     <string name="icons_color">Colour</string>
     <string name="icons_mono">Black and white</string>
+    <string name="launcher">Launcher</string>
+    <string name="launcher_mode">Use ShackScreen as a launcher</string>
+    <string name="launcher_hint">Off by default. On, ShackScreen can be this device\'s home screen, and All applications also lists your Android apps and Android\'s settings. Some TVs (Fire TV, newer Google TV) don\'t let you change the home screen; the apps list still works there.</string>
+    <string name="launcher_home">Home screen</string>
+    <string name="launcher_is_home">ShackScreen</string>
+    <string name="launcher_not_home">The TV\'s own (choose…)</string>
+    <string name="launcher_choose">Home screen</string>
+    <string name="launcher_no_choice">This device doesn\'t let you choose the home screen.</string>
+    <string name="launcher_missing">That app isn\'t installed any more.</string>
+    <string name="android_settings">Android settings</string>
 </resources>
