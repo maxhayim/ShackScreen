@@ -11,8 +11,8 @@ android {
         // 22 = Fire OS 5 / Android TV 5.1, so older sticks and TVs can still run it.
         minSdk 22
         targetSdk 35
-        versionCode 7
-        versionName '0.5.1'
+        versionCode 8
+        versionName '0.5.2'
     }
 
     // Release APKs must always carry the same key, or a downloaded update won't install over the old one.
