@@ -16,14 +16,16 @@
 
 # ShackScreen
 
-**ShackScreen** is a free Android (Android TV, Android Tablet Google TV and Fire TV) application that turns the TV or Tablet in your shack into a live radio dashboard, for people who love frequencies: hams, Meshtastic and MeshCore LoRa Mesh users, satellite chasers, and ADS-B and AIS listeners.
+**ShackScreen** is a free Android (Android TV, Android Tablet Google TV and Fire TV) application that turns the TV or Tablet in your shack into a live radio dashboard, for people who love frequencies: hams, [Meshtastic](https://github.com/meshtastic) and [MeshCore](https://github.com/meshcore-dev/MeshCore) LoRa Mesh users, satellite chasers, and ADS-B and AIS listeners.
 
-Live **widgets** across the top: space weather, POTA and DX spots, satellite passes, mesh messages, aircraft and ships nearby, and the weather. Your radio web applications along the bottom: OpenHamClock, ShackBoard, MeshMonitor, WebSDR, Broadcastify, Flightradar24 and more, full-screen with the remote.
+Live **widgets** across the top: space weather, POTA and DX spots, satellite passes, mesh messages, aircraft and ships nearby, and the weather. Your radio web applications along the bottom: [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [MeshMonitor](https://github.com/Yeraze/meshmonitor), [WebSDR](http://websdr.org), [Broadcastify](https://www.broadcastify.com), [Flightradar24](https://www.flightradar24.com) and more, full-screen with the remote.
 
 <p align="center">
-  <img src="docs/assets/home.png" alt="ShackScreen home screen" width="49%"/>
-  <img src="docs/assets/all-apps.png" alt="All applications" width="49%"/>
+  <img src="docs/screenshots/home.png" alt="ShackScreen home screen" width="49%"/>
+  <img src="docs/screenshots/all-applications.png" alt="All applications" width="49%"/>
 </p>
+
+More in [Screenshots](#screenshots).
 
 ---
 
@@ -74,26 +76,26 @@ Pick them in **Settings → Widgets**. Press and hold a widget to **move** or **
 
 | Widget | Data from |
 |---|---|
-| Space weather: SFI, sunspots, K and A index, X-ray, HF band conditions | OpenHamClock or ShackBoard |
-| POTA spots | OpenHamClock or ShackBoard |
-| DX cluster spots | OpenHamClock |
-| Contests, on now and coming up | OpenHamClock |
-| DXpeditions on the air | OpenHamClock |
+| Space weather: SFI, sunspots, K and A index, X-ray, HF band conditions | [OpenHamClock](https://github.com/accius/openhamclock) or [ShackBoard](https://shackboard.com) |
+| POTA spots | [OpenHamClock](https://github.com/accius/openhamclock) or [ShackBoard](https://shackboard.com) |
+| DX cluster spots | [OpenHamClock](https://github.com/accius/openhamclock) |
+| Contests, on now and coming up | [OpenHamClock](https://github.com/accius/openhamclock) |
+| DXpeditions on the air | [OpenHamClock](https://github.com/accius/openhamclock) |
 
 ### Satellites
 
 | Widget | Data from |
 |---|---|
-| Satellite passes over you: time, max elevation, downlink | OpenHamClock's orbital data, predicted on the device |
-| Satellites just heard, with frequency and mode | [SatNOGS](https://network.satnogs.org) |
+| Satellite passes over you: time, max elevation, downlink | [OpenHamClock](https://github.com/accius/openhamclock)'s orbital data, predicted on the device |
+| Satellites just heard, with frequency and mode | [SatNOGS](https://github.com/satnogs) |
 
 ### Mesh (via MeshMonitor)
 
 | Widget | Data from |
 |---|---|
-| Mesh sources: Meshtastic, MeshCore, MQTT, connected or not | MeshMonitor |
-| Mesh nodes heard today | MeshMonitor |
-| Mesh messages | MeshMonitor |
+| Mesh sources: Meshtastic, MeshCore, MQTT, connected or not | [MeshMonitor](https://github.com/Yeraze/meshmonitor) |
+| Mesh nodes heard today | [MeshMonitor](https://github.com/Yeraze/meshmonitor) |
+| Mesh messages | [MeshMonitor](https://github.com/Yeraze/meshmonitor) |
 
 In MeshMonitor's settings, create an API token and paste it into the MeshMonitor app in ShackScreen. The token acts as your user, so it only sees what you can see.
 
@@ -101,14 +103,14 @@ In MeshMonitor's settings, create an API token and paste it into the MeshMonitor
 
 | Widget | Data from |
 |---|---|
-| Aircraft within 25 nm | **your own** tar1090 / readsb / dump1090, or [ADSB.lol](https://www.adsb.lol), [adsb.fi](https://adsb.fi) |
+| Aircraft within 25 nm | **your own** [tar1090](https://github.com/wiedehopf/tar1090) / [readsb](https://github.com/wiedehopf/readsb) / [dump1090](https://github.com/flightaware/dump1090), or [ADSB.lol](https://github.com/adsblol), [adsb.fi](https://github.com/adsbfi) |
 | Ships nearby | **your own** [AIS-catcher](https://github.com/jvde-github/AIS-catcher) |
 
 ### Local
 
 | Widget | Data from |
 |---|---|
-| Weather | [Open-Meteo](https://open-meteo.com) |
+| Weather | [Open-Meteo](https://github.com/open-meteo/open-meteo) |
 
 Each widget uses the first of your applications that can supply it, and moves on to the next if a server is down.
 
@@ -120,25 +122,25 @@ The home row holds your favourites, with **All applications** at the end. Press 
 
 | Category | Applications |
 |---|---|
-| Ham radio | OpenHamClock, ShackBoard, APRS.fi, PSKReporter, RepeaterBook |
-| Satellites | N2YO, Heavens-Above, AMSAT status, SatNOGS, TinyGS, Satellite map, ISS Tracker |
-| Mesh | MeshMonitor, MeshMap (Meshtastic), MeshCore Map, your Meshtastic node |
-| SDR & scanners | WebSDR, KiwiSDR map, Broadcastify |
-| Aviation | Flightradar24, FlightAware, ADS-B Exchange, ADSB.lol, adsb.fi, your tar1090 |
-| Marine | MarineTraffic, VesselFinder, MyShipTracking, your AIS-catcher |
-| Weather | Windy, Lightning map |
+| Ham radio | [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [APRS.fi](https://aprs.fi), [PSKReporter](https://pskreporter.info), [RepeaterBook](https://www.repeaterbook.com) |
+| Satellites | [N2YO](https://www.n2yo.com), [Heavens-Above](https://www.heavens-above.com), [AMSAT status](https://www.amsat.org/status/), [SatNOGS](https://github.com/satnogs), [TinyGS](https://github.com/tinygs/tinyGS), [Satellite map](https://satellitemap.space), [ISS Tracker](https://isstracker.pl/en) |
+| Mesh | [MeshMonitor](https://github.com/Yeraze/meshmonitor), [MeshMap (Meshtastic)](https://github.com/brianshea2/meshmap.net), [MeshCore Map](https://github.com/meshcore-dev/map.meshcore.io), [your Meshtastic node](https://github.com/meshtastic/firmware) |
+| SDR & scanners | [WebSDR](http://websdr.org), [KiwiSDR map](http://rx.linkfanel.net), [Broadcastify](https://www.broadcastify.com) |
+| Aviation | [Flightradar24](https://www.flightradar24.com), [FlightAware](https://www.flightaware.com), [ADS-B Exchange](https://www.adsbexchange.com), [ADSB.lol](https://github.com/adsblol), [adsb.fi](https://github.com/adsbfi), [your tar1090](https://github.com/wiedehopf/tar1090) |
+| Marine | [MarineTraffic](https://www.marinetraffic.com), [VesselFinder](https://www.vesselfinder.com), [MyShipTracking](https://www.myshiptracking.com), [your AIS-catcher](https://github.com/jvde-github/AIS-catcher) |
+| Weather | [Windy](https://www.windy.com), [Lightning map](https://www.blitzortung.org) |
 | Other | any web page |
 
 ### Public site or your own server
 
-- Applications you can also run yourself (**OpenHamClock, WebSDR, KiwiSDR**) ask **Public site or My own server** when you add them.
-- **MeshMonitor, tar1090, AIS-catcher** and a **Meshtastic node** are always your own server.
+- Applications you can also run yourself (**[OpenHamClock](https://github.com/accius/openhamclock), [WebSDR](http://websdr.org), [KiwiSDR](https://github.com/jks-prv/Beagle_SDR_GPS)**) ask **Public site or My own server** when you add them.
+- **[MeshMonitor](https://github.com/Yeraze/meshmonitor), [tar1090](https://github.com/wiedehopf/tar1090), [AIS-catcher](https://github.com/jvde-github/AIS-catcher)** and a **[Meshtastic node](https://github.com/meshtastic/firmware)** are always your own server.
 - Type just the IP and the default port is added. You can add the same app more than once (say, the public OpenHamClock and the one on your shack Pi).
 - Addresses and tokens are stored **only on the device**.
 
 ### Remote access (VPN)
 
-To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale](https://tailscale.com): no port forwarding, encrypted, works behind NAT.
+To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale](https://github.com/tailscale/tailscale): no port forwarding, encrypted, works behind NAT.
 
 ### Missing an app?
 
@@ -205,6 +207,40 @@ Without `TV_HOST` it only builds `app/build/outputs/apk/release/app-release.apk`
 
 ---
 
+## Screenshots
+
+All screenshots are in [`docs/screenshots`](docs/screenshots).
+
+**Home**: widgets on top, your applications along the bottom
+
+![Home](docs/screenshots/home.png)
+
+**All applications**, by category
+
+![All applications](docs/screenshots/all-applications.png)
+
+**Widgets**: space weather, POTA spots, aircraft nearby
+
+![Space weather, POTA spots and aircraft nearby](docs/screenshots/widgets-space-weather-pota-aircraft.png)
+
+**Widgets**: mesh messages, satellites heard by SatNOGS, satellite passes
+
+![Mesh messages, SatNOGS and satellite passes](docs/screenshots/widgets-mesh-satnogs-satellite-passes.png)
+
+**Widget**: weather
+
+<img src="docs/screenshots/widget-weather.png" alt="Weather widget" width="33%"/>
+
+**Light theme**
+
+![Light theme](docs/screenshots/light-theme.png)
+
+**Settings**: location, theme and updates
+
+![Settings](docs/screenshots/settings.png)
+
+---
+
 ## License
 
 This project is licensed under the MIT License.
@@ -227,10 +263,10 @@ Pull requests are welcome. Open an issue first to discuss ideas or report bugs. 
 * Inspired by [CleanYourTV](https://github.com/Gathin23/cleanyourtv)
 * [OpenHamClock](https://github.com/accius/openhamclock) by K0CJH
 * [ShackBoard](https://shackboard.com)
-* MeshMonitor built by [Yeraze](https://github.com/Yeraze)
-* [SatNOGS](https://satnogs.org) by the Libre Space Foundation
-* [ADSB.lol](https://www.adsb.lol) and [adsb.fi](https://adsb.fi) (ODbL)
+* [MeshMonitor](https://github.com/Yeraze/meshmonitor) built by [Yeraze](https://github.com/Yeraze)
+* [SatNOGS](https://github.com/satnogs) by the Libre Space Foundation
+* [ADSB.lol](https://github.com/adsblol) and [adsb.fi](https://github.com/adsbfi) (ODbL)
 * [AIS-catcher](https://github.com/jvde-github/AIS-catcher)
-* [Open-Meteo](https://open-meteo.com)
+* [Open-Meteo](https://github.com/open-meteo/open-meteo)
 
 Discover community-contributed scripts for MeshMonitor: https://meshmonitor.org/user-scripts.html
