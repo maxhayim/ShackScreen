@@ -32,7 +32,8 @@
     <!-- usesCleartextTraffic: self-hosted servers on the home network are usually plain http. -->
     <application
         android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:banner="@drawable/banner"
         android:theme="@style/Theme.ShackScreen"
         android:usesCleartextTraffic="true"

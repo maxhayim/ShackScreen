@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The logo's dark navy tile, lighter at the top. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient android:angle="270" android:startColor="#FF1E2836" android:endColor="#FF05070C" />
+</shape>
