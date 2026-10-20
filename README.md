@@ -152,6 +152,7 @@ The home row holds your favourites, with **All applications** at the end. Press 
 | Category | Applications |
 |---|---|
 | Ham radio | [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [APRS.fi](https://aprs.fi), [PSKReporter](https://pskreporter.info), [RepeaterBook](https://www.repeaterbook.com) |
+| GMRS | [GMRS Hub](https://gmrshub.com) |
 | Satellites | [N2YO](https://www.n2yo.com), [Heavens-Above](https://www.heavens-above.com), [AMSAT status](https://www.amsat.org/status/), [SatNOGS](https://github.com/satnogs), [TinyGS](https://github.com/tinygs/tinyGS), [Satellite map](https://satellitemap.space), [ISS Tracker](https://isstracker.pl/en) |
 | Mesh | [MeshMonitor](https://github.com/Yeraze/meshmonitor), [MeshMap (Meshtastic)](https://github.com/brianshea2/meshmap.net), [MeshCore Map](https://github.com/meshcore-dev/map.meshcore.io), [your Meshtastic node](https://github.com/meshtastic/firmware) |
 | SDR & scanners | [WebSDR](http://websdr.org), [KiwiSDR map](http://rx.linkfanel.net), [Broadcastify](https://www.broadcastify.com) |
@@ -159,6 +160,12 @@ The home row holds your favourites, with **All applications** at the end. Press 
 | Marine | [MarineTraffic](https://www.marinetraffic.com), [VesselFinder](https://www.vesselfinder.com), [MyShipTracking](https://www.myshiptracking.com), [your AIS-catcher](https://github.com/jvde-github/AIS-catcher) |
 | Weather | [Windy](https://www.windy.com), [Lightning map](https://www.blitzortung.org) |
 | Other | any web page |
+
+### Pages inside an application
+
+Some applications have several pages. **GMRS Hub** opens on its home page; **Menu** on the remote (or the **Pages** button on a tablet) switches to the Live Node Map, Hub Status, Groups and Get On GMRS Hub, or reloads.
+
+You can add your own pages to any application, such as more hub URLs or a hub status page for your own nodes: press and hold it, **Edit**, then **Your pages for this application**. To have a page as its own icon instead, add the application again with that address.
 
 ### Public site or your own server
 
@@ -192,7 +199,7 @@ To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale]
 | Move, remove, edit | hold **OK** | press and hold |
 | Move a widget | arrows, then **OK** | on-screen arrows, then tap |
 | Back a page / home | **Back** | back |
-| Reload a page | **Menu** | |
+| Pages, reload | **Menu** | Pages button |
 
 An app that can't be reached is retried every 30 seconds, and the screen stays on while one is open.
 
