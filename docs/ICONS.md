@@ -45,7 +45,7 @@ People choose **Settings → Appearance → Application icons**: **Colour**, **D
 | [`icons/dark/`](../icons/dark) | For dark screens: a dark tile (black or near-black) with a light logo. |
 | [`icons/light/`](../icons/light) | For light screens: a light tile (white or near-white) with a dark logo. |
 
-Dark and light icons can be greys only or keep one accent colour; they should feel like one set. An application without a dark or light icon shows its colour one, so a colour-only contribution is welcome too. (The dark and light files here now are greyscale placeholders.)
+Dark and light icons can be greys only or keep one accent colour; they should feel like one set. An application without a dark or light icon shows its colour one, so a colour-only contribution is welcome too.
 
 ---
 

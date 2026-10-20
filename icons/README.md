@@ -15,10 +15,10 @@ ShackScreen's icons. The app loads the application icons straight from this fold
 - **Size:** 512 × 512 px PNG (the app draws them at 192 px; 512 keeps them sharp on 4K screens).
 - **Shape:** cropped exactly as the app shows them: a 512 × 512 square with **rounded corners of 136 px radius** (the app's 18 dp corner on a 68 dp tile), transparent outside the corners. Fill everything inside, edge to edge; no extra border or drop shadow. Edit the files here and keep that shape: the app shows them as they are.
 - **Name:** the application's id from [`catalog.json`](../app/src/main/assets/catalog.json), such as `gmrshub.png`.
-- **Dark and light:** if an app has no `dark/` or `light/` icon, its colour one is shown. The ones here now are greyscale placeholders.
+- **Dark and light:** if an app has no `dark/` or `light/` icon, its colour one is shown.
 - **Smallest accepted:** 96 × 96 px. Anything smaller is ignored.
 
-The icons here now are what ShackScreen showed before the set existed: each site's own icon, or a category symbol where the site has none. Replace them freely.
+The set was drawn for ShackScreen by its author, in colour, dark and light. Better versions are welcome.
 
 | File | Application | Category |
 |---|---|---|
