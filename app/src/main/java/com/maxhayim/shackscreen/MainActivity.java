@@ -46,6 +46,7 @@ public class MainActivity extends BaseActivity {
     private final SimpleDateFormat day = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
 
     private TextView clockLocal, clockUtc, date, updateText;
+    private LinearLayout callSigns;
     private View updateBadge;
     private HorizontalScrollView widgetScroll;
     private ViewGroup widgetRow, apps;
@@ -118,6 +119,8 @@ public class MainActivity extends BaseActivity {
         widgetRow = findViewById(R.id.widgets);
         updateBadge = findViewById(R.id.update);
         updateText = findViewById(R.id.update_text);
+        callSigns = findViewById(R.id.callsigns);
+        callSigns.setOnClickListener(v -> CallSigns.edit(this, () -> CallSigns.show(this, callSigns)));
         View settings = findViewById(R.id.settings);
         settings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
         updateBadge.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
@@ -142,6 +145,7 @@ public class MainActivity extends BaseActivity {
         ui.post(tickWidgets);
         ui.postDelayed(tickRotate, ROTATE_MS);
         showUpdateBadge();
+        CallSigns.show(this, callSigns);
         if (Updater.due(this)) {
             // Its own thread: a download can take minutes and must not hold up the widgets.
             new Thread(() -> {

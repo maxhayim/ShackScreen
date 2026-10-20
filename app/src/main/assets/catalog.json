@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 5,
+  "revision": 6,
   "categories": [
     "Ham radio",
     "GMRS",
@@ -91,6 +91,36 @@
         {
           "name": "Get On GMRS Hub",
           "url": "https://gmrshub.com/access/get_on_gmrshub.php"
+        }
+      ]
+    },
+    {
+      "id": "mygmrs",
+      "name": "myGMRS",
+      "category": "GMRS",
+      "url": "https://mygmrs.com/",
+      "home": true,
+      "seed": 4,
+      "pages": [
+        {
+          "name": "Home",
+          "url": "https://mygmrs.com/"
+        },
+        {
+          "name": "Repeater Map",
+          "url": "https://mygmrs.com/map"
+        },
+        {
+          "name": "Repeaters",
+          "url": "https://mygmrs.com/repeaters"
+        },
+        {
+          "name": "Network",
+          "url": "https://mygmrs.com/network"
+        },
+        {
+          "name": "My Favorites",
+          "url": "https://mygmrs.com/profile/favorites"
         }
       ]
     },

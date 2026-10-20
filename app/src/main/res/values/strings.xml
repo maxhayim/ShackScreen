@@ -3,8 +3,8 @@
     <string name="app_name">ShackScreen</string>
     <string name="settings">Settings</string>
     <string name="apps">Apps</string>
-    <string name="space">Space weather</string>
-    <string name="pota">POTA spots</string>
+    <string name="space">Space Weather</string>
+    <string name="pota">POTA Spots</string>
     <string name="mesh">Mesh</string>
     <string name="loading">Loading…</string>
     <string name="no_source">Add OpenHamClock or ShackBoard in Settings</string>
@@ -45,19 +45,19 @@
     <string name="no_messages">No messages yet</string>
     <string name="day">Day</string>
     <string name="night">Night</string>
-    <string name="w_space">Space weather</string>
-    <string name="w_pota">POTA spots</string>
-    <string name="w_dx">DX cluster</string>
+    <string name="w_space">Space Weather</string>
+    <string name="w_pota">POTA Spots</string>
+    <string name="w_dx">DX Cluster</string>
     <string name="w_contests">Contests</string>
     <string name="w_dxpeditions">DXpeditions</string>
-    <string name="w_mesh_sources">Mesh sources</string>
-    <string name="w_mesh_nodes">Mesh nodes</string>
-    <string name="w_mesh_messages">Mesh messages</string>
-    <string name="w_aircraft">Aircraft nearby</string>
-    <string name="w_ships">Ships nearby</string>
+    <string name="w_mesh_sources">Mesh Sources</string>
+    <string name="w_mesh_nodes">Mesh Nodes</string>
+    <string name="w_mesh_messages">Mesh Messages</string>
+    <string name="w_aircraft">Aircraft Nearby</string>
+    <string name="w_ships">Ships Nearby</string>
     <string name="w_weather">Weather</string>
-    <string name="w_satellites">Satellite passes</string>
-    <string name="w_satnogs">Heard by SatNOGS</string>
+    <string name="w_satellites">Satellite Passes</string>
+    <string name="w_satnogs">Heard By SatNOGS</string>
     <string name="widgets">Widgets</string>
     <string name="widgets_hint">Move a widget on the dashboard: select it and press OK (or long-press it), move it with the arrows, then press OK again.</string>
     <string name="rotate_on">Rotate widgets when idle: On</string>
@@ -139,4 +139,11 @@
         <item quantity="one">%1$d application</item>
         <item quantity="other">%1$d applications</item>
     </plurals>
+    <string name="callsigns">Call signs</string>
+    <string name="callsigns_add">Add your call signs</string>
+    <string name="callsigns_value">Call signs: %1$s…</string>
+    <string name="callsign_ham">Ham call sign (e.g. K1ABC)</string>
+    <string name="callsign_gmrs">GMRS call sign (e.g. WRXX123)</string>
+    <string name="cb_handle">CB handle</string>
+    <string name="not_set">not set</string>
 </resources>

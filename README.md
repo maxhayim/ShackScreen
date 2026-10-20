@@ -91,7 +91,13 @@ Needed for aircraft nearby, satellite passes and weather.
 
 ---
 
-### 5) Add your own servers (optional)
+### 5) Add your call signs (optional)
+
+Select the box next to the clock (or **Settings → Call signs**) and add your **ham call sign**, **GMRS call sign** and **CB handle**. They show next to the clock, and stay on the device.
+
+---
+
+### 6) Add your own servers (optional)
 
 **All applications → Add app**: pick an app, then **My own server** and type its IP. The default port is added for you.
 
@@ -152,7 +158,7 @@ The home row holds your favourites, with **All applications** at the end. Press 
 | Category | Applications |
 |---|---|
 | Ham radio | [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [APRS.fi](https://aprs.fi), [PSKReporter](https://pskreporter.info), [RepeaterBook](https://www.repeaterbook.com) |
-| GMRS | [GMRS Hub](https://gmrshub.com) |
+| GMRS | [GMRS Hub](https://gmrshub.com), [myGMRS](https://mygmrs.com) |
 | Satellites | [N2YO](https://www.n2yo.com), [Heavens-Above](https://www.heavens-above.com), [AMSAT status](https://www.amsat.org/status/), [SatNOGS](https://github.com/satnogs), [TinyGS](https://github.com/tinygs/tinyGS), [Satellite map](https://satellitemap.space), [ISS Tracker](https://isstracker.pl/en) |
 | Mesh | [MeshMonitor](https://github.com/Yeraze/meshmonitor), [MeshMap (Meshtastic)](https://github.com/brianshea2/meshmap.net), [MeshCore Map](https://github.com/meshcore-dev/map.meshcore.io), [your Meshtastic node](https://github.com/meshtastic/firmware) |
 | SDR & scanners | [WebSDR](http://websdr.org), [KiwiSDR map](http://rx.linkfanel.net), [Broadcastify](https://www.broadcastify.com) |

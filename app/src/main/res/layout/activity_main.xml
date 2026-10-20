@@ -92,6 +92,22 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
+        <!-- Call signs and CB handle, filled in code (CallSigns.java); OK edits them. -->
+        <LinearLayout
+            android:id="@+id/callsigns"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:background="@drawable/tile_bg"
+            android:clickable="true"
+            android:focusable="true"
+            android:minWidth="150dp"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="22dp"
+            android:paddingBottom="10dp" />
+
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"

@@ -397,7 +397,7 @@ final class Feeds {
     static Mesh meshMessages(Store.Instance in) throws IOException {
         Mesh m = new Mesh();
         if (in.token == null || in.token.isEmpty()) {
-            if (!Net.up(Store.join(in.url, "/api/health"))) throw new IOException("MeshMonitor is offline");
+            if (!healthy(in)) throw new IOException("MeshMonitor is offline");
             m.needsToken = true;
             return m;
         }
@@ -428,9 +428,15 @@ final class Feeds {
         return m;
     }
 
+    /** One missed answer (a dropped packet, a busy server) isn't enough to call it offline. */
+    private static boolean healthy(Store.Instance in) {
+        String url = Store.join(in.url, "/api/health");
+        return Net.up(url) || Net.up(url);
+    }
+
     private static boolean noToken(Store.Instance in, Rows r) throws IOException {
         if (in.token != null && !in.token.isEmpty()) return false;
-        if (!Net.up(Store.join(in.url, "/api/health"))) throw new IOException("MeshMonitor is offline");
+        if (!healthy(in)) throw new IOException("MeshMonitor is offline");
         r.header = "Online";
         r.empty = "Add an API token in Settings to see this";
         return true;

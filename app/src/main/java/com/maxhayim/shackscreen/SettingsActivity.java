@@ -82,6 +82,11 @@ public class SettingsActivity extends BaseActivity {
         });
         root.addView(rotate);
 
+        root.addView(section(getString(R.string.callsigns)));
+        Button calls = button(CallSigns.summary(this));
+        calls.setOnClickListener(v -> CallSigns.edit(this, () -> calls.setText(CallSigns.summary(this))));
+        root.addView(calls);
+
         root.addView(section(getString(R.string.location)));
         Button location = button(locationLabel());
         location.setOnClickListener(v -> editLocation(location));
@@ -323,7 +328,7 @@ public class SettingsActivity extends BaseActivity {
 
         AlertDialog.Builder b = new AlertDialog.Builder(this, R.style.Dialog)
                 .setTitle(type.name)
-                .setView(form)
+                .setView(scrolling(form))
                 .setPositiveButton(R.string.save, (d, w) -> {
                     in.name = name.getText().toString().trim();
                     if (in.name.isEmpty()) in.name = type.name;
@@ -589,6 +594,13 @@ public class SettingsActivity extends BaseActivity {
             });
         }
         quiet(b.show());
+    }
+
+    /** A long form scrolls instead of squashing its last rows on a TV screen. */
+    private ScrollView scrolling(View form) {
+        ScrollView sv = new ScrollView(this);
+        sv.addView(form);
+        return sv;
     }
 
     /** On a TV the keyboard covers the form; it opens when a text field is selected instead. */
