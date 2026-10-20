@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 7,
+  "revision": 8,
   "categories": [
     "Ham radio",
     "GMRS",
@@ -62,6 +62,32 @@
       "name": "RepeaterBook",
       "category": "Ham radio",
       "url": "https://www.repeaterbook.com/"
+    },
+    {
+      "id": "pota",
+      "name": "POTA",
+      "category": "Ham radio",
+      "url": "https://pota.app/",
+      "seed": 6,
+      "home": true,
+      "pages": [
+        {
+          "name": "Map",
+          "url": "https://pota.app/#/map"
+        },
+        {
+          "name": "Parks",
+          "url": "https://pota.app/#/parklist"
+        },
+        {
+          "name": "Activations",
+          "url": "https://pota.app/#/activations"
+        },
+        {
+          "name": "Stats",
+          "url": "https://pota.app/#/stats"
+        }
+      ]
     },
     {
       "id": "gmrshub",
