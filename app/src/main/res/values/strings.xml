@@ -245,5 +245,5 @@
     <string name="dropbox_steps">On your phone, scan this and allow ShackScreen. Dropbox then shows a code: type it below.</string>
     <string name="dropbox_code">Code from Dropbox</string>
     <string name="sign_in_cancelled">Sign-in was cancelled or ran out of time.</string>
-    <string name="trademarks">Application names and logos are trademarks of their respective owners, shown only to identify each service. ShackScreen is free and independent, and isn\'t affiliated with or endorsed by any of them. Details: github.com/maxhayim/ShackScreen/blob/main/TRADEMARKS.md</string>
+    <string name="trademarks">Application names and logos are trademarks of their respective owners, shown only to identify each service. Some logos have been resized, recoloured or simplified to fit the app. ShackScreen is free and independent, and isn\'t affiliated with or endorsed by any of them. Details: github.com/maxhayim/ShackScreen/blob/main/TRADEMARKS.md</string>
 </resources>

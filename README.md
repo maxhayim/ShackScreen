@@ -326,7 +326,7 @@ This project is licensed under the MIT License.
 See the LICENSE file for details.  
 Full license text: https://opensource.org/licenses/MIT
 
-Application names and the logos in the application icons are trademarks of their respective owners, used only to identify each service; ShackScreen is not affiliated with or endorsed by them, and the MIT License doesn't cover them. See [TRADEMARKS.md](TRADEMARKS.md).
+Application names and the logos in the application icons are trademarks of their respective owners, used only to identify each service (some resized, recoloured or simplified to fit the app); ShackScreen is not affiliated with or endorsed by them, and the MIT License doesn't cover them. See [TRADEMARKS.md](TRADEMARKS.md).
 
 Includes the [Outfit](https://github.com/Outfitio/Outfit-Fonts) font (SIL Open Font License, included in the LICENSE file) and Project Nayuki's [QR Code generator](https://github.com/nayuki/QR-Code-generator) (MIT).
 

@@ -6,7 +6,16 @@ ShackScreen is an independent, free project. It is **not affiliated with, endors
 
 The application names, and the logos and marks shown in ShackScreen's application icons, belong to their respective owners. They are used **only to identify each service**, so you can recognise it and open it, the same way a browser bookmark or a phone's home screen shows a site's icon. No ownership is claimed and no endorsement is implied.
 
-The icons in [`icons/color`](icons/color), [`icons/dark`](icons/dark) and [`icons/light`](icons/light) were redrawn for ShackScreen's tile shape and its colour, dark and light styles. Where an icon shows a service's logo or name, that logo or name remains the property of the service's owner, and **the MIT License of this repository does not cover it**. You may not use those marks to suggest that a service endorses your project.
+The icons in [`icons/color`](icons/color), [`icons/dark`](icons/dark) and [`icons/light`](icons/light) were redrawn for ShackScreen's tile shape and its colour, dark and light styles.
+
+**Some logos have been modified to fit the app.** Changes can include:
+
+- **Size and position:** scaled and centred to fit a 512 × 512 tile with rounded corners
+- **Shape:** placed on a square tile, cropped to rounded corners, or given a background where the original had none
+- **Colour:** recoloured to black, white or grey for the Dark and Light styles, or with a background colour changed to suit the tile
+- **Detail:** simplified or redrawn so they stay clear at small sizes on a TV
+
+These changes are made only so the icons look consistent and readable in ShackScreen. They are not the owners' official versions of their logos, and they don't suggest the owners approve of them. For a service's official logo, see its own site. Where an icon shows a service's logo or name, that logo or name remains the property of the service's owner, and **the MIT License of this repository does not cover it**. You may not use those marks to suggest that a service endorses your project.
 
 | Icon | Name and mark of | Owner's site |
 |---|---|---|
