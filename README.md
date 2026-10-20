@@ -22,7 +22,7 @@ Live **widgets** across the top: space weather, POTA and DX spots, satellite pas
 
 <p align="center">
   <img src="docs/assets/home.png" alt="ShackScreen home screen" width="49%"/>
-  <img src="docs/assets/all-apps.png" alt="All apps" width="49%"/>
+  <img src="docs/assets/all-apps.png" alt="All applications" width="49%"/>
 </p>
 
 ---
@@ -62,7 +62,7 @@ Needed for aircraft nearby, satellite passes and weather.
 
 ### 5) Add your own servers (optional)
 
-**All apps → Add app**: pick an app, then **My own server** and type its IP. The default port is added for you.
+**All applications → Add app**: pick an app, then **My own server** and type its IP. The default port is added for you.
 
 ---
 
@@ -110,15 +110,15 @@ In MeshMonitor's settings, create an API token and paste it into the MeshMonitor
 |---|---|
 | Weather | [Open-Meteo](https://open-meteo.com) |
 
-Each widget uses the first of your apps that can supply it, and moves on to the next if a server is down.
+Each widget uses the first of your applications that can supply it, and moves on to the next if a server is down.
 
 ---
 
-## Apps
+## Applications
 
-The home row holds your favourites, with **All apps** at the end. Press and hold an app (long-press OK on a remote) to move it, add it to the home row or take it off, edit it or delete it.
+The home row holds your favourites, with **All applications** at the end. Press and hold an app (long-press OK on a remote) to move it, add it to the home row or take it off, edit it or delete it.
 
-| Category | Apps |
+| Category | Applications |
 |---|---|
 | Ham radio | OpenHamClock, ShackBoard, APRS.fi, PSKReporter, RepeaterBook |
 | Satellites | N2YO, Heavens-Above, AMSAT status, SatNOGS, TinyGS, Satellite map, ISS Tracker |
@@ -131,7 +131,7 @@ The home row holds your favourites, with **All apps** at the end. Press and hold
 
 ### Public site or your own server
 
-- Apps you can also run yourself (**OpenHamClock, WebSDR, KiwiSDR**) ask **Public site or My own server** when you add them.
+- Applications you can also run yourself (**OpenHamClock, WebSDR, KiwiSDR**) ask **Public site or My own server** when you add them.
 - **MeshMonitor, tar1090, AIS-catcher** and a **Meshtastic node** are always your own server.
 - Type just the IP and the default port is added. You can add the same app more than once (say, the public OpenHamClock and the one on your shack Pi).
 - Addresses and tokens are stored **only on the device**.
@@ -142,7 +142,7 @@ To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale]
 
 ### Missing an app?
 
-**All apps → Request an app…** opens an [app request](../../issues/new?template=app_request.yml) here. On a TV, scan the QR code with your phone. The app list lives in [`catalog.json`](app/src/main/assets/catalog.json) and refreshes from this repo, so new apps arrive without a new APK.
+**All applications → Request an app…** opens an [app request](../../issues/new?template=app_request.yml) here. On a TV, scan the QR code with your phone. The app list lives in [`catalog.json`](app/src/main/assets/catalog.json) and refreshes from this repo, so new applications arrive without a new APK.
 
 ---
 
