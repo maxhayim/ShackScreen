@@ -20,13 +20,6 @@
 
 Live **widgets** across the top: space weather, POTA and DX spots, satellite passes, mesh messages, aircraft and ships nearby, and the weather. Your radio web applications along the bottom: [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [MeshMonitor](https://github.com/Yeraze/meshmonitor), [WebSDR](http://websdr.org), [Broadcastify](https://www.broadcastify.com), [Flightradar24](https://www.flightradar24.com) and more, full-screen with the remote.
 
-<p align="center">
-  <img src="docs/screenshots/home.png" alt="ShackScreen home screen" width="49%"/>
-  <img src="docs/screenshots/all-applications.png" alt="All applications" width="49%"/>
-</p>
-
-More in [Screenshots](#screenshots).
-
 ---
 
 ## Quick Start (5-minute setup)
