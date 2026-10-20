@@ -6,7 +6,7 @@ ShackScreen shows every application as an icon on the home row and in All applic
 
 ## Quick Start
 
-1. Find the application's file in [`icons/color/`](../icons/color) (and [`icons/mono/`](../icons/mono) for black and white).
+1. Find the application's file in [`icons/color/`](../icons/color), [`icons/dark/`](../icons/dark) or [`icons/light/`](../icons/light).
 2. Design a replacement at **512 × 512 px**, shaped like the [template](../icons/template-512.png).
 3. Send it in, either way:
    - **Pull request:** replace the file under the same name and open a PR, or
@@ -31,20 +31,21 @@ The shape is exactly what ShackScreen draws: an 18 dp corner on a 68 dp tile. Th
 
 - [`icons/template-512.png`](../icons/template-512.png): the shape, centre lines and logo-area guide
 - [`icons/mask-512.png`](../icons/mask-512.png): the shape alone, white on transparent, to clip your artwork in any editor
-- The current icon in `icons/color/` or `icons/mono/` is already the right shape, so you can edit it directly
+- The current icons in `icons/color/`, `icons/dark/` and `icons/light/` are already the right shape, so you can edit them directly
 
 ---
 
-## Colour and Black and White
+## Colour, Dark and Light
 
-People choose **Settings → Appearance → Application icons: Colour** or **Black and white**.
+People choose **Settings → Appearance → Application icons**: **Colour**, **Dark**, **Light**, or **Match the theme** (Dark icons with the dark themes, Light icons with the Light theme).
 
-| Folder | Rules |
+| Folder | Style |
 |---|---|
 | [`icons/color/`](../icons/color) | Full colour. The brand's own colours are best. |
-| [`icons/mono/`](../icons/mono) | Greys only, from black to white. Should read clearly on a black screen. |
+| [`icons/dark/`](../icons/dark) | For dark screens: a dark tile (black or near-black) with a light logo. |
+| [`icons/light/`](../icons/light) | For light screens: a light tile (white or near-white) with a dark logo. |
 
-An application without a `mono/` icon shows its colour one in grey, so a colour-only contribution is welcome too.
+Dark and light icons can be greys only or keep one accent colour; they should feel like one set. An application without a dark or light icon shows its colour one, so a colour-only contribution is welcome too. (The dark and light files here now are greyscale placeholders.)
 
 ---
 
@@ -70,9 +71,9 @@ In [`icons/app/`](../icons/app):
 
 | File | Size | Used for |
 |---|---|---|
-| `shackscreen-color.png`, `shackscreen-mono.png` | 512 × 512 px | App icon, GitHub logo |
+| `shackscreen-color.png`, `shackscreen-dark.png`, `shackscreen-light.png` | 512 × 512 px | App icon, GitHub logo |
 | `shackscreen-tower.png` | 512 × 512 px, transparent, no background | Logo next to SHACKSCREEN on the dashboard |
-| `tv-banner-color.png`, `tv-banner-mono.png` | 640 × 360 px (1280 × 720 master welcome) | Banner in the Android TV / Google TV / Fire TV app row |
+| `tv-banner-color.png`, `tv-banner-dark.png`, `tv-banner-light.png` | 640 × 360 px (1280 × 720 master welcome) | Banner in the Android TV / Google TV / Fire TV app row |
 
 These are built into the app, so a change ships with the next release.
 
@@ -89,7 +90,7 @@ These are built into the app, so a change ships with the next release.
 - [ ] 512 × 512 PNG, transparent outside the 136 px rounded corners
 - [ ] File named after the catalog `id`
 - [ ] Logo inside the middle 70%
-- [ ] Black and white version uses greys only
+- [ ] Dark version: dark tile, light logo. Light version: light tile, dark logo
 - [ ] You made it, or the logo's owner allows its use (official brand logos used to identify the service are fine). Say where it came from in the PR or issue.
 
 Thank you, and 73!

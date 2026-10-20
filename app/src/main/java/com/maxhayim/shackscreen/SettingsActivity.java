@@ -408,10 +408,20 @@ public class SettingsActivity extends BaseActivity {
         View r = row(R.drawable.ic_theme, getString(R.string.pick_theme), Appearance.label(this, Appearance.mode(this)));
         r.setOnClickListener(v -> pickTheme());
         pane.addView(r);
-        View icons = row(R.drawable.ic_grid, getString(R.string.icon_style), getString(Appearance.mono(this) ? R.string.icons_mono : R.string.icons_color));
+        View icons = row(R.drawable.ic_grid, getString(R.string.icon_style), iconStyleLabel(Appearance.iconSetting(this)));
         icons.setOnClickListener(v -> {
-            Appearance.setMono(this, !Appearance.mono(this));
-            setValue(icons, getString(Appearance.mono(this) ? R.string.icons_mono : R.string.icons_color));
+            String[] ids = Appearance.ICON_STYLES;
+            String[] names = new String[ids.length];
+            for (int i = 0; i < ids.length; i++) names[i] = iconStyleLabel(ids[i]);
+            int current = java.util.Arrays.asList(ids).indexOf(Appearance.iconSetting(this));
+            new AlertDialog.Builder(this, R.style.Dialog)
+                    .setTitle(R.string.icon_style)
+                    .setSingleChoiceItems(names, current, (d, which) -> {
+                        d.dismiss();
+                        Appearance.setIconSetting(this, ids[which]);
+                        setValue(icons, iconStyleLabel(ids[which]));
+                    })
+                    .show();
         });
         pane.addView(icons);
     }
@@ -435,6 +445,15 @@ public class SettingsActivity extends BaseActivity {
             View settings = row(R.drawable.ic_settings, getString(R.string.android_settings), "");
             settings.setOnClickListener(v -> Launcher.openSettings(this));
             pane.addView(settings);
+        }
+    }
+
+    private String iconStyleLabel(String id) {
+        switch (id) {
+            case Appearance.ICONS_DARK: return getString(R.string.icons_dark);
+            case Appearance.ICONS_LIGHT: return getString(R.string.icons_light);
+            case Appearance.ICONS_AUTO: return getString(R.string.icons_auto);
+            default: return getString(R.string.icons_color);
         }
     }
 

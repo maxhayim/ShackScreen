@@ -9,12 +9,13 @@ ShackScreen's icons. The app loads the application icons straight from this fold
 | Folder | Used when |
 |---|---|
 | [`color/`](color) | Settings → Appearance → Application icons: **Colour** (default) |
-| [`mono/`](mono) | Settings → Appearance → Application icons: **Black and white** |
+| [`dark/`](dark) | **Dark**, or **Match the theme** with a dark theme: dark tile, light logo |
+| [`light/`](light) | **Light**, or **Match the theme** with the Light theme: light tile, dark logo |
 
 - **Size:** 512 × 512 px PNG (the app draws them at 192 px; 512 keeps them sharp on 4K screens).
 - **Shape:** cropped exactly as the app shows them: a 512 × 512 square with **rounded corners of 136 px radius** (the app's 18 dp corner on a 68 dp tile), transparent outside the corners. Fill everything inside, edge to edge; no extra border or drop shadow. Edit the files here and keep that shape: the app shows them as they are.
 - **Name:** the application's id from [`catalog.json`](../app/src/main/assets/catalog.json), such as `gmrshub.png`.
-- **Black and white:** greys only. If an app has no `mono/` icon, its colour one is shown in grey.
+- **Dark and light:** if an app has no `dark/` or `light/` icon, its colour one is shown. The ones here now are greyscale placeholders.
 - **Smallest accepted:** 96 × 96 px. Anything smaller is ignored.
 
 The icons here now are what ShackScreen showed before the set existed: each site's own icon, or a category symbol where the site has none. Replace them freely.
@@ -64,9 +65,9 @@ In [`app/`](app):
 
 | File | Size | Used for |
 |---|---|---|
-| `shackscreen-color.png` / `-mono.png` | 512 × 512 px | App icon and the README |
+| `shackscreen-color.png` / `-dark.png` / `-light.png` | 512 × 512 px | App icon and the README |
 | `shackscreen-tower.png` | 512 × 512 px, transparent | The tower alone, next to SHACKSCREEN on the dashboard and in All applications |
-| `tv-banner-color.png` / `-mono.png` | 640 × 360 px (1280 × 720 for a sharper master) | The banner in the Android TV / Google TV / Fire TV app row |
+| `tv-banner-color.png` / `-dark.png` / `-light.png` | 640 × 360 px (1280 × 720 for a sharper master) | The banner in the Android TV / Google TV / Fire TV app row |
 
 The app icon can have rounded corners (it's shown as is). These are copied into the app when it's built, so a new one needs a new release.
 

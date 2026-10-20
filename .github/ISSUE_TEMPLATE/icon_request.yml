@@ -19,7 +19,7 @@ body:
     id: icon
     attributes:
       label: Icon
-      description: Attach the PNG (512 × 512, rounded corners, see docs/ICONS.md) or link to it. Colour, black and white, or both. Say where the logo came from.
+      description: Attach the PNG (512 × 512, rounded corners, see docs/ICONS.md) or link to it. Colour, dark, light, or any of them. Say where the logo came from.
     validations:
       required: true
   - type: textarea

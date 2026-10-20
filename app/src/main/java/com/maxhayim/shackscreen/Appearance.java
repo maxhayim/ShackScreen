@@ -53,13 +53,25 @@ final class Appearance {
         c.getSharedPreferences("appearance", Context.MODE_PRIVATE).edit().putString("theme", mode).apply();
     }
 
-    /** Application icons in black and white instead of colour. */
-    static boolean mono(Context c) {
-        return c.getSharedPreferences("appearance", Context.MODE_PRIVATE).getBoolean("mono_icons", false);
+    /** Application icon styles; "auto" picks dark or light to match the theme. */
+    static final String ICONS_COLOR = "color", ICONS_DARK = "dark", ICONS_LIGHT = "light", ICONS_AUTO = "auto";
+    static final String[] ICON_STYLES = {ICONS_COLOR, ICONS_DARK, ICONS_LIGHT, ICONS_AUTO};
+
+    /** The chosen setting, as stored. 0.9's black and white became Dark. */
+    static String iconSetting(Context c) {
+        android.content.SharedPreferences p = c.getSharedPreferences("appearance", Context.MODE_PRIVATE);
+        return p.getString("icons", p.getBoolean("mono_icons", false) ? ICONS_DARK : ICONS_COLOR);
     }
 
-    static void setMono(Context c, boolean on) {
-        c.getSharedPreferences("appearance", Context.MODE_PRIVATE).edit().putBoolean("mono_icons", on).apply();
+    static void setIconSetting(Context c, String style) {
+        c.getSharedPreferences("appearance", Context.MODE_PRIVATE).edit().putString("icons", style).remove("mono_icons").apply();
+    }
+
+    /** The icon style to show now: color, dark or light. */
+    static String iconStyle(Context c) {
+        String s = iconSetting(c);
+        if (!ICONS_AUTO.equals(s)) return s;
+        return theme(c).light ? ICONS_LIGHT : ICONS_DARK;
     }
 
     static String label(Context c, String mode) {
