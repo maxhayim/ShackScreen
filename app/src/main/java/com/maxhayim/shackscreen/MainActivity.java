@@ -66,6 +66,7 @@ public class MainActivity extends BaseActivity {
         ViewGroup body;
         TextView source;
         String sourceText = "";
+        Store.Instance from; // the app whose data it shows, opened when the widget is selected
     }
 
     private final Runnable tickClock = new Runnable() {
@@ -278,13 +279,14 @@ public class MainActivity extends BaseActivity {
         c.root = root;
         Appearance.font(root);
 
-        // OK on the remote, or a tap, picks the widget up and puts it down again.
+        // OK or a tap opens the app behind the widget; holding it offers Move and Remove.
+        // While moving, OK or a tap puts it down.
         root.setOnClickListener(v -> {
             if (d.id.equals(moving)) stopMove();
-            else startMove(d.id);
+            else if (moving == null && c.from != null) open(c.from);
         });
         root.setOnLongClickListener(v -> {
-            if (moving == null) startMove(d.id);
+            if (moving == null) widgetMenu(d);
             return true;
         });
         root.setOnKeyListener((v, code, e) -> {
@@ -299,6 +301,23 @@ public class MainActivity extends BaseActivity {
             }
         });
         return c;
+    }
+
+    private void widgetMenu(Widgets.Def d) {
+        String[] items = {getString(R.string.move), getString(R.string.remove_home)};
+        new android.app.AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(d.title)
+                .setItems(items, (dlg, which) -> {
+                    if (which == 0) {
+                        startMove(d.id);
+                    } else {
+                        shown.remove(d.id);
+                        Widgets.setShown(this, shown);
+                        buildWidgets();
+                        for (String id : shown) fetch(Widgets.get(id));
+                    }
+                })
+                .show();
     }
 
     /** The on-screen arrows shown while a widget is being moved, for touch screens. */
@@ -366,6 +385,7 @@ public class MainActivity extends BaseActivity {
         bg.execute(() -> {
             Object data = null;
             String from = "", why = null;
+            Store.Instance source = null;
             if (d.feed.equals("location")) {
                 try {
                     data = Feeds.weather(here);
@@ -384,6 +404,7 @@ public class MainActivity extends BaseActivity {
                     try {
                         data = read(d, t, in, here);
                         from = in.name;
+                        source = in;
                         break;
                     } catch (Feeds.NeedsLocation e) {
                         needsLocation = true;
@@ -399,6 +420,7 @@ public class MainActivity extends BaseActivity {
             }
             Object result = data;
             String via = from, reason = why;
+            Store.Instance supplier = source;
             ui.post(() -> {
                 Card c = cards.get(d.id);
                 if (isDestroyed() || c == null) return;
@@ -407,6 +429,7 @@ public class MainActivity extends BaseActivity {
                 c.body.removeAllViews();
                 c.body.addView(v);
                 c.sourceText = via;
+                c.from = supplier;
                 if (!d.id.equals(moving)) c.source.setText(via);
             });
         });
@@ -437,72 +460,54 @@ public class MainActivity extends BaseActivity {
         return panels.rows((Feeds.Rows) data);
     }
 
-    // --- Apps, grouped by category -------------------------------------------------------------
+    // --- Home row: the All apps button, then the user's favourite apps ----------------------
 
     private void buildAppRow() {
         View focused = getCurrentFocus();
         Object focusedId = focused == null ? null : focused.getTag();
         apps.removeAllViews();
         tiles.clear();
-        LayoutInflater inf = LayoutInflater.from(this);
+        View all = Icons.tile(this, apps, null, getString(R.string.all_apps), R.drawable.ic_grid);
+        all.setOnClickListener(v -> startActivity(new Intent(this, AppsActivity.class)));
+        apps.addView(all);
         View focusTarget = null;
-        for (String cat : Catalog.categories(this)) {
-            LinearLayout group = null;
-            for (Store.Instance in : instances) {
-                if (!Catalog.get(this, in.type).category.equals(cat)) continue;
-                if (group == null) group = group(cat);
-                ViewGroup row = (ViewGroup) group.getChildAt(1);
-                View tile = inf.inflate(R.layout.item_app, row, false);
-                tile.setTag(in.id);
-                ((TextView) tile.findViewById(R.id.name)).setText(in.name);
-                ((TextView) tile.findViewById(R.id.host)).setText(
-                        in.hasUrl() ? Uri.parse(in.url).getHost() : getString(R.string.needs_address));
-                Icons.show(this, in, tile.findViewById(R.id.icon));
-                tile.setOnClickListener(v -> open(in));
-                grow(tile, 1.07f);
-                Appearance.font(tile);
-                row.addView(tile);
-                tiles.add(tile);
-                if (in.id.equals(focusedId)) focusTarget = tile;
-            }
+        for (Store.Instance in : Store.home(instances)) {
+            View tile = Icons.tile(this, apps, in, in.name, 0);
+            tile.setOnClickListener(v -> open(in));
+            tile.setOnLongClickListener(v -> {
+                dockMenu(in);
+                return true;
+            });
+            apps.addView(tile);
+            tiles.add(tile);
+            if (in.id.equals(focusedId)) focusTarget = tile;
         }
-        LinearLayout last = group(" ");
-        ViewGroup lastRow = (ViewGroup) last.getChildAt(1);
-        View add = inf.inflate(R.layout.item_app, lastRow, false);
-        ((TextView) add.findViewById(R.id.name)).setText(R.string.add_app);
-        ImageView plus = add.findViewById(R.id.icon);
-        plus.setImageResource(R.drawable.ic_plus);
-        plus.setColorFilter(Icons.color(this, R.color.dim));
-        add.findViewById(R.id.dot).setVisibility(View.GONE);
-        add.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)
-                .putExtra(SettingsActivity.EXTRA_ADD, true)));
-        grow(add, 1.07f);
-        Appearance.font(add);
-        lastRow.addView(add);
-        if (focusTarget == null && !tiles.isEmpty()) focusTarget = tiles.get(0);
-        if (focusTarget != null && moving == null) focusTarget.requestFocus();
+        if (focusTarget == null) focusTarget = tiles.isEmpty() ? all : tiles.get(0);
+        if (moving == null) focusTarget.requestFocus();
     }
 
-    /** A category label with its tiles in a row underneath. */
-    private LinearLayout group(String name) {
-        LinearLayout g = new LinearLayout(this);
-        g.setOrientation(LinearLayout.VERTICAL);
-        g.setClipChildren(false);
-        TextView label = new TextView(this);
-        label.setText(name.toUpperCase(Locale.US));
-        label.setTextColor(Icons.color(this, R.color.dim));
-        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        label.setLetterSpacing(0.15f);
-        label.setPadding(dp(4), 0, 0, dp(6));
-        g.addView(label);
-        LinearLayout row = new LinearLayout(this);
-        row.setClipChildren(false);
-        g.addView(row);
-        Appearance.font(label);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.setMarginEnd(dp(14));
-        apps.addView(g, lp);
-        return g;
+    private void dockMenu(Store.Instance in) {
+        String[] items = {getString(R.string.move_left), getString(R.string.move_right),
+                getString(R.string.remove_home), getString(R.string.edit)};
+        new android.app.AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(in.name)
+                .setItems(items, (d, which) -> {
+                    switch (which) {
+                        case 0: Store.moveOnHome(this, instances, in, -1); break;
+                        case 1: Store.moveOnHome(this, instances, in, 1); break;
+                        case 2:
+                            in.home = false;
+                            Store.save(this, instances);
+                            break;
+                        default:
+                            startActivity(new Intent(this, SettingsActivity.class).putExtra(SettingsActivity.EXTRA_EDIT, in.id));
+                            return;
+                    }
+                    buildAppRow();
+                    for (View t : tiles) if (in.id.equals(t.getTag())) t.requestFocus();
+                    refreshHealth();
+                })
+                .show();
     }
 
     /** The focused tile or pill grows a little, so it's easy to spot from the couch. */

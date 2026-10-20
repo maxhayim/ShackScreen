@@ -4,11 +4,11 @@
     <color name="bg_bottom">#04060B</color>
     <color name="glow">#2EF5A524</color>
     <color name="glow2">#2238BDF8</color>
-    <color name="card">#B3141B2B</color>
+    <color name="card">#14FFFFFF</color>
     <color name="card_border">#1AFFFFFF</color>
-    <color name="tile">#171F30</color>
-    <color name="tile_focus">#222D45</color>
-    <color name="icon_bg">#0F1524</color>
+    <color name="tile">#1AFFFFFF</color>
+    <color name="tile_focus">#2EFFFFFF</color>
+    <color name="icon_bg">#1FFFFFFF</color>
     <color name="text">#EEF2F8</color>
     <color name="dim">#8C98AE</color>
     <color name="faint">#4A5468</color>
@@ -19,5 +19,5 @@
     <color name="poor">#F87171</color>
     <color name="up">#34D399</color>
     <color name="down">#F87171</color>
-    <color name="unknown">#4A5468</color>
+    <color name="unknown">#5A6475</color>
 </resources>

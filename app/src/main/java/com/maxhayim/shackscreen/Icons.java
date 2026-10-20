@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -78,16 +79,40 @@ final class Icons {
                 : t.id.equals("openhamclock") || t.id.equals("shackboard") ? R.drawable.ic_antenna
                 : R.drawable.ic_globe;
         v.setImageResource(res);
-        int pad = Math.round(13 * c.getResources().getDisplayMetrics().density);
+        int pad = Math.round(18 * c.getResources().getDisplayMetrics().density);
         v.setPadding(pad, pad, pad, pad);
+        v.setScaleType(ImageView.ScaleType.FIT_CENTER);
         v.setColorFilter(color(c, R.color.accent));
     }
 
+    /** A site's own icon fills the rounded square, like an app icon on a phone. */
     private static void photo(ImageView v, Bitmap b) {
         v.clearColorFilter();
-        int pad = Math.round(8 * v.getResources().getDisplayMetrics().density);
-        v.setPadding(pad, pad, pad, pad);
+        v.setPadding(0, 0, 0, 0);
+        v.setScaleType(ImageView.ScaleType.CENTER_CROP);
         v.setImageBitmap(b);
+    }
+
+    /**
+     * An app's home-row / All apps icon with its name underneath. With in == null it is a plain
+     * button (All apps, + Add app) drawn with symbolRes.
+     */
+    static View tile(android.app.Activity a, android.view.ViewGroup parent, Store.Instance in, String label, int symbolRes) {
+        View t = android.view.LayoutInflater.from(a).inflate(R.layout.item_app, parent, false);
+        ((android.widget.TextView) t.findViewById(R.id.name)).setText(label);
+        ImageView icon = t.findViewById(R.id.icon);
+        ((View) icon.getParent()).setClipToOutline(true); // round the corners of a square favicon
+        if (in != null) {
+            t.setTag(in.id);
+            show(a, in, icon);
+        } else {
+            icon.setImageResource(symbolRes);
+            icon.setColorFilter(color(a, R.color.accent));
+            t.findViewById(R.id.dot).setVisibility(View.GONE);
+        }
+        t.setOnFocusChangeListener((v, f) -> v.animate().scaleX(f ? 1.08f : 1f).scaleY(f ? 1.08f : 1f).setDuration(140));
+        Appearance.font(t);
+        return t;
     }
 
     /** Named after the instance and its address, so pointing it elsewhere fetches a fresh icon. */

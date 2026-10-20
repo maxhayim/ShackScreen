@@ -23,6 +23,12 @@ public abstract class BaseActivity extends Activity {
     }
 
     @Override
+    protected void onCreate(android.os.Bundle state) {
+        super.onCreate(state);
+        getWindow().setBackgroundDrawable(Appearance.background(this));
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         Updater.visible++;

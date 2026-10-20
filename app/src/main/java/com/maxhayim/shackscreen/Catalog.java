@@ -33,6 +33,7 @@ final class Catalog {
         final int port;          // default port for a self-hosted server, 0 if none
         final boolean token;     // the API needs a token (MeshMonitor)
         final boolean audio;     // plays sound, so autoplay is allowed in the viewer
+        final boolean home;      // starts on the home row when added as a default
         final int seed;          // added to everyone's apps in this round of defaults; 0 = never
         final Set<String> feeds; // dashboard panels this app can supply: space, pota, mesh
 
@@ -45,6 +46,7 @@ final class Catalog {
             port = o.optInt("port", 0);
             token = o.optBoolean("token");
             audio = o.optBoolean("audio");
+            home = o.optBoolean("home");
             // Older catalogs said "seed": true for the first round.
             Object sd = o.opt("seed");
             seed = sd instanceof Boolean ? ((Boolean) sd ? 1 : 0) : o.optInt("seed");

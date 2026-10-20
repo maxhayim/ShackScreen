@@ -79,4 +79,17 @@
     <string name="request_hint">Scan with your phone to suggest an app on GitHub, or open the form here.</string>
     <string name="open_here">Open here</string>
     <string name="close">Close</string>
+    <string name="all_apps">All apps</string>
+    <string name="add_home">Add to home</string>
+    <string name="remove_home">Remove from home</string>
+    <string name="move_left">Move left</string>
+    <string name="move_right">Move right</string>
+    <string name="move">Move</string>
+    <string name="edit">Edit…</string>
+    <string name="theme_value">Theme: %1$s</string>
+    <string name="pick_theme">Theme</string>
+    <string name="all_apps_hint">Press and hold an app (or long-press OK) to add it to the home row or take it off.</string>
+    <string name="use_public">Public site (%1$s)</string>
+    <string name="use_own">My own server</string>
+    <string name="port_hint">Type just the IP or name; port %1$d is added if you leave it out.</string>
 </resources>

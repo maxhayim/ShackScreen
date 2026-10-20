@@ -1,6 +1,7 @@
 package com.maxhayim.shackscreen;
 
 import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -79,10 +80,7 @@ public class SettingsActivity extends BaseActivity {
 
         root.addView(section(getString(R.string.appearance)));
         Button theme = button(themeLabel());
-        theme.setOnClickListener(v -> {
-            Appearance.setMode(this, Appearance.next(Appearance.mode(this)));
-            recreate();
-        });
+        theme.setOnClickListener(v -> pickTheme());
         root.addView(theme);
 
         TextView updates = section(getString(R.string.updates));
@@ -228,7 +226,7 @@ public class SettingsActivity extends BaseActivity {
         form.setPadding(dp(24), dp(8), dp(24), 0);
         EditText field = field(getString(R.string.location_hint), Widgets.location(this), InputType.TYPE_CLASS_TEXT);
         form.addView(field);
-        new AlertDialog.Builder(this, R.style.Dialog)
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
                 .setTitle(R.string.location)
                 .setView(form)
                 .setPositiveButton(R.string.save, (d, w) -> {
@@ -241,7 +239,7 @@ public class SettingsActivity extends BaseActivity {
                     label.setText(locationLabel());
                 })
                 .setNegativeButton(R.string.cancel, null)
-                .show();
+                .show());
     }
 
     private void edit(Store.Instance in, boolean isNew) {
@@ -254,10 +252,35 @@ public class SettingsActivity extends BaseActivity {
         EditText url = field(getString(R.string.address), in.url, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
         EditText token = field(getString(R.string.token), in.token, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         form.addView(name);
+        // Apps with a public site that people also run themselves: pick which one this is.
+        boolean both = !type.url.isEmpty() && type.port > 0;
+        if (both) {
+            android.widget.RadioGroup where = new android.widget.RadioGroup(this);
+            android.widget.RadioButton pub = new android.widget.RadioButton(this);
+            pub.setText(getString(R.string.use_public, Uri.parse(type.url).getHost()));
+            pub.setId(View.generateViewId());
+            android.widget.RadioButton own = new android.widget.RadioButton(this);
+            own.setText(R.string.use_own);
+            own.setId(View.generateViewId());
+            where.addView(pub);
+            where.addView(own);
+            boolean isPublic = in.url.isEmpty() || Uri.parse(in.url).getHost() != null
+                    && Uri.parse(in.url).getHost().equals(Uri.parse(type.url).getHost());
+            where.check(isPublic ? pub.getId() : own.getId());
+            url.setEnabled(!isPublic);
+            if (isPublic) url.setText(type.url);
+            where.setOnCheckedChangeListener((g, id) -> {
+                boolean p = id == pub.getId();
+                url.setEnabled(!p);
+                url.setText(p ? type.url : "");
+                if (!p) url.requestFocus();
+            });
+            form.addView(where);
+        }
         form.addView(url);
         if (type.token) form.addView(token);
         if (type.port > 0) {
-            form.addView(text(type.name + " default port: " + type.port + " (added if you leave it out)", 13, R.color.dim));
+            form.addView(text(getString(R.string.port_hint, type.port), 13, R.color.dim));
         }
         if (type.id.equals("custom")) {
             // A page someone adds by hand may be worth having in everyone's menu.
@@ -277,7 +300,10 @@ public class SettingsActivity extends BaseActivity {
                     if (in.name.isEmpty()) in.name = type.name;
                     in.url = Store.normalise(url.getText().toString(), type.port);
                     in.token = token.getText().toString().trim();
-                    if (isNew) instances.add(in);
+                    if (isNew) {
+                        in.home = true; // something you just added belongs where you'll see it
+                        instances.add(in);
+                    }
                     Store.save(this, instances);
                     rebuild();
                 })
@@ -289,15 +315,41 @@ public class SettingsActivity extends BaseActivity {
                 rebuild();
             });
         }
-        b.show();
+        quiet(b.show());
+    }
+
+    /** On a TV the keyboard covers the form; it opens when a text field is selected instead. */
+    private static void quiet(AlertDialog d) {
+        if (d.getWindow() != null) {
+            d.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        }
     }
 
     // --- Small view helpers -----------------------------------------------------------------
 
     private String themeLabel() {
-        String m = Appearance.mode(this);
-        return getString(Appearance.LIGHT.equals(m) ? R.string.theme_light
-                : Appearance.AUTO.equals(m) ? R.string.theme_auto : R.string.theme_dark);
+        return getString(R.string.theme_value, Appearance.label(this, Appearance.mode(this)));
+    }
+
+    private void pickTheme() {
+        int n = Appearance.THEMES.length;
+        String[] names = new String[n + 1];
+        String[] ids = new String[n + 1];
+        for (int i = 0; i < n; i++) {
+            names[i] = Appearance.THEMES[i].name;
+            ids[i] = Appearance.THEMES[i].id;
+        }
+        names[n] = Appearance.label(this, Appearance.AUTO);
+        ids[n] = Appearance.AUTO;
+        int current = java.util.Arrays.asList(ids).indexOf(Appearance.mode(this));
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.pick_theme)
+                .setSingleChoiceItems(names, current, (d, which) -> {
+                    d.dismiss();
+                    Appearance.setMode(this, ids[which]);
+                    recreate();
+                })
+                .show();
     }
 
     private TextView section(String s) {

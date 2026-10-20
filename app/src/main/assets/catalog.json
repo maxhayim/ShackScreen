@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 2,
+  "revision": 3,
   "categories": [
     "Ham radio",
     "Satellites",
@@ -28,7 +28,8 @@
         "dxpeditions",
         "satellites"
       ],
-      "seed": 1
+      "seed": 1,
+      "home": true
     },
     {
       "id": "shackboard",
@@ -40,7 +41,8 @@
         "space",
         "pota"
       ],
-      "seed": 1
+      "seed": 1,
+      "home": true
     },
     {
       "id": "aprsfi",
@@ -65,7 +67,8 @@
       "name": "N2YO",
       "category": "Satellites",
       "url": "https://www.n2yo.com",
-      "seed": 2
+      "seed": 2,
+      "home": true
     },
     {
       "id": "heavensabove",
@@ -120,10 +123,11 @@
     },
     {
       "id": "meshmap",
-      "name": "MeshMap (Meshtastic)",
+      "name": "MeshMap",
       "category": "Mesh",
       "url": "https://meshmap.net",
-      "seed": 2
+      "seed": 2,
+      "home": true
     },
     {
       "id": "meshcoremap",
@@ -145,7 +149,8 @@
       "url": "http://websdr.org/",
       "port": 8901,
       "audio": true,
-      "seed": 1
+      "seed": 1,
+      "home": true
     },
     {
       "id": "kiwisdr",
@@ -161,14 +166,16 @@
       "category": "SDR & scanners",
       "url": "https://www.broadcastify.com/listen/",
       "audio": true,
-      "seed": 1
+      "seed": 1,
+      "home": true
     },
     {
       "id": "flightradar24",
       "name": "Flightradar24",
       "category": "Aviation",
       "url": "https://www.flightradar24.com",
-      "seed": 2
+      "seed": 2,
+      "home": true
     },
     {
       "id": "flightaware",
@@ -215,7 +222,8 @@
       "name": "MarineTraffic",
       "category": "Marine",
       "url": "https://www.marinetraffic.com/en/ais/home",
-      "seed": 2
+      "seed": 2,
+      "home": true
     },
     {
       "id": "vesselfinder",

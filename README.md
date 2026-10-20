@@ -2,12 +2,13 @@
 
 Radio dashboards on your TV, for people who love frequencies. ShackScreen is a small Android TV / Google TV /
 Fire TV app (it runs on tablets too) for hams, mesh, satellite, aviation and marine radio fans: a live dashboard on top, and a row of radio web apps you open full-screen with the remote.
-Dark and light themes (or follow the TV), and each app tile shows the app's own icon, fetched from
-whichever server you point it at.
+A black background by default, or pick a colour (Midnight, Ocean, Forest, Plum, Ember, Slate) or Light.
+Apps sit on a home row as phone-style icons, each showing the app's own icon fetched from whichever
+server you point it at; **All apps** lists everything by category.
 
-| Dark | Light |
+| Home | All apps |
 |---|---|
-| ![Dark theme](docs/dashboard-dark.png) | ![Light theme](docs/dashboard-light.png) |
+| ![Home](docs/dashboard-dark.png) | ![All apps](docs/all-apps.png) |
 
 ## Widgets
 
@@ -38,7 +39,11 @@ next if a server is down.
 
 ## Apps
 
-Apps are grouped by category on the dashboard and in **+ Add app**:
+The home row holds your favourites; **All apps** has everything, by category. Press and hold an app (long-press
+OK on a remote) to add it to the home row or take it off, move it, edit it or delete it. Press and hold a
+widget to move it or remove it; selecting a widget opens the app its data comes from.
+
+Apps by category:
 
 | Category | Apps |
 |---|---|
@@ -51,7 +56,9 @@ Apps are grouped by category on the dashboard and in **+ Add app**:
 | Weather | Windy, Lightning map |
 | Other | any web page |
 
-Every app can use the public site **or your own server**, and you can add the same app more than once.
+Apps you can also run yourself (OpenHamClock, WebSDR, KiwiSDR) ask **Public site or My own server** when you
+add them; MeshMonitor, tar1090, AIS-catcher and a Meshtastic node are your own server. You can add the same
+app more than once.
 Type just the IP and the default port is added. Addresses and tokens are stored only on the device. The
 list of apps lives in [`app/src/main/assets/catalog.json`](app/src/main/assets/catalog.json) and refreshes
 from this repo, so new apps can appear without a new APK.
