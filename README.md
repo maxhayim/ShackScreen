@@ -245,7 +245,7 @@ This project is licensed under the MIT License.
 See the LICENSE file for details.  
 Full license text: https://opensource.org/licenses/MIT
 
-Includes the [Outfit](https://github.com/Outfitio/Outfit-Fonts) font (SIL Open Font License, see `FONT-LICENSE-OFL.txt`) and Project Nayuki's [QR Code generator](https://github.com/nayuki/QR-Code-generator) (MIT).
+Includes the [Outfit](https://github.com/Outfitio/Outfit-Fonts) font (SIL Open Font License, included in the LICENSE file) and Project Nayuki's [QR Code generator](https://github.com/nayuki/QR-Code-generator) (MIT).
 
 ---
 
