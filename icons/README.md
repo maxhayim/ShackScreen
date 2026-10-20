@@ -67,9 +67,20 @@ In [`app/`](app):
 |---|---|---|
 | `shackscreen-color.png` / `-dark.png` / `-light.png` | 512 × 512 px | App icon and the README |
 | `shackscreen-tower.png` | 512 × 512 px, transparent | The tower alone, next to SHACKSCREEN on the dashboard and in All applications |
-| `tv-banner-color.png` / `-dark.png` / `-light.png` | 640 × 360 px (1280 × 720 for a sharper master) | The banner in the Android TV / Google TV / Fire TV app row |
+| `tv-banner-color.png` / `-dark.png` / `-light.png` | 640 × 360 px (1920 × 1080 for a sharper master) | The banner in the Android TV / Google TV / Fire TV app row |
 
-The app icon can have rounded corners (it's shown as is). These are copied into the app when it's built, so a new one needs a new release.
+These are the masters. A new one needs a new release, because launchers read the icons built into the app.
+
+### What each device shows when launching ShackScreen
+
+| Where | What it uses | In the app |
+|---|---|---|
+| Android 8+ tablets and launchers (Pixel, Samsung, Fire tablets, Google TV's app lists) | **Adaptive icon**: a background layer and a foreground layer, each 108 × 108 dp. The launcher crops it to its own shape (circle, squircle, rounded square), so keep the artwork inside the central **66 × 66 dp** circle | `res/mipmap-anydpi-v26/ic_launcher.xml`, with `drawable/ic_launcher_background.xml` (navy gradient) and `drawable/ic_launcher_foreground.xml` (the tower, as a vector) |
+| Android 13+ themed icons | **Monochrome** layer: the foreground in one colour; Android tints it | `drawable/ic_launcher_monochrome.xml` |
+| Android 5–7 | Square and round PNGs: 48, 72, 96, 144 and 192 px (mdpi to xxxhdpi) | `res/mipmap-*/ic_launcher.png`, `ic_launcher_round.png` |
+| Android TV, Google TV, Fire TV app row | **Banner**, 320 × 180 dp, with the app's name on it: 320 × 180 (mdpi), 480 × 270 (hdpi), 640 × 360 (xhdpi) and 960 × 540 px (xxhdpi) | `res/drawable-*/banner.png` |
+
+The dark and light app icons and banners are kept for the README and for a future option; Android shows one launcher icon, so the app uses the colour one.
 
 ## Symbols
 

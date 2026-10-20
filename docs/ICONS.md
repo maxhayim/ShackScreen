@@ -75,6 +75,8 @@ In [`icons/app/`](../icons/app):
 | `shackscreen-tower.png` | 512 × 512 px, transparent, no background | Logo next to SHACKSCREEN on the dashboard |
 | `tv-banner-color.png`, `tv-banner-dark.png`, `tv-banner-light.png` | 640 × 360 px (1280 × 720 master welcome) | Banner in the Android TV / Google TV / Fire TV app row |
 
+The launcher icon is built from layers (adaptive, themed and older sizes); [`icons/README.md`](../icons/README.md#what-each-device-shows-when-launching-shackscreen) lists every size each device uses.
+
 These are built into the app, so a change ships with the next release.
 
 ---
