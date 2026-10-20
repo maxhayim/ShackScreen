@@ -57,7 +57,7 @@ final class Icons {
     /** Output size, and the smallest source worth showing rather than a category tile. */
     private static final int SIZE = 192, MIN_SOURCE = 40, FULL_BLEED = 96;
     /** Bumped when the way icons are drawn changes, so cached ones are redrawn. */
-    private static final int STYLE = 4;
+    private static final int STYLE = 5;
     /** ShackScreen's own icon set, one PNG per catalog app, in colour and in black and white. */
     static final String REPO_ICONS = "https://raw.githubusercontent.com/" + Updater.REPO + "/main/icons/";
     private static final long REFRESH_MS = 7 * 24 * 60 * 60 * 1000L;
@@ -198,11 +198,21 @@ final class Icons {
         return b;
     }
 
+    /** Marks a bitmap from the icon set so compose leaves it alone. */
+    private static final java.util.Set<Bitmap> FINISHED = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+    private static Bitmap finished(Bitmap b) {
+        Bitmap out = Bitmap.createScaledBitmap(b, SIZE, SIZE, true);
+        FINISHED.add(out);
+        return out;
+    }
+
     /**
      * A site's icon made square. Large and solid to the edges: it fills the tile. Otherwise it's a
      * logo on a tile: white behind dark logos, the category colour behind light ones.
      */
     static Bitmap compose(Context c, Bitmap src, int[] look) {
+        if (FINISHED.contains(src)) return src;
         int w = src.getWidth(), h = src.getHeight();
         if (Math.min(w, h) < MIN_SOURCE) return null;
         Bitmap out = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888);
@@ -322,7 +332,8 @@ final class Icons {
             try {
                 byte[] data = get(url, MAX_ICON);
                 Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
-                if (b != null && Math.min(b.getWidth(), b.getHeight()) >= FULL_BLEED) return b;
+                // Already a finished icon, rounded like the tile: shown as it is, only resized.
+                if (b != null && Math.min(b.getWidth(), b.getHeight()) >= FULL_BLEED) return finished(b);
             } catch (IOException | RuntimeException ignored) {
                 // Not in the set yet; the site's own icon is used.
             }
