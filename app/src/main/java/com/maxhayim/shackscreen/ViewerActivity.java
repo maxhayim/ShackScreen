@@ -1,6 +1,7 @@
 package com.maxhayim.shackscreen;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,7 +23,7 @@ import android.widget.TextView;
  */
 public class ViewerActivity extends BaseActivity {
 
-    static final String EXTRA_ID = "id";
+    static final String EXTRA_ID = "id", EXTRA_URL = "url";
     private static final long RETRY_MS = 30_000;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -39,7 +40,17 @@ public class ViewerActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        in = Store.find(this, getIntent().getStringExtra(EXTRA_ID));
+        String direct = getIntent().getStringExtra(EXTRA_URL);
+        if (direct != null) {
+            // A one-off page, such as the GitHub request form.
+            in = new Store.Instance();
+            in.id = "";
+            in.type = "custom";
+            in.name = Uri.parse(direct).getHost();
+            in.url = direct;
+        } else {
+            in = Store.find(this, getIntent().getStringExtra(EXTRA_ID));
+        }
         if (in == null || !in.hasUrl()) {
             finish();
             return;

@@ -1,7 +1,7 @@
 # ShackScreen
 
-Radio dashboards on your TV. ShackScreen is a small Android TV / Google TV / Fire TV app for hams and
-mesh users: a live dashboard on top, and a row of radio web apps you open full-screen with the remote.
+Radio dashboards on your TV, for people who love frequencies. ShackScreen is a small Android TV / Google TV /
+Fire TV app (it runs on tablets too) for hams, mesh, satellite, aviation and marine radio fans: a live dashboard on top, and a row of radio web apps you open full-screen with the remote.
 Dark and light themes (or follow the TV), and each app tile shows the app's own icon, fetched from
 whichever server you point it at.
 
@@ -9,42 +9,65 @@ whichever server you point it at.
 |---|---|
 | ![Dark theme](docs/dashboard-dark.png) | ![Light theme](docs/dashboard-light.png) |
 
-## What's on the dashboard
+## Widgets
 
-| Panel | Comes from |
+Pick the widgets you want in **Settings → Widgets**, and arrange them on the dashboard: select one and press
+OK (or long-press it on a tablet), move it with the arrows, then press OK again. Three fit across a TV,
+two on a portrait tablet, one on a phone; the rest scroll, and when nobody touches the remote for a minute
+the dashboard pages through them on its own.
+
+| Widget | Comes from |
 |---|---|
-| Space weather: SFI, sunspots, K/A index (coloured by storm level), X-ray, HF band conditions | OpenHamClock (`/api/n0nbh`) or ShackBoard (`/api/space-weather`) |
-| Latest POTA spots | OpenHamClock (`/api/pota/spots`) or ShackBoard (`/api/spots`, POTA only) |
-| Mesh: nodes heard today, latest messages | MeshMonitor (`/api/v1`, needs an API token) |
+| Space weather: SFI, sunspots, K/A index, X-ray, HF band conditions | OpenHamClock or ShackBoard |
+| POTA spots | OpenHamClock or ShackBoard |
+| DX cluster spots | OpenHamClock |
+| Contests on now and coming up | OpenHamClock |
+| DXpeditions on the air | OpenHamClock |
+| Satellite passes over you (time, max elevation, downlink) | OpenHamClock's orbital data, predicted on the TV |
+| Satellites just heard, with frequency and mode | SatNOGS |
+| Mesh sources (Meshtastic, MeshCore, MQTT), connected or not | MeshMonitor |
+| Mesh nodes heard today | MeshMonitor |
+| Mesh messages | MeshMonitor |
+| Aircraft within 25 nm | adsb.lol, adsb.fi, or your own tar1090 / readsb / dump1090 |
+| Ships nearby | your own AIS-catcher |
+| Local weather | Open-Meteo |
 
-Each panel uses the first of your apps that can supply it and moves on to the next if a server is down.
-Panels refresh every 2 minutes; the dot on each app tile shows whether its server is reachable.
+Aircraft, satellite passes and weather need your location: a grid square (FN31pr) or latitude, longitude,
+in **Settings → Location**. Each widget uses the first of your apps that can supply it and moves on to the
+next if a server is down.
 
 ## Apps
 
-| App | Public site | Run your own |
-|---|---|---|
-| [OpenHamClock](https://github.com/accius/openhamclock) | openhamclock.com | yes, default port 3000 |
-| [ShackBoard](https://shackboard.com) | shackboard.com | — |
-| [MeshMonitor](https://github.com/Yeraze/meshmonitor) | — | yes, default port 8080 |
-| [WebSDR](http://websdr.org) | websdr.org directory | point it at any receiver |
-| [Broadcastify](https://www.broadcastify.com) | broadcastify.com | — |
-| [RepeaterBook](https://www.repeaterbook.com) | repeaterbook.com | — |
-| Other web page | — | any URL |
+Apps are grouped by category on the dashboard and in **+ Add app**:
 
-Every app can use the public site **or your own server**, and you can add the same app more than once
-(say, public OpenHamClock and the one on your shack Pi). Type just the IP and the default port is added.
-Addresses and tokens are stored only on the TV. The list of known apps lives in
-[`app/src/main/assets/catalog.json`](app/src/main/assets/catalog.json).
+| Category | Apps |
+|---|---|
+| Ham radio | OpenHamClock, ShackBoard, APRS.fi, PSKReporter, RepeaterBook |
+| Satellites | N2YO, Heavens-Above, AMSAT status, SatNOGS, TinyGS, Satellite map, ISS Tracker |
+| Mesh | MeshMonitor, MeshMap (Meshtastic), MeshCore Map, your Meshtastic node |
+| SDR & scanners | WebSDR, KiwiSDR map, Broadcastify |
+| Aviation | Flightradar24, FlightAware, ADS-B Exchange, adsb.lol, adsb.fi, your tar1090 |
+| Marine | MarineTraffic, VesselFinder, MyShipTracking, your AIS-catcher |
+| Weather | Windy, Lightning map |
+| Other | any web page |
+
+Every app can use the public site **or your own server**, and you can add the same app more than once.
+Type just the IP and the default port is added. Addresses and tokens are stored only on the device. The
+list of apps lives in [`app/src/main/assets/catalog.json`](app/src/main/assets/catalog.json) and refreshes
+from this repo, so new apps can appear without a new APK.
+
+Missing one? **+ Add app → Request an app…** (or the button in *Other web page*) opens an
+[app request](../../issues/new?template=app_request.yml) here; on a TV, scan the QR code with your phone.
 
 ### MeshMonitor token
 
 In MeshMonitor's settings, create an API token and paste it into the MeshMonitor entry in
 ShackScreen's settings. The token acts as your user, so it only sees what you can see.
 
-## Remote
+## Remote and touch
 
-- **Left/Right/OK** on the dashboard: pick and open an app.
+- **Left/Right/OK** on the dashboard: pick and open an app. On a tablet, tap.
+- **OK on a widget** (or long-press): pick it up to move it.
 - **Back** in an app: go back a page, or return to the dashboard.
 - **Menu**: reload the page.
 - An app that can't be reached is retried every 30 seconds, and the screen stays on while one is open.
@@ -85,4 +108,8 @@ Without `TV_HOST` it only builds `app/build/outputs/apk/release/app-release.apk`
 
 ## License
 
-MIT
+MIT. Includes the [Outfit](https://github.com/Outfitio/Outfit-Fonts) font (SIL Open Font License, see
+`FONT-LICENSE-OFL.txt`) and Project Nayuki's [QR Code generator](https://github.com/nayuki/QR-Code-generator)
+(MIT, in `app/src/main/java/io/nayuki`).
+
+Data comes from the apps you add and from adsb.lol and adsb.fi (ODbL), Open-Meteo, and the SatNOGS network.

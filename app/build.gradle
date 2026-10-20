@@ -11,8 +11,8 @@ android {
         // 22 = Fire OS 5 / Android TV 5.1, so older sticks and TVs can still run it.
         minSdk 22
         targetSdk 35
-        versionCode 4
-        versionName '0.3.0'
+        versionCode 5
+        versionName '0.4.0'
     }
 
     // Release APKs must always carry the same key, or a downloaded update won't install over the old one.
@@ -54,4 +54,6 @@ android {
 // No app dependencies: plain Android views and org.json keep the APK tiny for 1 GB TVs.
 dependencies {
     testImplementation 'junit:junit:4.13.2'
+    // Android's org.json is a stub on the JVM; tests use the real one.
+    testImplementation 'org.json:json:20231013'
 }

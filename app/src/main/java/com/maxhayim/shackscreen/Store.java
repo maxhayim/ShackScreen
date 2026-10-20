@@ -38,24 +38,32 @@ final class Store {
         boolean hasUrl() { return url != null && !url.isEmpty(); }
     }
 
-    private static final String PREFS = "shackscreen", KEY = "instances";
+    private static final String PREFS = "shackscreen", KEY = "instances", KEY_SEEDED = "seeded";
 
     static List<Instance> load(Context c) {
         SharedPreferences p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String raw = p.getString(KEY, null);
         List<Instance> list = new ArrayList<>();
-        if (raw == null) {
+        if (raw != null) {
+            try {
+                JSONArray a = new JSONArray(raw);
+                for (int i = 0; i < a.length(); i++) list.add(Instance.fromJson(a.getJSONObject(i)));
+            } catch (Exception ignored) {
+                // A broken list is replaced by the next save rather than crashing the dashboard.
+            }
+        }
+        // New default apps arrive in rounds. Each round is added once, so an app the user removed
+        // stays removed. Installs from before rounds existed had round 1.
+        int done = p.getInt(KEY_SEEDED, raw == null ? 0 : 1), latest = Catalog.seedRound(c);
+        if (done < latest) {
             for (Catalog.Type t : Catalog.all(c)) {
-                if (t.seed) list.add(create(t));
+                if (t.seed <= done || t.seed > latest) continue;
+                boolean have = false;
+                for (Instance i : list) have |= i.type.equals(t.id);
+                if (!have) list.add(create(t));
             }
             save(c, list);
-            return list;
-        }
-        try {
-            JSONArray a = new JSONArray(raw);
-            for (int i = 0; i < a.length(); i++) list.add(Instance.fromJson(a.getJSONObject(i)));
-        } catch (Exception ignored) {
-            // A broken list is replaced by the next save rather than crashing the dashboard.
+            p.edit().putInt(KEY_SEEDED, latest).apply();
         }
         return list;
     }

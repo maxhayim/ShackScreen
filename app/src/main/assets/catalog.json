@@ -1,56 +1,259 @@
 {
   "version": 1,
+  "revision": 2,
+  "categories": [
+    "Ham radio",
+    "Satellites",
+    "Mesh",
+    "SDR & scanners",
+    "Aviation",
+    "Marine",
+    "Weather",
+    "Other"
+  ],
   "apps": [
     {
       "id": "openhamclock",
       "name": "OpenHamClock",
+      "category": "Ham radio",
       "url": "https://openhamclock.com",
       "port": 3000,
       "health": "/api/health",
       "icon": "/icons/icon-512.png",
-      "feeds": ["space", "pota"],
-      "seed": true
+      "feeds": [
+        "space",
+        "pota",
+        "dx",
+        "contests",
+        "dxpeditions",
+        "satellites"
+      ],
+      "seed": 1
     },
     {
       "id": "shackboard",
       "name": "ShackBoard",
+      "category": "Ham radio",
       "url": "https://shackboard.com",
       "health": "/api/health",
-      "feeds": ["space", "pota"],
-      "seed": true
+      "feeds": [
+        "space",
+        "pota"
+      ],
+      "seed": 1
     },
     {
-      "id": "meshmonitor",
-      "name": "MeshMonitor",
-      "port": 8080,
-      "health": "/api/health",
-      "feeds": ["mesh"],
-      "token": true
+      "id": "aprsfi",
+      "name": "APRS.fi",
+      "category": "Ham radio",
+      "url": "https://aprs.fi"
     },
     {
-      "id": "websdr",
-      "name": "WebSDR",
-      "url": "http://websdr.org/",
-      "port": 8901,
-      "audio": true,
-      "seed": true
-    },
-    {
-      "id": "broadcastify",
-      "name": "Broadcastify",
-      "url": "https://www.broadcastify.com/listen/",
-      "audio": true,
-      "seed": true
+      "id": "pskreporter",
+      "name": "PSKReporter",
+      "category": "Ham radio",
+      "url": "https://pskreporter.info/pskmap.html"
     },
     {
       "id": "repeaterbook",
       "name": "RepeaterBook",
-      "url": "https://www.repeaterbook.com/",
-      "seed": true
+      "category": "Ham radio",
+      "url": "https://www.repeaterbook.com/"
+    },
+    {
+      "id": "n2yo",
+      "name": "N2YO",
+      "category": "Satellites",
+      "url": "https://www.n2yo.com",
+      "seed": 2
+    },
+    {
+      "id": "heavensabove",
+      "name": "Heavens-Above",
+      "category": "Satellites",
+      "url": "https://www.heavens-above.com"
+    },
+    {
+      "id": "amsatstatus",
+      "name": "AMSAT status",
+      "category": "Satellites",
+      "url": "https://www.amsat.org/status/"
+    },
+    {
+      "id": "satnogs",
+      "name": "SatNOGS",
+      "category": "Satellites",
+      "url": "https://network.satnogs.org",
+      "feeds": [
+        "satnogs"
+      ],
+      "seed": 2
+    },
+    {
+      "id": "tinygs",
+      "name": "TinyGS",
+      "category": "Satellites",
+      "url": "https://tinygs.com"
+    },
+    {
+      "id": "satellitemap",
+      "name": "Satellite map",
+      "category": "Satellites",
+      "url": "https://satellitemap.space"
+    },
+    {
+      "id": "isstracker",
+      "name": "ISS Tracker",
+      "category": "Satellites",
+      "url": "https://isstracker.pl/en"
+    },
+    {
+      "id": "meshmonitor",
+      "name": "MeshMonitor",
+      "category": "Mesh",
+      "port": 8080,
+      "health": "/api/health",
+      "feeds": [
+        "mesh"
+      ],
+      "token": true
+    },
+    {
+      "id": "meshmap",
+      "name": "MeshMap (Meshtastic)",
+      "category": "Mesh",
+      "url": "https://meshmap.net",
+      "seed": 2
+    },
+    {
+      "id": "meshcoremap",
+      "name": "MeshCore Map",
+      "category": "Mesh",
+      "url": "https://map.meshcore.io",
+      "seed": 2
+    },
+    {
+      "id": "meshtasticnode",
+      "name": "Meshtastic node",
+      "category": "Mesh",
+      "port": 80
+    },
+    {
+      "id": "websdr",
+      "name": "WebSDR",
+      "category": "SDR & scanners",
+      "url": "http://websdr.org/",
+      "port": 8901,
+      "audio": true,
+      "seed": 1
+    },
+    {
+      "id": "kiwisdr",
+      "name": "KiwiSDR map",
+      "category": "SDR & scanners",
+      "url": "http://rx.linkfanel.net",
+      "port": 8073,
+      "audio": true
+    },
+    {
+      "id": "broadcastify",
+      "name": "Broadcastify",
+      "category": "SDR & scanners",
+      "url": "https://www.broadcastify.com/listen/",
+      "audio": true,
+      "seed": 1
+    },
+    {
+      "id": "flightradar24",
+      "name": "Flightradar24",
+      "category": "Aviation",
+      "url": "https://www.flightradar24.com",
+      "seed": 2
+    },
+    {
+      "id": "flightaware",
+      "name": "FlightAware",
+      "category": "Aviation",
+      "url": "https://www.flightaware.com/live/map"
+    },
+    {
+      "id": "adsbexchange",
+      "name": "ADS-B Exchange",
+      "category": "Aviation",
+      "url": "https://globe.adsbexchange.com"
+    },
+    {
+      "id": "adsblol",
+      "name": "adsb.lol",
+      "category": "Aviation",
+      "url": "https://adsb.lol",
+      "feeds": [
+        "aircraft"
+      ],
+      "seed": 2
+    },
+    {
+      "id": "adsbfi",
+      "name": "adsb.fi",
+      "category": "Aviation",
+      "url": "https://globe.adsb.fi",
+      "feeds": [
+        "aircraft"
+      ]
+    },
+    {
+      "id": "tar1090",
+      "name": "My ADS-B receiver (tar1090)",
+      "category": "Aviation",
+      "port": 8080,
+      "feeds": [
+        "aircraft"
+      ]
+    },
+    {
+      "id": "marinetraffic",
+      "name": "MarineTraffic",
+      "category": "Marine",
+      "url": "https://www.marinetraffic.com/en/ais/home",
+      "seed": 2
+    },
+    {
+      "id": "vesselfinder",
+      "name": "VesselFinder",
+      "category": "Marine",
+      "url": "https://www.vesselfinder.com"
+    },
+    {
+      "id": "myshiptracking",
+      "name": "MyShipTracking",
+      "category": "Marine",
+      "url": "https://www.myshiptracking.com"
+    },
+    {
+      "id": "aiscatcher",
+      "name": "My AIS receiver (AIS-catcher)",
+      "category": "Marine",
+      "port": 8100,
+      "feeds": [
+        "ships"
+      ]
+    },
+    {
+      "id": "windy",
+      "name": "Windy",
+      "category": "Weather",
+      "url": "https://www.windy.com"
+    },
+    {
+      "id": "blitzortung",
+      "name": "Lightning map",
+      "category": "Weather",
+      "url": "https://map.blitzortung.org"
     },
     {
       "id": "custom",
-      "name": "Other web page"
+      "name": "Other web page",
+      "category": "Other"
     }
   ]
 }

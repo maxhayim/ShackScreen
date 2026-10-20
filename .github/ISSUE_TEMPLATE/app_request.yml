@@ -1,0 +1,37 @@
+name: App or widget request
+description: Suggest a radio, mesh, aviation, marine or weather app for ShackScreen's menu, or a new widget.
+title: "App request: "
+labels: ["app request"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: App name
+      placeholder: e.g. HamAlert
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Web address
+      description: The page ShackScreen should open. Say if people usually run their own server, and its default port.
+      placeholder: https://…
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Ham radio
+        - Mesh
+        - SDR & scanners
+        - Aviation
+        - Marine
+        - Weather
+        - Other
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else?
+      description: Does it have an API a dashboard widget could use? Links to its docs help.

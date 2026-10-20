@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/card" />
-    <stroke android:width="1dp" android:color="@color/card_border" />
-    <corners android:radius="20dp" />
-</shape>
+<!-- Focused: amber edge. Activated: being moved, a thicker blue edge. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_activated="true">
+        <shape>
+            <solid android:color="@color/tile_focus" />
+            <stroke android:width="3dp" android:color="@color/accent2" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape>
+            <solid android:color="@color/card" />
+            <stroke android:width="2dp" android:color="@color/accent" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="@color/card" />
+            <stroke android:width="1dp" android:color="@color/card_border" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+</selector>

@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,10 +28,10 @@ final class Panels {
     View space(Feeds.Space s) {
         LinearLayout col = column();
         LinearLayout stats = row();
-        stats.addView(stat("SFI", s.sfi, R.color.text), weight());
-        stats.addView(stat("SSN", s.ssn, R.color.text), weight());
-        stats.addView(stat("K", s.k, kColor(s.k)), weight());
-        stats.addView(stat("A", s.a, R.color.text), weight());
+        stats.addView(stat("SFI", s.sfi, R.color.text, 28), weight());
+        stats.addView(stat("SSN", s.ssn, R.color.text, 28), weight());
+        stats.addView(stat("K", s.k, kColor(s.k), 28), weight());
+        stats.addView(stat("A", s.a, R.color.text, 28), weight());
         col.addView(stats);
         TextView xray = text("X-ray " + nz(s.xray), 12, R.color.dim, false);
         xray.setPadding(0, dp(4), 0, dp(10));
@@ -55,9 +54,9 @@ final class Panels {
         return col;
     }
 
-    private View stat(String name, String value, int colorRes) {
+    private View stat(String name, String value, int colorRes, int sp) {
         LinearLayout box = column();
-        TextView v = text(nz(value), 28, colorRes, false);
+        TextView v = text(nz(value), sp, colorRes, false);
         v.setIncludeFontPadding(false);
         box.addView(v);
         box.addView(label(name));
@@ -86,38 +85,97 @@ final class Panels {
         return wrap;
     }
 
-    // --- POTA spots --------------------------------------------------------------------------
+    // --- Lists: POTA, DX, contests, DXpeditions, aircraft, ships, mesh nodes and sources -----
 
-    View pota(List<Feeds.Spot> spots) {
-        if (spots.isEmpty()) return message(c.getString(R.string.no_spots));
+    View rows(Feeds.Rows r) {
         LinearLayout col = column();
-        for (Feeds.Spot s : spots) {
-            LinearLayout r = row();
-            r.setGravity(Gravity.CENTER_VERTICAL);
-            r.setPadding(0, dp(3), 0, dp(3));
-            TextView call = text(s.call, 15, R.color.text, true);
-            r.addView(call, new LinearLayout.LayoutParams(dp(78), ViewGroup.LayoutParams.WRAP_CONTENT));
-            TextView freq = text(s.freq, 14, R.color.accent2, false);
-            freq.setGravity(Gravity.END);
-            r.addView(freq, new LinearLayout.LayoutParams(dp(58), ViewGroup.LayoutParams.WRAP_CONTENT));
-            LinearLayout.LayoutParams chipLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            chipLp.setMarginStart(dp(10));
-            r.addView(chip(s.mode, R.color.accent), chipLp);
-            TextView ref = text(s.ref, 12, R.color.dim, false);
-            ref.setGravity(Gravity.END);
-            r.addView(ref, weight());
-            col.addView(r);
+        if (r.header != null) {
+            TextView h = text(r.header, 12, R.color.dim, false);
+            h.setPadding(0, 0, 0, dp(6));
+            col.addView(h);
+        }
+        if (r.rows.isEmpty()) {
+            if (r.header == null) return message(r.empty);
+            TextView e = text(r.empty, 13, R.color.dim, false);
+            e.setSingleLine(false);
+            col.addView(e);
+            return col;
+        }
+        for (Feeds.Row row : r.rows) {
+            LinearLayout line = row();
+            line.setGravity(Gravity.CENTER_VERTICAL);
+            line.setPadding(0, dp(3), 0, dp(3));
+            TextView main = text(row.main, 15, R.color.text, true);
+            line.addView(main, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.3f));
+            if (row.num != null) {
+                TextView num = text(row.num, 14, R.color.accent2, false);
+                num.setGravity(Gravity.END);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.setMarginStart(dp(6));
+                line.addView(num, lp);
+            }
+            if (row.chip != null && !row.chip.isEmpty()) {
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.setMarginStart(dp(8));
+                // Long mode names ("BPSK PMT-A3") are shortened to their first word.
+                String chip = row.chip.length() > 8 && row.chip.contains(" ") ? row.chip.substring(0, row.chip.indexOf(' ')) : row.chip;
+                line.addView(chip(chip, tone(row.tone)), lp);
+            }
+            if (row.trail != null && !row.trail.isEmpty()) {
+                TextView trail = text(row.trail, 12, R.color.dim, false);
+                trail.setSingleLine(true); // a list row is one line, however long the text
+                trail.setGravity(Gravity.END);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                lp.setMarginStart(dp(8));
+                line.addView(trail, lp);
+            }
+            col.addView(line);
         }
         return col;
     }
 
-    // --- Mesh ----------------------------------------------------------------------------------
+    private static int tone(int t) {
+        switch (t) {
+            case Feeds.GOOD: return R.color.good;
+            case Feeds.FAIR: return R.color.fair;
+            case Feeds.POOR: return R.color.poor;
+            case Feeds.DIM: return R.color.dim;
+            default: return R.color.accent;
+        }
+    }
+
+    // --- Weather -------------------------------------------------------------------------------
+
+    View weather(Feeds.Weather w) {
+        LinearLayout col = column();
+        LinearLayout big = row();
+        big.setGravity(Gravity.BOTTOM);
+        TextView t = text(w.temp, 48, R.color.text, false);
+        t.setIncludeFontPadding(false);
+        big.addView(t);
+        LinearLayout side = column();
+        side.setPadding(dp(14), 0, 0, dp(4));
+        side.addView(text(w.sky, 16, R.color.text, true));
+        if (w.high != null) side.addView(text("H " + w.high + "  L " + w.low + "  · feels " + w.feels, 12, R.color.dim, false));
+        big.addView(side);
+        col.addView(big);
+        LinearLayout stats = row();
+        stats.setPadding(0, dp(16), 0, 0);
+        stats.addView(stat("Wind", w.wind, R.color.text, 15), weight());
+        stats.addView(stat("Humidity", w.humidity, R.color.text, 15), weight());
+        stats.addView(stat("Pressure", w.pressure, R.color.text, 15), weight());
+        col.addView(stats);
+        return col;
+    }
+
+    // --- Mesh messages ---------------------------------------------------------------------------
 
     View mesh(Feeds.Mesh m) {
         LinearLayout col = column();
         if (m.needsToken) {
             col.addView(text(c.getString(R.string.mesh_online), 28, R.color.good, false));
             TextView hint = text(c.getString(R.string.mesh_token), 13, R.color.dim, false);
+            hint.setSingleLine(false);
             hint.setPadding(0, dp(6), 0, 0);
             col.addView(hint);
             return col;
@@ -140,7 +198,13 @@ final class Panels {
             LinearLayout bubble = column();
             bubble.setPadding(dp(12), dp(7), dp(12), dp(7));
             bubble.setBackground(round(R.color.icon_bg, 255, 12));
-            bubble.addView(text(msg[0], 12, R.color.accent, true));
+            LinearLayout head = row();
+            head.setGravity(Gravity.CENTER_VERTICAL);
+            head.addView(text(msg[0], 12, R.color.accent, true));
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            clp.setMarginStart(dp(8));
+            head.addView(chip(msg[2], R.color.dim), clp);
+            bubble.addView(head);
             TextView body = text(msg[1], 13, R.color.text, false);
             body.setMaxLines(2);
             body.setEllipsize(TextUtils.TruncateAt.END);

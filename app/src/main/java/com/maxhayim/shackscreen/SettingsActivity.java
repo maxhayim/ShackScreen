@@ -13,15 +13,19 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/** Add, edit and remove apps. Each one points at a public site or the user's own server. */
+/**
+ * Apps (each pointing at a public site or the user's own server), widgets, location, theme and
+ * updates. Works with a remote and with touch.
+ */
 public class SettingsActivity extends BaseActivity {
 
     static final String EXTRA_ADD = "add", EXTRA_EDIT = "edit";
 
     private final Handler ui = new Handler(Looper.getMainLooper());
-    private LinearLayout list;
+    private LinearLayout list, widgetList;
     private List<Store.Instance> instances;
     private Button modeButton, installButton;
     private TextView updateStatus;
@@ -52,6 +56,26 @@ public class SettingsActivity extends BaseActivity {
         Button add = button(getString(R.string.add_app));
         add.setOnClickListener(v -> pickType());
         root.addView(add);
+
+        root.addView(section(getString(R.string.widgets)));
+        TextView hint = text(getString(R.string.widgets_hint), 13, R.color.dim);
+        hint.setPadding(0, 0, 0, dp(10));
+        root.addView(hint);
+        widgetList = new LinearLayout(this);
+        widgetList.setOrientation(LinearLayout.VERTICAL);
+        root.addView(widgetList);
+        Button rotate = button("");
+        rotate.setText(Widgets.rotate(this) ? R.string.rotate_on : R.string.rotate_off);
+        rotate.setOnClickListener(v -> {
+            Widgets.setRotate(this, !Widgets.rotate(this));
+            rotate.setText(Widgets.rotate(this) ? R.string.rotate_on : R.string.rotate_off);
+        });
+        root.addView(rotate);
+
+        root.addView(section(getString(R.string.location)));
+        Button location = button(locationLabel());
+        location.setOnClickListener(v -> editLocation(location));
+        root.addView(location);
 
         root.addView(section(getString(R.string.appearance)));
         Button theme = button(themeLabel());
@@ -90,6 +114,7 @@ public class SettingsActivity extends BaseActivity {
 
         instances = Store.load(this);
         rebuild();
+        rebuildWidgets();
         if (getIntent().getBooleanExtra(EXTRA_ADD, false)) pickType();
         String editId = getIntent().getStringExtra(EXTRA_EDIT);
         if (editId != null) {
@@ -131,13 +156,91 @@ public class SettingsActivity extends BaseActivity {
         if (list.getChildCount() > 0) list.getChildAt(0).requestFocus();
     }
 
+    /**
+     * First a category, then an app in it. "Request an app…" and "Other web page" come last,
+     * so a missing app can be asked for right where it would have been.
+     */
     private void pickType() {
-        List<Catalog.Type> types = Catalog.all(this);
+        List<String> cats = new ArrayList<>(Catalog.categories(this));
+        cats.remove("Other");
+        List<String> items = new ArrayList<>(cats);
+        items.add(getString(R.string.request_app));
+        items.add(Catalog.get(this, "custom").name);
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.pick_category)
+                .setItems(items.toArray(new String[0]), (d, which) -> {
+                    if (which < cats.size()) pickInCategory(cats.get(which));
+                    else if (which == cats.size()) Requests.show(this, "", "");
+                    else edit(Store.create(Catalog.get(this, "custom")), true);
+                })
+                .show();
+    }
+
+    private void pickInCategory(String cat) {
+        List<Catalog.Type> types = new ArrayList<>();
+        for (Catalog.Type t : Catalog.all(this)) if (t.category.equals(cat)) types.add(t);
         String[] names = new String[types.size()];
         for (int i = 0; i < names.length; i++) names[i] = types.get(i).name;
         new AlertDialog.Builder(this, R.style.Dialog)
-                .setTitle(R.string.pick_app)
+                .setTitle(cat)
                 .setItems(names, (d, which) -> edit(Store.create(types.get(which)), true))
+                .show();
+    }
+
+    // --- Widgets ---------------------------------------------------------------------------
+
+    /** Shown widgets first, in dashboard order, then the hidden ones. Selecting one shows or hides it. */
+    private void rebuildWidgets() {
+        widgetList.removeAllViews();
+        List<String> shown = Widgets.shown(this);
+        List<Widgets.Def> ordered = new ArrayList<>();
+        for (String id : shown) ordered.add(Widgets.get(id));
+        for (Widgets.Def d : Widgets.ALL) if (!shown.contains(d.id)) ordered.add(d);
+        for (Widgets.Def d : ordered) {
+            boolean on = shown.contains(d.id);
+            Button b = button((on ? "✓   " : "+   ") + getString(d.title) + "   ·   " + d.category);
+            if (!on) b.setTextColor(color(R.color.dim));
+            b.setOnClickListener(v -> {
+                List<String> now = Widgets.shown(this);
+                if (now.contains(d.id)) now.remove(d.id);
+                else now.add(d.id);
+                Widgets.setShown(this, now);
+                rebuildWidgets();
+                // Keep the remote's focus on the row that was just toggled.
+                for (int i = 0; i < widgetList.getChildCount(); i++) {
+                    if (d.id.equals(widgetList.getChildAt(i).getTag())) widgetList.getChildAt(i).requestFocus();
+                }
+            });
+            b.setTag(d.id);
+            widgetList.addView(b);
+        }
+        Appearance.font(widgetList);
+    }
+
+    private String locationLabel() {
+        String loc = Widgets.location(this);
+        return loc.isEmpty() ? getString(R.string.location_unset) : getString(R.string.location_value, loc);
+    }
+
+    private void editLocation(Button label) {
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(24), dp(8), dp(24), 0);
+        EditText field = field(getString(R.string.location_hint), Widgets.location(this), InputType.TYPE_CLASS_TEXT);
+        form.addView(field);
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.location)
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    String s = field.getText().toString();
+                    if (!s.trim().isEmpty() && Widgets.parseLocation(s) == null) {
+                        android.widget.Toast.makeText(this, R.string.location_hint, android.widget.Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Widgets.setLocation(this, s);
+                    label.setText(locationLabel());
+                })
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 
@@ -156,6 +259,15 @@ public class SettingsActivity extends BaseActivity {
         if (type.port > 0) {
             form.addView(text(type.name + " default port: " + type.port + " (added if you leave it out)", 13, R.color.dim));
         }
+        if (type.id.equals("custom")) {
+            // A page someone adds by hand may be worth having in everyone's menu.
+            Button ask = button(getString(R.string.request_it));
+            ask.setOnClickListener(v -> Requests.show(this, name.getText().toString().trim(), url.getText().toString().trim()));
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) ask.getLayoutParams();
+            lp.topMargin = dp(10);
+            form.addView(ask);
+        }
+        Appearance.font(form);
 
         AlertDialog.Builder b = new AlertDialog.Builder(this, R.style.Dialog)
                 .setTitle(type.name)
