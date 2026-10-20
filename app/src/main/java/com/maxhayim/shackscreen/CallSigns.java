@@ -44,7 +44,12 @@ final class CallSigns {
         }
         for (String[] f : FIELDS) {
             String v = get(c, f[0]);
-            if (!v.isEmpty()) box.addView(row(c, f[1], v, true));
+            if (!v.isEmpty()) {
+                // Rows sit close together so three of them stay within the clock's height.
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.bottomMargin = -Math.round(3 * c.getResources().getDisplayMetrics().density);
+                box.addView(row(c, f[1], v, true), lp);
+            }
         }
     }
 
@@ -55,14 +60,14 @@ final class CallSigns {
         r.setBaselineAligned(true);
         TextView v = new TextView(c);
         v.setText(value);
-        v.setTextSize(TypedValue.COMPLEX_UNIT_SP, big ? 23 : 17);
+        v.setTextSize(TypedValue.COMPLEX_UNIT_SP, big ? 29 : 17);
         v.setTextColor(Icons.color(c, big ? R.color.text : R.color.dim));
         v.setSingleLine(true);
         v.setIncludeFontPadding(false);
         r.addView(v);
         TextView l = new TextView(c);
         l.setText(label);
-        l.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        l.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         l.setLetterSpacing(0.15f);
         l.setAllCaps(true);
         l.setTextColor(Icons.color(c, R.color.dim));
