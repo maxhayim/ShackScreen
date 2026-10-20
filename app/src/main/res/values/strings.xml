@@ -133,9 +133,7 @@
         <item quantity="one">%1$d application</item>
         <item quantity="other">%1$d applications</item>
     </plurals>
-    <string name="callsigns">Call Signs</string>
     <string name="callsigns_add">Add your call signs</string>
-    <string name="callsigns_value">Call signs: %1$s…</string>
     <string name="callsign_ham">Ham call sign (e.g. K1ABC)</string>
     <string name="callsign_gmrs">GMRS call sign (e.g. WRXX123)</string>
     <string name="cb_handle">CB handle</string>
@@ -144,10 +142,15 @@
     <string name="rotate">Rotate widgets when idle</string>
     <string name="on">On</string>
     <string name="off">Off</string>
-    <string name="callsigns_hint">Shown next to the clock. Kept on this device only.</string>
-    <string name="ham">Ham call sign</string>
-    <string name="gmrs">GMRS call sign</string>
-    <string name="cb">CB handle</string>
+    <string name="profiles">Profiles</string>
+    <string name="profiles_hint">Each profile holds call signs to show next to the clock. Demo comes with ShackScreen, for showing it off. Kept on this device only.</string>
+    <string name="profile_add">Add profile</string>
+    <string name="profile_edit">Edit profile</string>
+    <string name="profile_use">Use this profile</string>
+    <string name="profile_delete">Delete profile</string>
+    <string name="profile_in_use">in use</string>
+    <string name="profile_name">Profile name (e.g. your name)</string>
+    <string name="profile_default_name">My profile</string>
     <string name="location_why">A grid square or latitude, longitude. Used for Aircraft Nearby, Satellite Passes and Weather.</string>
     <string name="map_hint">Arrows move the map · OK sets this as your location · Menu: zoom, find a place, map style</string>
     <string name="map_options">Options</string>
@@ -179,6 +182,7 @@
     <string name="icons_color">Colour</string>
     <string name="icons_dark">Dark</string>
     <string name="icons_light">Light</string>
+    <string name="icons_suggested">suggested for this theme</string>
     <string name="icons_auto">Match the theme (Dark or Light)</string>
     <string name="launcher">Launcher</string>
     <string name="launcher_mode">Use ShackScreen as a launcher</string>

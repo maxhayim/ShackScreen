@@ -74,6 +74,16 @@ final class Appearance {
         return theme(c).light ? ICONS_LIGHT : ICONS_DARK;
     }
 
+    /**
+     * The icon style that looks best with the theme in use: colour on Black, black tiles on the
+     * tinted themes (they sit on the colour like cut-outs), white tiles on Light.
+     */
+    static String suggestedIcons(Context c) {
+        Theme t = theme(c);
+        if (t.light) return ICONS_LIGHT;
+        return BLACK.equals(t.id) ? ICONS_COLOR : ICONS_DARK;
+    }
+
     static String label(Context c, String mode) {
         if (AUTO.equals(mode)) return "Follow the TV (Black or Light)";
         for (Theme t : THEMES) if (t.id.equals(mode)) return t.name;

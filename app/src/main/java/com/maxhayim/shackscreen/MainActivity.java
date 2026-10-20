@@ -121,7 +121,7 @@ public class MainActivity extends BaseActivity {
         updateBadge = findViewById(R.id.update);
         updateText = findViewById(R.id.update_text);
         callSigns = findViewById(R.id.callsigns);
-        callSigns.setOnClickListener(v -> CallSigns.edit(this, () -> CallSigns.show(this, callSigns)));
+        callSigns.setOnClickListener(v -> CallSigns.choose(this, () -> CallSigns.show(this, callSigns)));
         View settings = findViewById(R.id.settings);
         settings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
         updateBadge.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));

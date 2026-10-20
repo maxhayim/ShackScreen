@@ -55,7 +55,7 @@ public class SettingsActivity extends BaseActivity {
     private static final Object[][] SECTIONS = {
             {APPS, R.string.applications, R.drawable.ic_grid},
             {WIDGETS, R.string.widgets, R.drawable.ic_waves},
-            {CALLS, R.string.callsigns, R.drawable.ic_radio},
+            {CALLS, R.string.profiles, R.drawable.ic_radio},
             {LOCATION, R.string.location, R.drawable.ic_globe},
             {LOOK, R.string.appearance, R.drawable.ic_theme},
             {LAUNCHER, R.string.launcher, R.drawable.ic_grid},
@@ -294,15 +294,39 @@ public class SettingsActivity extends BaseActivity {
         pane.addView(rotate);
     }
 
+    /** Profiles: each holds call signs for the clock. Demo comes with every install and can't be changed. */
     private void callsPane() {
-        head(R.string.callsigns, getString(R.string.callsigns_hint));
-        int[] titles = {R.string.ham, R.string.gmrs, R.string.cb};
-        for (int i = 0; i < CallSigns.FIELDS.length; i++) {
-            String v = CallSigns.get(this, CallSigns.FIELDS[i][0]);
-            View r = row(0, getString(titles[i]), v.isEmpty() ? getString(R.string.not_set) : v);
-            r.setOnClickListener(x -> CallSigns.edit(this, this::buildPane));
+        head(R.string.profiles, getString(R.string.profiles_hint));
+        String active = CallSigns.active(this).id;
+        for (CallSigns.Profile p : CallSigns.profiles(this)) {
+            boolean on = p.id.equals(active);
+            View r = row(on ? R.drawable.ic_radio : 0, p.name + (on ? "   ·   " + getString(R.string.profile_in_use) : ""), CallSigns.summary(p));
+            r.setOnClickListener(x -> profileMenu(p));
             pane.addView(r);
         }
+        View add = row(0, "+ " + getString(R.string.profile_add), "");
+        add.setOnClickListener(x -> CallSigns.edit(this, null, this::buildPane));
+        pane.addView(add);
+    }
+
+    private void profileMenu(CallSigns.Profile p) {
+        List<String> items = new ArrayList<>();
+        items.add(getString(R.string.profile_use));
+        if (!p.demo()) {
+            items.add(getString(R.string.profile_edit));
+            items.add(getString(R.string.profile_delete));
+        }
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(p.name)
+                .setItems(items.toArray(new String[0]), (d, which) -> {
+                    if (which == 0) CallSigns.use(this, p);
+                    else if (which == 1) {
+                        CallSigns.edit(this, p, this::buildPane);
+                        return;
+                    } else CallSigns.delete(this, p);
+                    buildPane();
+                })
+                .show();
     }
 
     private void locationPane() {
@@ -413,7 +437,10 @@ public class SettingsActivity extends BaseActivity {
         icons.setOnClickListener(v -> {
             String[] ids = Appearance.ICON_STYLES;
             String[] names = new String[ids.length];
-            for (int i = 0; i < ids.length; i++) names[i] = iconStyleLabel(ids[i]);
+            String suggested = Appearance.suggestedIcons(this);
+            for (int i = 0; i < ids.length; i++) {
+                names[i] = iconStyleLabel(ids[i]) + (ids[i].equals(suggested) ? "   ·   " + getString(R.string.icons_suggested) : "");
+            }
             int current = java.util.Arrays.asList(ids).indexOf(Appearance.iconSetting(this));
             new AlertDialog.Builder(this, R.style.Dialog)
                     .setTitle(R.string.icon_style)
