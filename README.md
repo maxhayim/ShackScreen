@@ -9,6 +9,9 @@
   <a href="https://developer.android.com/tv">
     <img src="https://img.shields.io/badge/Android%20TV%20%7C%20Google%20TV%20%7C%20Fire%20TV-5.1%2B-blue" alt="Platforms">
   </a>
+  <a href="https://developer.android.com/large-screens">
+    <img src="https://img.shields.io/badge/Android%20Tablets-5.1%2B-blue" alt="Tablets">
+  </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
   </a>
@@ -19,6 +22,41 @@
 **ShackScreen** is a free Android (Android TV, Android Tablet Google TV and Fire TV) application that turns the TV or Tablet in your shack into a live radio dashboard, for people who love frequencies: hams, [Meshtastic](https://github.com/meshtastic) and [MeshCore](https://github.com/meshcore-dev/MeshCore) LoRa Mesh users, satellite chasers, and ADS-B and AIS listeners.
 
 Live **widgets** across the top: space weather, POTA and DX spots, satellite passes, mesh messages, aircraft and ships nearby, and the weather. Your radio web applications along the bottom: [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [MeshMonitor](https://github.com/Yeraze/meshmonitor), [WebSDR](http://websdr.org), [Broadcastify](https://www.broadcastify.com), [Flightradar24](https://www.flightradar24.com) and more, full-screen with the remote.
+
+---
+
+## Screenshots
+
+All screenshots are in [`docs/screenshots`](docs/screenshots).
+
+**Home**: widgets on top, your applications along the bottom
+
+![Home](docs/screenshots/home.png)
+
+**All applications**, by category
+
+![All applications](docs/screenshots/all-applications.png)
+
+**Widgets**: space weather, POTA spots, aircraft nearby
+
+![Space weather, POTA spots and aircraft nearby](docs/screenshots/widgets-space-weather-pota-aircraft.png)
+
+**Widgets**: mesh messages, satellites heard by SatNOGS, satellite passes
+
+![Mesh messages, SatNOGS and satellite passes](docs/screenshots/widgets-mesh-satnogs-satellite-passes.png)
+
+**Widget**: weather
+
+<img src="docs/screenshots/widget-weather.png" alt="Weather widget" width="33%"/>
+
+**Light theme**
+
+![Light theme](docs/screenshots/light-theme.png)
+
+**Settings**: location, theme and updates
+
+![Settings](docs/screenshots/settings.png)
+
 
 ---
 
@@ -197,40 +235,6 @@ TV_HOST=192.168.1.50 ./build-and-install.sh
 ```
 
 Without `TV_HOST` it only builds `app/build/outputs/apk/release/app-release.apk`.
-
----
-
-## Screenshots
-
-All screenshots are in [`docs/screenshots`](docs/screenshots).
-
-**Home**: widgets on top, your applications along the bottom
-
-![Home](docs/screenshots/home.png)
-
-**All applications**, by category
-
-![All applications](docs/screenshots/all-applications.png)
-
-**Widgets**: space weather, POTA spots, aircraft nearby
-
-![Space weather, POTA spots and aircraft nearby](docs/screenshots/widgets-space-weather-pota-aircraft.png)
-
-**Widgets**: mesh messages, satellites heard by SatNOGS, satellite passes
-
-![Mesh messages, SatNOGS and satellite passes](docs/screenshots/widgets-mesh-satnogs-satellite-passes.png)
-
-**Widget**: weather
-
-<img src="docs/screenshots/widget-weather.png" alt="Weather widget" width="33%"/>
-
-**Light theme**
-
-![Light theme](docs/screenshots/light-theme.png)
-
-**Settings**: location, theme and updates
-
-![Settings](docs/screenshots/settings.png)
 
 ---
 
