@@ -268,5 +268,3 @@ Pull requests are welcome. Open an issue first to discuss ideas or report bugs. 
 * [ADSB.lol](https://github.com/adsblol) and [adsb.fi](https://github.com/adsbfi) (ODbL)
 * [AIS-catcher](https://github.com/jvde-github/AIS-catcher)
 * [Open-Meteo](https://github.com/open-meteo/open-meteo)
-
-Discover community-contributed scripts for MeshMonitor: https://meshmonitor.org/user-scripts.html
