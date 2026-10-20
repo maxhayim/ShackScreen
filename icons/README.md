@@ -39,7 +39,6 @@ The set was drawn for ShackScreen by its author, in colour, dark and light. Bett
 | `meshcoremap.png` | MeshCore Map | Mesh |
 | `meshmap.png` | MeshMap | Mesh |
 | `meshmonitor.png` | MeshMonitor | Mesh |
-| `meshmonitor.png` | MeshMonitor | Mesh |
 | `meshtasticnode.png` | Meshtastic node | Mesh |
 | `broadcastify.png` | Broadcastify | SDR & scanners |
 | `kiwisdr.png` | KiwiSDR map | SDR & scanners |
