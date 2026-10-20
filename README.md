@@ -27,7 +27,9 @@ Live **widgets** across the top: space weather, POTA and DX spots, satellite pas
 
 ## Screenshots
 
-**Home**: the clock and your call signs, widgets in the middle, your applications along the bottom
+All screenshots use the **Demo** profile that comes with every install, and each theme with the icon style suggested for it.
+
+**Home**: Black theme, Colour icons. The clock and your call signs, widgets in the middle, your applications along the bottom
 
 ![Home](docs/screenshots/home.png)
 
@@ -35,9 +37,9 @@ Live **widgets** across the top: space weather, POTA and DX spots, satellite pas
 
 ![All applications](docs/screenshots/all-applications.png)
 
-**Widgets**: Space Weather, POTA Spots, Aircraft Nearby
+**Widgets**: Aircraft Nearby, Weather (with the next five hours), DX Cluster
 
-![Space Weather, POTA Spots and Aircraft Nearby](docs/screenshots/widgets-space-weather-pota-aircraft.png)
+![Aircraft Nearby, Weather and DX Cluster](docs/screenshots/widgets-aircraft-weather-dx.png)
 
 **Widgets**: Mesh Messages, Heard By SatNOGS, Satellite Passes
 
@@ -47,11 +49,17 @@ Live **widgets** across the top: space weather, POTA and DX spots, satellite pas
 
 <img src="docs/screenshots/widget-weather.png" alt="Weather widget" width="33%"/>
 
-**Light theme**
+**Ocean theme with Dark icons**
+
+![Ocean theme with Dark icons](docs/screenshots/theme-ocean-dark-icons.png)
+
+**Light theme with Light icons**
 
 ![Light theme](docs/screenshots/light-theme.png)
 
-**Settings**: location, theme and updates
+![All applications, Light theme](docs/screenshots/all-applications-light.png)
+
+**Settings**: profiles, widgets, location, appearance, launcher and updates
 
 ![Settings](docs/screenshots/settings.png)
 
@@ -93,9 +101,9 @@ Needed for Aircraft Nearby, Satellite Passes and Weather.
 
 ---
 
-### 5) Add your call signs (optional)
+### 5) Add your profile (optional)
 
-Select your call signs next to the clock (or **Settings → Call Signs**) and add your **ham call sign**, **GMRS call sign** and **CB handle**. They show next to the clock, and stay on the device.
+ShackScreen starts with the **Demo** profile (N0CALL, WRXX000, Night Owl). Select the call signs next to the clock (or **Settings → Profiles**), then **Add profile** with your **ham call sign**, **GMRS call sign** and **CB handle**. Add as many profiles as you like, one for each operator in the shack, and switch between them from the same place. They stay on the device.
 
 ---
 
@@ -210,7 +218,7 @@ To reach servers at home from a TV somewhere else, use a VPN such as [Tailscale]
 
 - **Settings → Appearance**: Black (default), Midnight, Ocean, Forest, Plum, Ember, Slate, Light, or follow the TV.
 - Every application shows its **own icon**, fetched from the server you point it at and made square like a phone app icon. A site without a good one gets a coloured tile for its category.
-- **Settings → Appearance → Application icons**: Colour, Dark, Light, or match the theme.
+- **Settings → Appearance → Application icons**: Colour, Dark, Light, or match the theme. The style that suits your theme is marked *suggested*: Colour on Black, Dark on the tinted themes (Midnight, Ocean, Forest, Plum, Ember, Slate), Light on Light.
 - ShackScreen's own icon set lives in [`icons/`](icons) (512 × 512 PNG, in colour, dark and light). The app loads it from this repo, so new icons arrive without an update. **Want to design one?** See [Contributing Icons](docs/ICONS.md).
 - **All applications** lists them by category, with a count for each, like a TV channel guide.
 - To change an icon: press and hold the application, **Edit**, then **Icon**. Choose a symbol, an image from a web address, or an image on the device (tablets and TVs with a file picker).

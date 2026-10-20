@@ -2,5 +2,7 @@
 <resources>
     <style name="Dialog" parent="@android:style/Theme.DeviceDefault.Dialog.Alert">
         <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">#FFFFFFFF</item>
+        <item name="android:windowTitleStyle">@style/DialogTitle</item>
     </style>
 </resources>
