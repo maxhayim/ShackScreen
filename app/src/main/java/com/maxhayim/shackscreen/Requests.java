@@ -72,7 +72,7 @@ final class Requests {
     }
 
     /** Black modules on white with a quiet zone, scaled to about px square. */
-    private static Bitmap qr(String text, int px) {
+    static Bitmap qr(String text, int px) {
         QrCode code = QrCode.encodeText(text, QrCode.Ecc.LOW);
         int border = 2, n = code.size + border * 2, scale = Math.max(1, px / n);
         Bitmap b = Bitmap.createBitmap(n * scale, n * scale, Bitmap.Config.RGB_565);

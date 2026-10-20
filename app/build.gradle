@@ -11,8 +11,18 @@ android {
         // 22 = Fire OS 5 / Android TV 5.1, so older sticks and TVs can still run it.
         minSdk 22
         targetSdk 35
-        versionCode 23
-        versionName '0.11.2'
+        versionCode 24
+        versionName '0.12.0'
+
+        // Google Drive and Dropbox sign-in need the app's own OAuth keys. They live outside the repo
+        // (SHACKSCREEN_OAUTH, or ../Signing/oauth.properties) and are built into release APKs; a build
+        // without them simply doesn't offer those two services.
+        def oauth = new Properties()
+        def oauthFile = file(System.getenv('SHACKSCREEN_OAUTH') ?: '../../Signing/oauth.properties')
+        if (oauthFile.exists()) oauthFile.withInputStream { oauth.load(it) }
+        buildConfigField 'String', 'GOOGLE_CLIENT_ID', "\"${oauth.getProperty('googleClientId', '')}\""
+        buildConfigField 'String', 'GOOGLE_CLIENT_SECRET', "\"${oauth.getProperty('googleClientSecret', '')}\""
+        buildConfigField 'String', 'DROPBOX_APP_KEY', "\"${oauth.getProperty('dropboxAppKey', '')}\""
     }
 
     // Release APKs must always carry the same key, or a downloaded update won't install over the old one.

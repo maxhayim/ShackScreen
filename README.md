@@ -191,7 +191,8 @@ Each application has its own page size, from 50% to 150%, so a site laid out lar
 
 When you sign in to a site inside ShackScreen, it offers to save the login, like a password manager. Next time it fills it in and signs in for you.
 
-- Saved **encrypted** (AES-256-GCM) with a key kept in the Android Keystore, which never leaves it. Nothing is sent anywhere.
+- Kept for each **profile**: switching profile switches the saved logins, and the Demo profile has none of yours.
+- Saved **encrypted** (AES-256-GCM) with a key kept in the Android Keystore, which never leaves it. Nothing is sent anywhere, except inside an encrypted [backup](#backup) if you set one up.
 - Filled in **only on the site it was saved for**.
 - If a saved login doesn't work, ShackScreen fills it in but stops pressing the sign-in button, so a wrong password isn't sent over and over.
 - Add, change or delete logins, or turn off signing in automatically: press and hold the application, **Edit**, then **Saved logins**.
@@ -256,6 +257,28 @@ Some devices (Fire TV, newer Google TV) don't let you change the home screen; th
 
 ---
 
+## Backup
+
+**Settings → Backup** keeps an encrypted copy of your setup on a cloud service, and puts it back on a new or reset TV.
+
+- **What's in it:** your profiles and each profile's saved logins, your applications (with their addresses and tokens), widgets, location, theme, map keys and custom icons.
+- **Encrypted on the TV** with a passphrase you choose (PBKDF2, then AES-256-GCM), before it's sent. The service only stores a file it can't read. Write the passphrase down: nobody can recover it, and you need it to restore.
+- **Services:**
+
+| Service | How you connect |
+|---|---|
+| **Google Drive** | Scan a QR code with your phone and enter the code shown on the TV. Saved in a ShackScreen folder; ShackScreen can only see its own files. |
+| **Dropbox** | Scan a QR code, allow ShackScreen, then type the code Dropbox shows. Saved in Apps/ShackScreen. |
+| **S3-compatible** | AWS S3, Backblaze B2, Cloudflare R2 or MinIO: an endpoint, bucket and access key. Use a key that can only reach that bucket. |
+| **WebDAV** | Nextcloud, Synology, ownCloud or any WebDAV server: a folder address, user name and password. |
+
+- **Back up every day** is on once a service and passphrase are set. **Back up now** does it straight away.
+- **Restore from backup:** choose the same service, enter the passphrase, and confirm. It replaces what's on the TV, then reopens the dashboard.
+- Sign-ins to the service, and the passphrase, are kept encrypted on the TV only. **Stop backing up** forgets them; the backup stays on the service.
+- Needs Android 6 or later.
+
+---
+
 ## Updates
 
 **Settings → Updates**:
@@ -291,6 +314,8 @@ TV_HOST=192.168.1.50 ./build-and-install.sh
 ```
 
 Without `TV_HOST` it only builds `app/build/outputs/apk/release/app-release.apk`.
+
+Google Drive and Dropbox backups need your own OAuth keys: see [docs/BACKUP-KEYS.md](docs/BACKUP-KEYS.md). Without them, the build offers S3 and WebDAV only.
 
 ---
 

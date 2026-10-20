@@ -141,6 +141,7 @@ final class CallSigns {
         List<Profile> list = profiles(c);
         for (int i = list.size() - 1; i >= 0; i--) if (list.get(i).id.equals(p.id)) list.remove(i);
         save(c, list);
+        Logins.deleteProfile(c, p.id);
         if (p.id.equals(activeId(c))) use(c, demo());
     }
 

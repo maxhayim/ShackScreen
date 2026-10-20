@@ -23,9 +23,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
 /**
- * Saved logins, one per app and site, like a password manager's. Each is encrypted with AES-GCM
- * under a key that lives in the Android Keystore and never leaves it, so the stored file alone is
- * useless. A login is only ever filled into the site it was saved for.
+ * Saved logins, one per app and site, like a password manager's, kept for each profile: switching
+ * profile switches the logins. Each is encrypted with AES-GCM under a key that lives in the Android
+ * Keystore and never leaves it, so the stored file alone is useless. A login is only ever filled
+ * into the site it was saved for.
  */
 final class Logins {
 
@@ -35,7 +36,7 @@ final class Logins {
     }
 
     private static final String PREFS = "logins", NEVER = "logins_never", ALIAS = "shackscreen_logins";
-    private static final String SEP = "\n";
+    private static final String SEP = "\n", MIGRATED = "migrated_to_profiles";
 
     private Logins() {}
 
@@ -45,14 +46,61 @@ final class Logins {
     }
 
     static List<Login> list(Context c, String id) {
+        return list(c, CallSigns.active(c).id, id);
+    }
+
+    /** A profile's logins for one app. */
+    static List<Login> list(Context c, String profile, String id) {
         List<Login> out = new ArrayList<>();
         if (!supported()) return out;
-        for (Map.Entry<String, ?> e : prefs(c).getAll().entrySet()) {
+        for (Map.Entry<String, ?> e : prefs(c, profile).getAll().entrySet()) {
             if (!e.getKey().startsWith(id + SEP)) continue;
             Login l = decode(e.getKey().substring(id.length() + 1), (String) e.getValue());
             if (l != null) out.add(l);
         }
         return out;
+    }
+
+    /** Every login of a profile, as {app id, login}, for a backup. */
+    static List<Object[]> all(Context c, String profile) {
+        List<Object[]> out = new ArrayList<>();
+        if (!supported()) return out;
+        for (Map.Entry<String, ?> e : prefs(c, profile).getAll().entrySet()) {
+            int cut = e.getKey().indexOf(SEP);
+            if (cut < 0) continue;
+            Login l = decode(e.getKey().substring(cut + 1), (String) e.getValue());
+            if (l != null) out.add(new Object[]{e.getKey().substring(0, cut), l});
+        }
+        return out;
+    }
+
+    /** The "never for this site" keys of a profile ("app id\nhost"), for a backup. */
+    static java.util.Set<String> nevers(Context c, String profile) {
+        return new java.util.HashSet<>(never(c, profile).getAll().keySet());
+    }
+
+    /** Replaces a profile's logins with these (from a backup), encrypted on this device. */
+    static void replaceAll(Context c, String profile, List<Object[]> logins, Collection<String> nevers) {
+        SharedPreferences.Editor ed = prefs(c, profile).edit().clear();
+        for (Object[] e : logins) {
+            Login l = (Login) e[1];
+            try {
+                JSONObject o = new JSONObject().put("user", l.user).put("pass", l.pass).put("auto", l.auto);
+                ed.putString(e[0] + SEP + l.host, encrypt(o.toString()));
+            } catch (Exception ignored) {
+                // A login that can't be encrypted here is left out rather than stored in the clear.
+            }
+        }
+        ed.commit();
+        SharedPreferences.Editor ne = never(c, profile).edit().clear();
+        for (String k : nevers) ne.putBoolean(k, true);
+        ne.commit();
+    }
+
+    /** A deleted profile's logins go with it. */
+    static void deleteProfile(Context c, String profile) {
+        prefs(c, profile).edit().clear().commit();
+        never(c, profile).edit().clear().commit();
     }
 
     static Login find(Context c, String id, String host) {
@@ -86,9 +134,14 @@ final class Logins {
         return never(c).getBoolean(id + SEP + host, false);
     }
 
-    /** Drops the logins of apps that were deleted. */
+    /** Drops the logins of apps that were deleted, in every profile. */
     static void prune(Context c, Collection<String> ids) {
-        for (SharedPreferences p : new SharedPreferences[]{prefs(c), never(c)}) {
+        List<SharedPreferences> files = new ArrayList<>();
+        for (CallSigns.Profile pr : CallSigns.profiles(c)) {
+            files.add(prefs(c, pr.id));
+            files.add(never(c, pr.id));
+        }
+        for (SharedPreferences p : files) {
             SharedPreferences.Editor ed = p.edit();
             for (String k : p.getAll().keySet()) {
                 int cut = k.indexOf(SEP);
@@ -113,11 +166,49 @@ final class Logins {
     }
 
     private static SharedPreferences prefs(Context c) {
-        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        return prefs(c, CallSigns.active(c).id);
     }
 
     private static SharedPreferences never(Context c) {
-        return c.getSharedPreferences(NEVER, Context.MODE_PRIVATE);
+        return never(c, CallSigns.active(c).id);
+    }
+
+    private static SharedPreferences prefs(Context c, String profile) {
+        migrate(c);
+        return c.getSharedPreferences(PREFS + "_" + profile, Context.MODE_PRIVATE);
+    }
+
+    private static SharedPreferences never(Context c, String profile) {
+        migrate(c);
+        return c.getSharedPreferences(NEVER + "_" + profile, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Logins were once kept for the whole device. They move to the first profile the user made, or
+     * to Demo if there's none yet, and the old files are emptied.
+     */
+    private static void migrate(Context c) {
+        SharedPreferences flags = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (flags.getBoolean(MIGRATED, false)) return;
+        String target = CallSigns.DEMO;
+        for (CallSigns.Profile p : CallSigns.profiles(c)) {
+            if (!p.demo()) {
+                target = p.id;
+                break;
+            }
+        }
+        for (String name : new String[]{PREFS, NEVER}) {
+            SharedPreferences from = c.getSharedPreferences(name, Context.MODE_PRIVATE);
+            SharedPreferences.Editor to = c.getSharedPreferences(name + "_" + target, Context.MODE_PRIVATE).edit();
+            for (Map.Entry<String, ?> e : from.getAll().entrySet()) {
+                if (e.getKey().equals(MIGRATED)) continue;
+                if (e.getValue() instanceof String) to.putString(e.getKey(), (String) e.getValue());
+                else if (e.getValue() instanceof Boolean) to.putBoolean(e.getKey(), (Boolean) e.getValue());
+            }
+            to.commit();
+            from.edit().clear().commit();
+        }
+        flags.edit().putBoolean(MIGRATED, true).commit();
     }
 
     // --- Encryption ---------------------------------------------------------------------------

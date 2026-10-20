@@ -133,6 +133,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        new Thread(() -> Backup.ifDue(getApplicationContext()), "shackscreen-backup").start();
         // Settings may have changed while we were away, so rebuild from the stores each time.
         instances = Store.load(this);
         List<String> now = Widgets.shown(this);

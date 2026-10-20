@@ -51,7 +51,7 @@ public class SettingsActivity extends BaseActivity {
 
     // The sections down the side: key, title, symbol.
     private static final String APPS = "apps", WIDGETS = "widgets", CALLS = "calls", LOCATION = "location",
-            LOOK = "look", LAUNCHER = "launcher", UPDATES = "updates";
+            LOOK = "look", LAUNCHER = "launcher", BACKUP = "backup", UPDATES = "updates";
     private static final Object[][] SECTIONS = {
             {APPS, R.string.applications, R.drawable.ic_grid},
             {WIDGETS, R.string.widgets, R.drawable.ic_waves},
@@ -59,9 +59,11 @@ public class SettingsActivity extends BaseActivity {
             {LOCATION, R.string.location, R.drawable.ic_globe},
             {LOOK, R.string.appearance, R.drawable.ic_theme},
             {LAUNCHER, R.string.launcher, R.drawable.ic_grid},
+            {BACKUP, R.string.backup, R.drawable.ic_cloud},
             {UPDATES, R.string.updates, R.drawable.ic_update}};
 
     private String section = APPS;
+    private long lastMove; // when the remote last moved up or down, so only that switches section by focus
     private boolean building;
     private LinearLayout side, pane;
     private TextView paneTitle, paneHint;
@@ -127,6 +129,15 @@ public class SettingsActivity extends BaseActivity {
     }
 
     @Override
+    public boolean dispatchKeyEvent(android.view.KeyEvent e) {
+        int k = e.getKeyCode();
+        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN && (k == android.view.KeyEvent.KEYCODE_DPAD_UP || k == android.view.KeyEvent.KEYCODE_DPAD_DOWN)) {
+            lastMove = android.os.SystemClock.uptimeMillis();
+        }
+        return super.dispatchKeyEvent(e);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
         out.putString("section", section); // a theme change recreates the screen
@@ -169,7 +180,13 @@ public class SettingsActivity extends BaseActivity {
         row.addView(t);
         // Moving through the list shows each section, as in All applications.
         row.setOnFocusChangeListener((v, f) -> {
-            if (f) select(key);
+            if (!f) return;
+            if (android.os.SystemClock.uptimeMillis() - lastMove < 600) {
+                select(key);
+            } else if (!key.equals(section)) {
+                // Focus landed here on its own (a dialog closed after the pane was rebuilt): stay put.
+                for (View item : sideItems) if (section.equals(item.getTag())) ui.post(item::requestFocus);
+            }
         });
         row.setOnClickListener(v -> select(key));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -231,6 +248,7 @@ public class SettingsActivity extends BaseActivity {
             case LOCATION: locationPane(); break;
             case LOOK: lookPane(); break;
             case LAUNCHER: launcherPane(); break;
+            case BACKUP: backupPane(); break;
             default: updatesPane();
         }
         Appearance.font(pane);
@@ -479,6 +497,334 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
+    // --- Backup ---------------------------------------------------------------------------------
+
+    /** Encrypted backups of profiles, logins and settings to a cloud service, and restoring them. */
+    private void backupPane() {
+        head(R.string.backup, getString(R.string.backup_hint));
+        if (!Backup.supported()) {
+            pane.addView(row(0, getString(R.string.backup_unsupported), ""));
+            return;
+        }
+        View service = row(R.drawable.ic_cloud, getString(R.string.backup_service), Cloud.describe(this));
+        service.setOnClickListener(v -> pickService());
+        pane.addView(service);
+        View pass = row(0, getString(R.string.backup_passphrase),
+                getString(Backup.passphrase(this).isEmpty() ? R.string.not_set : R.string.backup_passphrase_set));
+        pass.setOnClickListener(v -> editPassphrase(null));
+        pane.addView(pass);
+        View now = row(R.drawable.ic_update, getString(R.string.backup_now), backupStatus());
+        now.setOnClickListener(v -> {
+            if (!Backup.ready(this)) {
+                toast(Cloud.service(this).isEmpty() ? R.string.backup_need_service : R.string.backup_need_passphrase);
+                return;
+            }
+            setValue(now, getString(R.string.backup_working));
+            bgThen(() -> Backup.now(getApplicationContext()), err -> {
+                setValue(now, backupStatus());
+                toast(err == null ? getString(R.string.backup_done) : getString(R.string.backup_failed, err));
+            });
+        });
+        pane.addView(now);
+        View auto = row(0, getString(R.string.backup_auto), getString(Backup.auto(this) ? R.string.on : R.string.off));
+        auto.setOnClickListener(v -> {
+            Backup.setAuto(this, !Backup.auto(this));
+            setValue(auto, getString(Backup.auto(this) ? R.string.on : R.string.off));
+        });
+        pane.addView(auto);
+        View restore = row(0, getString(R.string.backup_restore), "");
+        restore.setOnClickListener(v -> {
+            if (Cloud.service(this).isEmpty()) {
+                toast(R.string.backup_need_service);
+                return;
+            }
+            askRestorePassphrase();
+        });
+        pane.addView(restore);
+    }
+
+    private String backupStatus() {
+        long last = Backup.last(this);
+        String err = Backup.lastError(this);
+        if (!err.isEmpty()) return getString(R.string.backup_last_failed);
+        if (last == 0) return getString(R.string.backup_never);
+        return getString(R.string.backup_last, android.text.format.DateUtils.getRelativeTimeSpanString(last));
+    }
+
+    private void toast(int res) {
+        android.widget.Toast.makeText(this, res, android.widget.Toast.LENGTH_LONG).show();
+    }
+
+    private void toast(String s) {
+        android.widget.Toast.makeText(this, s, android.widget.Toast.LENGTH_LONG).show();
+    }
+
+    interface Work { void run() throws Exception; }
+
+    interface After { void run(String error); }
+
+    /** Runs work off the main thread, then after on it with null or the error's message. */
+    private void bgThen(Work work, After after) {
+        new Thread(() -> {
+            String err = null;
+            try {
+                work.run();
+            } catch (Exception e) {
+                err = e instanceof Backup.BadPassphrase ? getString(R.string.backup_bad_passphrase) : String.valueOf(e.getMessage());
+            }
+            String result = err;
+            ui.post(() -> {
+                if (!isFinishing()) after.run(result);
+            });
+        }, "shackscreen-backup").start();
+    }
+
+    private void pickService() {
+        String[] ids = {Cloud.GOOGLE, Cloud.DROPBOX, Cloud.S3, Cloud.WEBDAV, Cloud.NONE};
+        String[] names = new String[ids.length];
+        for (int i = 0; i < ids.length; i++) {
+            names[i] = ids[i].isEmpty() ? getString(R.string.backup_stop)
+                    : Cloud.name(this, ids[i]) + (Cloud.available(ids[i]) ? "" : "   ·   " + getString(R.string.backup_not_in_build));
+        }
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.backup_service)
+                .setItems(names, (d, which) -> {
+                    switch (ids[which]) {
+                        case Cloud.GOOGLE: if (Cloud.available(Cloud.GOOGLE)) signInGoogle(); else toast(R.string.backup_not_in_build_long); break;
+                        case Cloud.DROPBOX: if (Cloud.available(Cloud.DROPBOX)) signInDropbox(); else toast(R.string.backup_not_in_build_long); break;
+                        case Cloud.S3: s3Form(); break;
+                        case Cloud.WEBDAV: davForm(); break;
+                        default:
+                            Cloud.forget(this);
+                            buildPane();
+                    }
+                })
+                .show();
+    }
+
+    /** After a service is set: check it answers, then ask for a passphrase if there's none yet. */
+    private void serviceSet() {
+        buildPane();
+        toast(R.string.backup_checking);
+        bgThen(() -> Cloud.download(getApplicationContext()), err -> {
+            if (err != null) {
+                toast(getString(R.string.backup_service_failed, err));
+                return;
+            }
+            toast(R.string.backup_service_ok);
+            if (Backup.passphrase(this).isEmpty()) editPassphrase(null);
+        });
+    }
+
+    private void s3Form() {
+        LinearLayout form = form();
+        android.content.SharedPreferences p = Cloud.prefs(this);
+        EditText endpoint = field(getString(R.string.s3_endpoint), p.getString("s3_endpoint", ""), InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        EditText region = field(getString(R.string.s3_region), p.getString("s3_region", ""), InputType.TYPE_CLASS_TEXT);
+        EditText bucket = field(getString(R.string.s3_bucket), p.getString("s3_bucket", ""), InputType.TYPE_CLASS_TEXT);
+        EditText access = field(getString(R.string.s3_access), p.getString("s3_access", ""), InputType.TYPE_CLASS_TEXT);
+        EditText secret = field(getString(R.string.s3_secret), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        for (View v : new View[]{endpoint, region, bucket, access, secret}) form.addView(v);
+        Appearance.font(form);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle("S3-compatible")
+                .setMessage(R.string.s3_help)
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    String sec = secret.getText().toString().trim();
+                    if (sec.isEmpty()) sec = Cloud.secret(this, "s3_secret"); // left blank: keep the saved one
+                    Cloud.setS3(this, endpoint.getText().toString().trim(), region.getText().toString().trim(),
+                            bucket.getText().toString().trim(), access.getText().toString().trim(), sec);
+                    serviceSet();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+    }
+
+    private void davForm() {
+        LinearLayout form = form();
+        android.content.SharedPreferences p = Cloud.prefs(this);
+        EditText url = field(getString(R.string.dav_url), p.getString("dav_url", ""), InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        EditText user = field(getString(R.string.login_user), p.getString("dav_user", ""), InputType.TYPE_CLASS_TEXT);
+        EditText pass = field(getString(R.string.login_pass), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        form.addView(url);
+        form.addView(user);
+        form.addView(pass);
+        Appearance.font(form);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle("WebDAV")
+                .setMessage(R.string.dav_help)
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    String pw = pass.getText().toString();
+                    if (pw.isEmpty()) pw = Cloud.secret(this, "dav_pass");
+                    Cloud.setWebDav(this, url.getText().toString().trim(), user.getText().toString().trim(), pw);
+                    serviceSet();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+    }
+
+    /** Google's TV sign-in: open the address on a phone (or scan it) and type the code shown here. */
+    private void signInGoogle() {
+        toast(R.string.backup_checking);
+        Cloud.DeviceCode[] code = new Cloud.DeviceCode[1];
+        bgThen(() -> code[0] = Cloud.googleStart(), err -> {
+            if (err != null) {
+                toast(getString(R.string.backup_service_failed, err));
+                return;
+            }
+            AlertDialog dialog = new AlertDialog.Builder(this, R.style.Dialog)
+                    .setTitle(R.string.google_sign_in)
+                    .setView(qrPanel(code[0].url, getString(R.string.google_steps, code[0].url.replace("https://", "")), code[0].userCode))
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+            boolean[] ok = new boolean[1];
+            bgThen(() -> ok[0] = Cloud.googleFinish(getApplicationContext(), code[0]), e2 -> {
+                if (!dialog.isShowing()) return; // cancelled
+                dialog.dismiss();
+                if (e2 != null) toast(getString(R.string.backup_service_failed, e2));
+                else if (!ok[0]) toast(R.string.sign_in_cancelled);
+                else serviceSet();
+            });
+        });
+    }
+
+    /** Dropbox: approve on a phone, then type the code Dropbox shows. */
+    private void signInDropbox() {
+        String[] start = Cloud.dropboxStart();
+        LinearLayout panel = qrPanel(start[0], getString(R.string.dropbox_steps), null);
+        EditText code = field(getString(R.string.dropbox_code), "", InputType.TYPE_CLASS_TEXT);
+        panel.addView(code);
+        Appearance.font(panel);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.dropbox_sign_in)
+                .setView(panel)
+                .setPositiveButton(R.string.save, (d, w) -> bgThen(
+                        () -> Cloud.dropboxFinish(getApplicationContext(), code.getText().toString(), start[1]),
+                        err -> {
+                            if (err != null) toast(getString(R.string.backup_service_failed, err));
+                            else serviceSet();
+                        }))
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+    }
+
+    /** A QR code of an address, the steps beside it, and an optional big code to type. */
+    private LinearLayout qrPanel(String url, String steps, String bigCode) {
+        LinearLayout panel = form();
+        LinearLayout r = new LinearLayout(this);
+        r.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        ImageView qr = new ImageView(this);
+        qr.setImageBitmap(Requests.qr(url, dp(150)));
+        r.addView(qr, new LinearLayout.LayoutParams(dp(150), dp(150)));
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setPadding(dp(20), 0, 0, 0);
+        TextView t = new TextView(this);
+        t.setText(steps);
+        t.setTextColor(0xFFE5E7EB);
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        col.addView(t);
+        if (bigCode != null) {
+            TextView c = new TextView(this);
+            c.setText(bigCode);
+            c.setTextColor(0xFFF5A524);
+            c.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            c.setLetterSpacing(0.08f);
+            c.setPadding(0, dp(10), 0, 0);
+            col.addView(c);
+        }
+        r.addView(col, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        panel.addView(r);
+        Appearance.font(panel);
+        return panel;
+    }
+
+    private LinearLayout form() {
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(24), dp(8), dp(24), 0);
+        return form;
+    }
+
+    /** Sets the passphrase (twice, to be sure); then runs next, if given. */
+    private void editPassphrase(Runnable next) {
+        LinearLayout form = form();
+        EditText a = field(getString(R.string.backup_passphrase), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText b = field(getString(R.string.backup_passphrase_again), "", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        form.addView(a);
+        form.addView(b);
+        Appearance.font(form);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.backup_passphrase)
+                .setMessage(R.string.backup_passphrase_help)
+                .setView(form)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    String p = a.getText().toString();
+                    if (p.length() < 8) {
+                        toast(R.string.backup_passphrase_short);
+                        return;
+                    }
+                    if (!p.equals(b.getText().toString())) {
+                        toast(R.string.backup_passphrase_mismatch);
+                        return;
+                    }
+                    Backup.setPassphrase(this, p);
+                    buildPane();
+                    if (next != null) next.run();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+    }
+
+    /** Restoring needs the backup's passphrase: on a new TV it hasn't been typed here yet. */
+    private void askRestorePassphrase() {
+        LinearLayout form = form();
+        EditText a = field(getString(R.string.backup_passphrase), Backup.passphrase(this), InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        form.addView(a);
+        Appearance.font(form);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.backup_restore)
+                .setMessage(R.string.backup_restore_help)
+                .setView(form)
+                .setPositiveButton(R.string.backup_open, (d, w) -> {
+                    String p = a.getText().toString();
+                    org.json.JSONObject[] found = new org.json.JSONObject[1];
+                    toast(R.string.backup_checking);
+                    bgThen(() -> found[0] = Backup.fetch(getApplicationContext(), p), err -> {
+                        if (err != null) toast(getString(R.string.backup_failed, err));
+                        else if (found[0] == null) toast(R.string.backup_none_found);
+                        else confirmRestore(found[0], p);
+                    });
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
+    }
+
+    private void confirmRestore(org.json.JSONObject backup, String passphrase) {
+        String when = android.text.format.DateUtils.formatDateTime(this, backup.optLong("created"),
+                android.text.format.DateUtils.FORMAT_SHOW_DATE | android.text.format.DateUtils.FORMAT_SHOW_TIME | android.text.format.DateUtils.FORMAT_SHOW_YEAR);
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.backup_restore)
+                .setMessage(getString(R.string.backup_restore_confirm, backup.optString("device"), when))
+                .setPositiveButton(R.string.backup_restore_go, (d, w) -> bgThen(() -> {
+                    Backup.apply(getApplicationContext(), backup);
+                    Backup.setPassphrase(getApplicationContext(), passphrase);
+                }, err -> {
+                    if (err != null) {
+                        toast(getString(R.string.backup_failed, err));
+                        return;
+                    }
+                    toast(R.string.backup_restored);
+                    // Start again from the dashboard, so everything is read from the restored settings.
+                    startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    finish();
+                }))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
     private String iconStyleLabel(String id) {
         switch (id) {
             case Appearance.ICONS_DARK: return getString(R.string.icons_dark);
@@ -587,7 +933,7 @@ public class SettingsActivity extends BaseActivity {
             String where = in.hasUrl() ? in.url : getString(R.string.needs_address);
             LinearLayout r = row(0, in.name, where);
             android.widget.FrameLayout frame = new android.widget.FrameLayout(this);
-            android.graphics.drawable.GradientDrawable shape = pill(color(R.color.icon_bg));
+            android.graphics.drawable.GradientDrawable shape = pill(0); // no backing: it showed as a rim
             shape.setCornerRadius(dp(9)); // a rounded square, like the icons everywhere else
             frame.setBackground(shape);
             frame.setClipToOutline(true);
