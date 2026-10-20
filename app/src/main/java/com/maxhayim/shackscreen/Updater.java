@@ -75,13 +75,6 @@ final class Updater {
 
     static void setStatus(Context c, String s) { prefs(c).edit().putString("status", s).apply(); }
 
-    /** True once: ShackScreen was on screen when the update it just finished started. */
-    static boolean takeReopen(Context c) {
-        boolean reopen = prefs(c).getBoolean("reopen", false);
-        if (reopen) prefs(c).edit().remove("reopen").apply();
-        return reopen;
-    }
-
     // --- Checking --------------------------------------------------------------------------
 
     /** Runs the daily job, and checks now if the last check is old. Called from the dashboard. */
@@ -224,8 +217,6 @@ final class Updater {
             // Silent when ShackScreen is the installer of record of itself; otherwise Android asks.
             params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED);
         }
-        // Android closes ShackScreen to replace it; UpdateReceiver brings it back if it was on screen.
-        prefs(c).edit().putBoolean("reopen", visible > 0).apply();
         int id = pi.createSession(params);
         try (PackageInstaller.Session s = pi.openSession(id)) {
             try (OutputStream out = s.openWrite("base.apk", 0, apk.length());
