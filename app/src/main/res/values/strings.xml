@@ -190,4 +190,6 @@
     <string name="launcher_no_choice">This device doesn\'t let you choose the home screen.</string>
     <string name="launcher_missing">That app isn\'t installed any more.</string>
     <string name="android_settings">Android settings</string>
+    <string name="android_apps_hint">Press and hold an app (or long-press OK) to add it to the home row or take it off.</string>
+    <string name="launcher_off_done">Launcher mode is off. Back to the TV\'s own home screen.</string>
 </resources>

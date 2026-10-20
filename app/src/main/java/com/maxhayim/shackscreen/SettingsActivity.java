@@ -1,6 +1,7 @@
 package com.maxhayim.shackscreen;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -86,7 +87,7 @@ public class SettingsActivity extends BaseActivity {
         brand.setPadding(dp(6), 0, 0, dp(18));
         android.widget.ImageView logo = new android.widget.ImageView(this);
         logo.setImageResource(R.drawable.ic_settings);
-        logo.setColorFilter(color(R.color.accent));
+        logo.setColorFilter(color(R.color.text)); // as on the dashboard's Settings button
         brand.addView(logo, new LinearLayout.LayoutParams(dp(28), dp(28)));
         TextView name = text(getString(R.string.settings), 21, R.color.text);
         name.setTypeface(name.getTypeface(), android.graphics.Typeface.BOLD);
@@ -432,10 +433,13 @@ public class SettingsActivity extends BaseActivity {
         boolean on = Launcher.enabled(this);
         View mode = row(R.drawable.ic_grid, getString(R.string.launcher_mode), getString(on ? R.string.on : R.string.off));
         mode.setOnClickListener(v -> {
-            boolean now = !Launcher.enabled(this);
-            Launcher.setEnabled(this, now);
+            if (Launcher.enabled(this)) {
+                turnLauncherOff();
+                return;
+            }
+            Launcher.setEnabled(this, true);
             buildPane();
-            if (now) Launcher.chooseHome(this);
+            Launcher.chooseHome(this);
         });
         pane.addView(mode);
         if (on) {
@@ -455,6 +459,16 @@ public class SettingsActivity extends BaseActivity {
             case Appearance.ICONS_AUTO: return getString(R.string.icons_auto);
             default: return getString(R.string.icons_color);
         }
+    }
+
+    /**
+     * Switching the home entry off makes Android close ShackScreen and show the TV's own home
+     * screen, so say so first.
+     */
+    private void turnLauncherOff() {
+        android.widget.Toast.makeText(getApplicationContext(), R.string.launcher_off_done, android.widget.Toast.LENGTH_LONG).show();
+        Launcher.setEnabled(this, false);
+        buildPane();
     }
 
     private void updatesPane() {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Settings as a radio's tuning knob: a dial with tick marks and a pointer. -->
+<!-- Settings as a radio's volume knob: a knob with a pointer, over a dotted scale like a dial's markings. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="2"
+        android:pathData="M12,6a6,6 0,1 1,0 12a6,6 0,1 1,0 -12z" />
     <path android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:strokeLineCap="round"
-        android:pathData="M12,6.5a5.5,5.5 0,1 1,0 11a5.5,5.5 0,1 1,0 -11z" />
-    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:strokeLineCap="round"
-        android:pathData="M12,12 L14.6,9.4" />
-    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:strokeLineCap="round"
-        android:pathData="M12,1.5V3 M19.4,4.6L18.4,5.6 M22.5,12H21 M4.6,4.6L5.6,5.6 M1.5,12H3 M19.4,19.4L18.4,18.4 M4.6,19.4L5.6,18.4" />
+        android:pathData="M12,12 L9.2,9.2" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M4.2,19.8m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M1.6,14.8m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M1.6,9.2m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M4.2,4.2m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M9.2,1.6m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M14.8,1.6m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M19.8,4.2m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M22.4,9.2m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M22.4,14.8m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0 M19.8,19.8m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0" />
 </vector>

@@ -75,6 +75,14 @@ final class Launcher {
 
     /** True when ShackScreen is the home screen Android opens now. */
     static boolean isHome(Context c) {
+        if (!enabled(c)) return false;
+        if (android.os.Build.VERSION.SDK_INT >= 29) {
+            // Android 10+ keeps the home screen as a role; resolving HOME can name the wrong app.
+            android.app.role.RoleManager rm = c.getSystemService(android.app.role.RoleManager.class);
+            if (rm != null && rm.isRoleAvailable(android.app.role.RoleManager.ROLE_HOME)) {
+                return rm.isRoleHeld(android.app.role.RoleManager.ROLE_HOME);
+            }
+        }
         ResolveInfo r = c.getPackageManager().resolveActivity(
                 new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY);
         return r != null && r.activityInfo != null && c.getPackageName().equals(r.activityInfo.packageName);

@@ -233,6 +233,21 @@ An app that can't be reached is retried every 30 seconds, and the screen stays o
 
 ---
 
+## Launcher Mode
+
+ShackScreen is a launcher dashboard: it can also be the device's home screen. This is **off by default**.
+
+**Settings → Launcher → Use ShackScreen as a launcher**:
+
+- Android's **Default home app** choice opens; pick ShackScreen. **Home** on the remote then opens the dashboard, and **Back** stays on it.
+- **All applications** gets an **Android apps** category: every installed app, plus **Android settings**. Press and hold an app to add it to the home row next to your radio applications.
+- **Home screen** shows which launcher is in charge, and switches back to the TV's own.
+- Turning launcher mode off returns to the TV's own home screen.
+
+Some devices (Fire TV, newer Google TV) don't let you change the home screen; the Android apps list still works there.
+
+---
+
 ## Updates
 
 **Settings → Updates**:

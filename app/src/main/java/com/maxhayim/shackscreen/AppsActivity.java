@@ -30,7 +30,7 @@ public class AppsActivity extends BaseActivity {
     private static final int SIDE = 236, PAD_LEFT = 28, PAD_RIGHT = 20;
 
     private LinearLayout side, grid;
-    private TextView heading, count;
+    private TextView heading, count, hint;
     private ScrollView gridScroll;
     private List<Store.Instance> instances;
     private String category = ALL;
@@ -64,7 +64,7 @@ public class AppsActivity extends BaseActivity {
         count.setPadding(dp(14), 0, 0, dp(4));
         head.addView(count);
         main.addView(head);
-        TextView hint = text(getString(R.string.all_apps_hint), 12, R.color.faint);
+        hint = text(getString(R.string.all_apps_hint), 12, R.color.faint);
         hint.setPadding(0, dp(2), 0, dp(6));
         main.addView(hint);
         gridScroll = new ScrollView(this);
@@ -201,6 +201,7 @@ public class AppsActivity extends BaseActivity {
             buildAndroidGrid();
             return;
         }
+        hint.setText(R.string.all_apps_hint);
         List<Store.Instance> apps = inCategory(category);
         heading.setText(category.equals(ALL) ? getString(R.string.all) : category);
         count.setText(getResources().getQuantityString(R.plurals.application_count, apps.size(), apps.size()));
@@ -278,6 +279,7 @@ public class AppsActivity extends BaseActivity {
 
     /** Launcher mode: Android's settings, then every installed app. Hold one to put it on the home row. */
     private void buildAndroidGrid() {
+        hint.setText(R.string.android_apps_hint);
         List<Launcher.App> installed = Launcher.apps(this);
         heading.setText(Launcher.CATEGORY);
         count.setText(getResources().getQuantityString(R.plurals.application_count, installed.size(), installed.size()));
