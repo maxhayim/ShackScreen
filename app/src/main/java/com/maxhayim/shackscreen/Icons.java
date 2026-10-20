@@ -57,7 +57,7 @@ final class Icons {
     /** Output size, and the smallest source worth showing rather than a category tile. */
     private static final int SIZE = 192, MIN_SOURCE = 40, FULL_BLEED = 96;
     /** Bumped when the way icons are drawn changes, so cached ones are redrawn. */
-    private static final int STYLE = 8;
+    private static final int STYLE = 9;
     /** ShackScreen's own icon set, one PNG per catalog app, in colour, dark and light. */
     static final String REPO_ICONS = "https://raw.githubusercontent.com/" + Updater.REPO + "/main/icons/";
     private static final long REFRESH_MS = 7 * 24 * 60 * 60 * 1000L;
@@ -141,31 +141,42 @@ final class Icons {
                 if (in.icon.equals("symbol:" + SYMBOL_NAMES[i])) symbol = SYMBOLS[i];
             }
         }
-        view.setImageBitmap(symbolTile(c, symbol, look[0], look[1]));
+        Bitmap tile = symbolTile(c, symbol, look[0], look[1]);
         if (Launcher.is(in)) {
             Bitmap b = Launcher.icon(c, Launcher.pkg(in), SIZE);
-            if (b != null) view.setImageBitmap(b);
+            view.setImageBitmap(b != null ? b : tile);
             return;
         }
         if (in.icon.equals("file")) {
             Bitmap b = BitmapFactory.decodeFile(customFile(c, in).getPath());
-            if (b != null) view.setImageBitmap(b);
+            view.setImageBitmap(b != null ? b : tile);
             return;
         }
-        if (!in.hasUrl() || !in.icon.isEmpty()) return;
+        if (!in.hasUrl() || !in.icon.isEmpty()) {
+            view.setImageBitmap(tile);
+            return;
+        }
         File cached = file(c, in, style);
-        // Icons are fetched again after a week, so new ones in the repo reach everyone.
-        if (cached.exists() && System.currentTimeMillis() - cached.lastModified() > REFRESH_MS) cached.delete();
         if (cached.exists()) {
             Bitmap b = BitmapFactory.decodeFile(cached.getPath());
             if (b != null) {
                 view.setImageBitmap(b);
-                return;
+                // Icons are fetched again after a week, so new ones in the repo reach everyone;
+                // the old one stays on screen until then.
+                if (System.currentTimeMillis() - cached.lastModified() <= REFRESH_MS) return;
             }
+        } else {
+            // While the icon loads, the one shown before (another style, or an older copy) stays,
+            // never a placeholder that then jumps to the real icon.
+            Bitmap before = previous(c, in);
+            view.setImageBitmap(before);
         }
         // A site with no usable icon is remembered for a day rather than asked on every visit.
         File miss = new File(cached.getPath() + ".none");
-        if (miss.exists() && System.currentTimeMillis() - miss.lastModified() < 24 * 60 * 60 * 1000L) return;
+        if (miss.exists() && System.currentTimeMillis() - miss.lastModified() < 24 * 60 * 60 * 1000L) {
+            if (!cached.exists()) view.setImageBitmap(tile);
+            return;
+        }
         Context app = c.getApplicationContext();
         bg.execute(() -> {
             Bitmap src = fetch(t, in, style);
@@ -173,18 +184,47 @@ final class Icons {
             try {
                 if (b == null) {
                     new FileOutputStream(miss).close();
-                    return;
-                }
-                try (OutputStream out = new FileOutputStream(cached)) {
-                    b.compress(Bitmap.CompressFormat.PNG, 100, out);
+                } else {
+                    try (OutputStream out = new FileOutputStream(cached)) {
+                        b.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    }
+                    dropOlder(app, in, cached);
                 }
             } catch (IOException ignored) {
                 // Not cached this time; it is fetched again on the next visit.
             }
             ui.post(() -> {
-                if (in.id.equals(view.getTag())) view.setImageBitmap(b);
+                if (!in.id.equals(view.getTag())) return;
+                if (b != null) view.setImageBitmap(b);
+                else if (view.getDrawable() == null) view.setImageBitmap(tile); // no icon anywhere
             });
         });
+    }
+
+    /** The newest icon cached for this app in any style or version; null if there's none. */
+    private static Bitmap previous(Context c, Store.Instance in) {
+        File newest = null;
+        File[] files = new File(c.getFilesDir(), "icons").listFiles();
+        for (int i = 0; files != null && i < files.length; i++) {
+            File f = files[i];
+            String n = f.getName();
+            if (!n.startsWith(in.id + "-") || !n.endsWith(".png") || n.endsWith("-custom.png")) continue;
+            if (newest == null || f.lastModified() > newest.lastModified()) newest = f;
+        }
+        return newest == null ? null : BitmapFactory.decodeFile(newest.getPath());
+    }
+
+    /** Removes copies from older versions of the icon cache once the new one is saved; other styles stay. */
+    private static void dropOlder(Context c, Store.Instance in, File keep) {
+        String version = "-v" + STYLE + "-";
+        File[] files = new File(c.getFilesDir(), "icons").listFiles();
+        for (int i = 0; files != null && i < files.length; i++) {
+            String n = files[i].getName();
+            if (n.startsWith(in.id + "-") && !n.contains(version) && !n.endsWith("-custom.png") && !files[i].equals(keep)) {
+                //noinspection ResultOfMethodCallIgnored
+                files[i].delete();
+            }
+        }
     }
 
     // --- Drawing -----------------------------------------------------------------------------
