@@ -13,8 +13,9 @@
 
     <FrameLayout
         android:layout_width="68dp"
-        android:layout_height="68dp"
-        android:background="@drawable/icon_bg">
+        android:layout_height="68dp">
+
+        <!-- No backing tile: every icon draws its own, and a backing showed as a thin rim round dark ones. -->
 
         <ImageView
             android:id="@+id/icon"
