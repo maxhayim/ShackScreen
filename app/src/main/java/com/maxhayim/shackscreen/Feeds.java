@@ -53,7 +53,18 @@ final class Feeds {
     }
 
     static final class Weather {
-        String temp, feels, sky, wind, humidity, pressure, high, low;
+        String temp, feels, sky, wind, humidity, pressure, high, low, uv;
+        int code;
+        boolean day = true;
+        String sunrise, sunset; // "HH:mm", local to the place
+        final List<Hour> hours = new ArrayList<>();
+    }
+
+    /** One of the next hours: its time ("HH:mm"), weather code, temperature and chance of rain. */
+    static final class Hour {
+        String time, temp;
+        int code, rain;
+        boolean day;
     }
 
     static final class Mesh {
@@ -312,8 +323,9 @@ final class Feeds {
         if (here == null) throw new NeedsLocation();
         boolean imp = Widgets.imperial();
         String url = String.format(Locale.US, "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f"
-                + "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,pressure_msl"
-                + "&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto%s",
+                + "&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,wind_direction_10m,relative_humidity_2m,pressure_msl"
+                + "&hourly=temperature_2m,weather_code,precipitation_probability,is_day&forecast_hours=6"
+                + "&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&forecast_days=2&timezone=auto%s",
                 here[0], here[1], imp ? "&temperature_unit=fahrenheit&wind_speed_unit=mph" : "");
         JSONObject o = obj(Net.json(url, null));
         JSONObject cur = o.optJSONObject("current");
@@ -322,13 +334,34 @@ final class Feeds {
         Weather w = new Weather();
         w.temp = Math.round(cur.optDouble("temperature_2m")) + "°";
         w.feels = Math.round(cur.optDouble("apparent_temperature")) + "°";
-        w.sky = sky(cur.optInt("weather_code"));
+        w.code = cur.optInt("weather_code");
+        w.day = cur.optInt("is_day", 1) == 1;
+        w.sky = sky(w.code);
         w.wind = Math.round(cur.optDouble("wind_speed_10m")) + (imp ? " mph " : " km/h ") + compass(cur.optDouble("wind_direction_10m"));
         w.humidity = Math.round(cur.optDouble("relative_humidity_2m")) + "%";
         w.pressure = Math.round(cur.optDouble("pressure_msl")) + " hPa";
         if (daily != null) {
             w.high = Math.round(daily.optJSONArray("temperature_2m_max").optDouble(0)) + "°";
             w.low = Math.round(daily.optJSONArray("temperature_2m_min").optDouble(0)) + "°";
+            JSONArray uv = daily.optJSONArray("uv_index_max");
+            if (uv != null && !uv.isNull(0)) w.uv = String.valueOf(Math.round(uv.optDouble(0)));
+            w.sunrise = clock(daily.optJSONArray("sunrise"));
+            w.sunset = clock(daily.optJSONArray("sunset"));
+        }
+        JSONObject hourly = o.optJSONObject("hourly");
+        JSONArray times = hourly == null ? null : hourly.optJSONArray("time");
+        // The first hour is the current one, already shown above.
+        for (int i = 1; times != null && i < times.length(); i++) {
+            Hour h = new Hour();
+            String t = times.optString(i);
+            h.time = t.length() >= 16 ? t.substring(11, 16) : t;
+            h.temp = Math.round(hourly.optJSONArray("temperature_2m").optDouble(i)) + "°";
+            h.code = hourly.optJSONArray("weather_code").optInt(i);
+            JSONArray rain = hourly.optJSONArray("precipitation_probability");
+            h.rain = rain == null ? 0 : rain.optInt(i);
+            JSONArray day = hourly.optJSONArray("is_day");
+            h.day = day == null || day.optInt(i, 1) == 1;
+            w.hours.add(h);
         }
         return w;
     }
@@ -408,16 +441,19 @@ final class Feeds {
             JSONArray nodes = nodesOf(in, id);
             for (int i = 0; nodes != null && i < nodes.length(); i++) {
                 JSONObject n = nodes.optJSONObject(i);
-                if (n != null) names.put(n.optString("nodeId"), n.optString("shortName", n.optString("nodeId")));
+                if (n == null) continue;
+                // optString turns a JSON null into "null"; a node without a short name keeps its id.
+                String shortName = n.isNull("shortName") ? "" : n.optString("shortName").trim();
+                names.put(n.optString("nodeId"), shortName.isEmpty() ? n.optString("nodeId") : shortName);
             }
             m.nodes += names.size();
             JSONArray msgs = obj(Net.json(Store.join(in.url, "/api/v1/sources/" + id + "/messages?limit=" + MAX_MESSAGES), in.token)).optJSONArray("data");
             for (int i = 0; msgs != null && i < msgs.length(); i++) {
                 JSONObject msg = msgs.optJSONObject(i);
                 if (msg == null) continue;
-                String from = msg.optString("fromNodeId");
+                String from = msg.isNull("fromNodeId") ? "" : msg.optString("fromNodeId");
                 long t = msg.optLong("timestamp", msg.optLong("rxTime", 0));
-                all.add(new Object[]{t, new String[]{names.containsKey(from) ? names.get(from) : from, msg.optString("text"), kind(src.optString("type"))}});
+                all.add(new Object[]{t, new String[]{names.containsKey(from) ? names.get(from) : from.isEmpty() ? "?" : from, msg.optString("text"), kind(src.optString("type"))}});
             }
         }
         Collections.sort(all, (a, b) -> Long.compare((Long) b[0], (Long) a[0]));
@@ -533,6 +569,12 @@ final class Feeds {
     }
 
     /** WMO weather codes, as used by Open-Meteo. */
+    /** "HH:mm" from the first of Open-Meteo's local times ("2026-10-20T19:01"). */
+    private static String clock(JSONArray a) {
+        String t = a == null ? "" : a.optString(0);
+        return t.length() >= 16 ? t.substring(11, 16) : null;
+    }
+
     private static String sky(int code) {
         if (code == 0) return "Clear";
         if (code <= 2) return "Partly cloudy";

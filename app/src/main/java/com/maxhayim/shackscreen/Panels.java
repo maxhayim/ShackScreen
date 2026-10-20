@@ -149,23 +149,99 @@ final class Panels {
     View weather(Feeds.Weather w) {
         LinearLayout col = column();
         LinearLayout big = row();
-        big.setGravity(Gravity.BOTTOM);
-        TextView t = text(w.temp, 48, R.color.text, false);
+        big.setGravity(Gravity.CENTER_VERTICAL);
+        big.addView(icon(skyIcon(w.code, w.day), 46, R.color.text), new LinearLayout.LayoutParams(dp(46), dp(46)));
+        TextView t = text(w.temp, 44, R.color.text, false);
         t.setIncludeFontPadding(false);
+        t.setPadding(dp(12), 0, 0, 0);
         big.addView(t);
         LinearLayout side = column();
-        side.setPadding(dp(14), 0, 0, dp(4));
+        side.setPadding(dp(14), 0, 0, 0);
         side.addView(text(w.sky, 16, R.color.text, true));
-        if (w.high != null) side.addView(text("H " + w.high + "  L " + w.low + "  · feels " + w.feels, 12, R.color.dim, false));
+        if (w.high != null) side.addView(text("H " + w.high + "   L " + w.low, 12, R.color.dim, false));
+        side.addView(text("Feels like " + w.feels, 12, R.color.dim, false));
         big.addView(side);
         col.addView(big);
+        // The next hours, like a phone's weather app.
+        if (!w.hours.isEmpty()) {
+            LinearLayout hours = row();
+            hours.setPadding(0, dp(12), 0, 0);
+            boolean rain = false;
+            for (Feeds.Hour h : w.hours) rain |= h.rain >= 20;
+            for (Feeds.Hour h : w.hours) {
+                LinearLayout cell = column();
+                cell.setGravity(Gravity.CENTER_HORIZONTAL);
+                cell.addView(text(hourLabel(h.time), 12, R.color.dim, false));
+                LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(22), dp(22));
+                ip.topMargin = dp(4);
+                ip.bottomMargin = dp(4);
+                cell.addView(icon(skyIcon(h.code, h.day), 22, R.color.text), ip);
+                cell.addView(text(h.temp, 15, R.color.text, false));
+                // Chance of rain, only when it's worth knowing.
+                if (rain) cell.addView(text(h.rain >= 20 ? h.rain + "%" : " ", 11, R.color.accent, false));
+                hours.addView(cell, weight());
+            }
+            col.addView(hours);
+        }
+        // Two rows of two, so nothing is cut short.
+        String sun = w.day ? w.sunset : w.sunrise;
         LinearLayout stats = row();
-        stats.setPadding(0, dp(16), 0, 0);
-        stats.addView(stat("Wind", w.wind, R.color.text, 15), weight());
-        stats.addView(stat("Humidity", w.humidity, R.color.text, 15), weight());
-        stats.addView(stat("Pressure", w.pressure, R.color.text, 15), weight());
+        stats.setPadding(0, dp(10), 0, 0);
+        stats.addView(iconStat(R.drawable.ic_w_wind, w.wind), weight());
+        stats.addView(iconStat(R.drawable.ic_w_drop, w.humidity + " humidity"), weight());
+        col.addView(stats);
+        stats = row();
+        stats.setPadding(0, dp(6), 0, 0);
+        if (sun != null) stats.addView(iconStat(w.day ? R.drawable.ic_w_sunset : R.drawable.ic_w_sunrise, hourLabel(sun, true)), weight());
+        if (w.uv != null && w.day) stats.addView(iconStat(R.drawable.ic_sun, "UV " + w.uv), weight());
+        else stats.addView(iconStat(R.drawable.ic_w_gauge, w.pressure), weight());
         col.addView(stats);
         return col;
+    }
+
+    /** Open-Meteo's WMO weather code as a line icon, with a moon at night. */
+    private static int skyIcon(int code, boolean day) {
+        if (code == 0) return day ? R.drawable.ic_sun : R.drawable.ic_w_moon;
+        if (code <= 2) return day ? R.drawable.ic_w_partly : R.drawable.ic_w_partly_night;
+        if (code == 3) return R.drawable.ic_cloud;
+        if (code <= 48) return R.drawable.ic_w_fog;
+        if (code <= 57) return R.drawable.ic_w_drizzle;
+        if (code <= 67 || (code >= 80 && code <= 82)) return R.drawable.ic_w_rain;
+        if (code <= 77 || code == 85 || code == 86) return R.drawable.ic_w_snow;
+        return R.drawable.ic_w_thunder;
+    }
+
+    private String hourLabel(String hhmm) {
+        return hourLabel(hhmm, false);
+    }
+
+    /** "18:00" as the TV tells time: "18:00", or "6 PM" ("6:01 PM" with minutes). */
+    private String hourLabel(String hhmm, boolean minutes) {
+        if (hhmm == null || hhmm.length() < 5) return nz(hhmm);
+        if (android.text.format.DateFormat.is24HourFormat(c)) return hhmm;
+        int h = Integer.parseInt(hhmm.substring(0, 2));
+        String m = hhmm.substring(3, 5);
+        int h12 = h % 12 == 0 ? 12 : h % 12;
+        return h12 + (minutes ? ":" + m : "") + (h < 12 ? " AM" : " PM");
+    }
+
+    private android.widget.ImageView icon(int res, int sizeDp, int colorRes) {
+        android.widget.ImageView v = new android.widget.ImageView(c);
+        v.setImageResource(res);
+        v.setColorFilter(Icons.color(c, colorRes));
+        v.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        return v;
+    }
+
+    /** A small dim icon with a value beside it. */
+    private View iconStat(int res, String value) {
+        LinearLayout r = row();
+        r.setGravity(Gravity.CENTER_VERTICAL);
+        r.addView(icon(res, 16, R.color.dim), new LinearLayout.LayoutParams(dp(16), dp(16)));
+        TextView v = text(nz(value), 14, R.color.text, false);
+        v.setPadding(dp(6), 0, 0, 0);
+        r.addView(v);
+        return r;
     }
 
     // --- Mesh messages ---------------------------------------------------------------------------
@@ -266,7 +342,7 @@ final class Panels {
 
     private TextView text(String s, int sp, int colorRes, boolean bold) {
         TextView t = new TextView(c);
-        t.setText(s);
+        t.setText(Emoji.forWidgets(c, s));
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         t.setTextColor(Icons.color(c, colorRes));
         t.setSingleLine(sp > 13);
