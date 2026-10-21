@@ -165,17 +165,65 @@ Each widget uses the first of your applications that can supply it, and moves on
 
 The home row holds your favourites, with **All applications** at the end. Press and hold an app (long-press OK on a remote) to move it, add it to the home row or take it off, edit it or delete it.
 
-| Category | Applications |
-|---|---|
-| Ham radio | [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [APRS.fi](https://aprs.fi), [PSKReporter](https://pskreporter.info), [RepeaterBook](https://www.repeaterbook.com), [POTA](https://pota.app), your own [HamClock](https://www.clearskyinstitute.com/ham/HamClock/), [DX Summit](https://www.dxsummit.fi), [Reverse Beacon Network](https://www.reversebeacon.net), [WSPR Rocks](https://wspr.rocks), [KC2G propagation](https://prop.kc2g.com), [SOTLAS](https://sotl.as) |
-| GMRS | [GMRS Hub](https://gmrshub.com), [myGMRS](https://mygmrs.com) |
-| Satellites | [N2YO](https://www.n2yo.com), [Heavens-Above](https://www.heavens-above.com), [AMSAT status](https://www.amsat.org/status/), [SatNOGS](https://github.com/satnogs), [TinyGS](https://github.com/tinygs/tinyGS), [Satellite map](https://satellitemap.space), [ISS Tracker](https://isstracker.pl/en) |
-| Mesh | [MeshMonitor](https://github.com/Yeraze/meshmonitor), [MeshMap (Meshtastic)](https://github.com/brianshea2/meshmap.net), [MeshCore Map](https://github.com/meshcore-dev/map.meshcore.io), [your Meshtastic node](https://github.com/meshtastic/firmware) |
-| SDR & scanners | [WebSDR](http://websdr.org), [KiwiSDR map](http://rx.linkfanel.net), [Broadcastify](https://www.broadcastify.com) |
-| Aviation | [Flightradar24](https://www.flightradar24.com), [FlightAware](https://www.flightaware.com), [ADS-B Exchange](https://www.adsbexchange.com), [ADSB.lol](https://github.com/adsblol), [adsb.fi](https://github.com/adsbfi), [your tar1090](https://github.com/wiedehopf/tar1090) |
-| Marine | [MarineTraffic](https://www.marinetraffic.com), [VesselFinder](https://www.vesselfinder.com), [MyShipTracking](https://www.myshiptracking.com), [your AIS-catcher](https://github.com/jvde-github/AIS-catcher) |
-| Weather | [Windy](https://www.windy.com), [Lightning map](https://www.blitzortung.org), [NOAA Space Weather](https://www.swpc.noaa.gov) |
-| Other | any web page |
+<!-- apps -->
+**Ham radio**
+
+<table>
+<tr><td align="center" width="110"><a href="https://github.com/accius/openhamclock"><img src="icons/color/openhamclock.png" width="64" height="64" alt="OpenHamClock"/></a><br/><sub><a href="https://github.com/accius/openhamclock">OpenHamClock</a></sub></td><td align="center" width="110"><a href="https://shackboard.com"><img src="icons/color/shackboard.png" width="64" height="64" alt="ShackBoard"/></a><br/><sub><a href="https://shackboard.com">ShackBoard</a></sub></td><td align="center" width="110"><a href="https://aprs.fi"><img src="icons/color/aprsfi.png" width="64" height="64" alt="APRS.fi"/></a><br/><sub><a href="https://aprs.fi">APRS.fi</a></sub></td><td align="center" width="110"><a href="https://pskreporter.info/pskmap.html"><img src="icons/color/pskreporter.png" width="64" height="64" alt="PSKReporter"/></a><br/><sub><a href="https://pskreporter.info/pskmap.html">PSKReporter</a></sub></td><td align="center" width="110"><a href="https://www.repeaterbook.com/"><img src="icons/color/repeaterbook.png" width="64" height="64" alt="RepeaterBook"/></a><br/><sub><a href="https://www.repeaterbook.com/">RepeaterBook</a></sub></td><td align="center" width="110"><a href="https://pota.app/"><img src="icons/color/custom.png" width="64" height="64" alt="POTA"/></a><br/><sub><a href="https://pota.app/">POTA</a></sub></td></tr>
+<tr><td align="center" width="110"><a href="https://www.clearskyinstitute.com/ham/HamClock/"><img src="icons/color/custom.png" width="64" height="64" alt="HamClock (your own)"/></a><br/><sub><a href="https://www.clearskyinstitute.com/ham/HamClock/">HamClock (your own)</a></sub></td><td align="center" width="110"><a href="https://www.dxsummit.fi/"><img src="icons/color/custom.png" width="64" height="64" alt="DX Summit"/></a><br/><sub><a href="https://www.dxsummit.fi/">DX Summit</a></sub></td><td align="center" width="110"><a href="https://www.reversebeacon.net/main.php"><img src="icons/color/custom.png" width="64" height="64" alt="Reverse Beacon Network"/></a><br/><sub><a href="https://www.reversebeacon.net/main.php">Reverse Beacon Network</a></sub></td><td align="center" width="110"><a href="https://wspr.rocks/"><img src="icons/color/custom.png" width="64" height="64" alt="WSPR Rocks"/></a><br/><sub><a href="https://wspr.rocks/">WSPR Rocks</a></sub></td><td align="center" width="110"><a href="https://prop.kc2g.com/"><img src="icons/color/custom.png" width="64" height="64" alt="KC2G Propagation"/></a><br/><sub><a href="https://prop.kc2g.com/">KC2G Propagation</a></sub></td><td align="center" width="110"><a href="https://sotl.as/"><img src="icons/color/custom.png" width="64" height="64" alt="SOTA (SOTLAS)"/></a><br/><sub><a href="https://sotl.as/">SOTA (SOTLAS)</a></sub></td></tr>
+</table>
+
+**GMRS**
+
+<table>
+<tr><td align="center" width="110"><a href="https://gmrshub.com/access/home.php"><img src="icons/color/gmrshub.png" width="64" height="64" alt="GMRS Hub"/></a><br/><sub><a href="https://gmrshub.com/access/home.php">GMRS Hub</a></sub></td><td align="center" width="110"><a href="https://mygmrs.com/"><img src="icons/color/mygmrs.png" width="64" height="64" alt="myGMRS"/></a><br/><sub><a href="https://mygmrs.com/">myGMRS</a></sub></td></tr>
+</table>
+
+**Satellites**
+
+<table>
+<tr><td align="center" width="110"><a href="https://www.n2yo.com"><img src="icons/color/n2yo.png" width="64" height="64" alt="N2YO"/></a><br/><sub><a href="https://www.n2yo.com">N2YO</a></sub></td><td align="center" width="110"><a href="https://www.heavens-above.com"><img src="icons/color/heavensabove.png" width="64" height="64" alt="Heavens-Above"/></a><br/><sub><a href="https://www.heavens-above.com">Heavens-Above</a></sub></td><td align="center" width="110"><a href="https://www.amsat.org/status/"><img src="icons/color/amsatstatus.png" width="64" height="64" alt="AMSAT status"/></a><br/><sub><a href="https://www.amsat.org/status/">AMSAT status</a></sub></td><td align="center" width="110"><a href="https://github.com/satnogs"><img src="icons/color/satnogs.png" width="64" height="64" alt="SatNOGS"/></a><br/><sub><a href="https://github.com/satnogs">SatNOGS</a></sub></td><td align="center" width="110"><a href="https://github.com/tinygs/tinyGS"><img src="icons/color/tinygs.png" width="64" height="64" alt="TinyGS"/></a><br/><sub><a href="https://github.com/tinygs/tinyGS">TinyGS</a></sub></td><td align="center" width="110"><a href="https://satellitemap.space"><img src="icons/color/satellitemap.png" width="64" height="64" alt="Satellite map"/></a><br/><sub><a href="https://satellitemap.space">Satellite map</a></sub></td></tr>
+<tr><td align="center" width="110"><a href="https://isstracker.pl/en"><img src="icons/color/isstracker.png" width="64" height="64" alt="ISS Tracker"/></a><br/><sub><a href="https://isstracker.pl/en">ISS Tracker</a></sub></td></tr>
+</table>
+
+**Mesh**
+
+<table>
+<tr><td align="center" width="110"><a href="https://github.com/Yeraze/meshmonitor"><img src="icons/color/meshmonitor.png" width="64" height="64" alt="MeshMonitor"/></a><br/><sub><a href="https://github.com/Yeraze/meshmonitor">MeshMonitor</a></sub></td><td align="center" width="110"><a href="https://github.com/brianshea2/meshmap.net"><img src="icons/color/meshmap.png" width="64" height="64" alt="MeshMap"/></a><br/><sub><a href="https://github.com/brianshea2/meshmap.net">MeshMap</a></sub></td><td align="center" width="110"><a href="https://github.com/meshcore-dev/map.meshcore.io"><img src="icons/color/meshcoremap.png" width="64" height="64" alt="MeshCore Map"/></a><br/><sub><a href="https://github.com/meshcore-dev/map.meshcore.io">MeshCore Map</a></sub></td><td align="center" width="110"><a href="https://github.com/meshtastic/firmware"><img src="icons/color/custom.png" width="64" height="64" alt="Meshtastic node"/></a><br/><sub><a href="https://github.com/meshtastic/firmware">Meshtastic node</a></sub></td></tr>
+</table>
+
+**SDR & scanners**
+
+<table>
+<tr><td align="center" width="110"><a href="http://websdr.org/"><img src="icons/color/websdr.png" width="64" height="64" alt="WebSDR"/></a><br/><sub><a href="http://websdr.org/">WebSDR</a></sub></td><td align="center" width="110"><a href="http://rx.linkfanel.net"><img src="icons/color/kiwisdr.png" width="64" height="64" alt="KiwiSDR map"/></a><br/><sub><a href="http://rx.linkfanel.net">KiwiSDR map</a></sub></td><td align="center" width="110"><a href="https://www.broadcastify.com/listen/"><img src="icons/color/broadcastify.png" width="64" height="64" alt="Broadcastify"/></a><br/><sub><a href="https://www.broadcastify.com/listen/">Broadcastify</a></sub></td></tr>
+</table>
+
+**Aviation**
+
+<table>
+<tr><td align="center" width="110"><a href="https://www.flightradar24.com"><img src="icons/color/flightradar24.png" width="64" height="64" alt="Flightradar24"/></a><br/><sub><a href="https://www.flightradar24.com">Flightradar24</a></sub></td><td align="center" width="110"><a href="https://www.flightaware.com/live/map"><img src="icons/color/flightaware.png" width="64" height="64" alt="FlightAware"/></a><br/><sub><a href="https://www.flightaware.com/live/map">FlightAware</a></sub></td><td align="center" width="110"><a href="https://globe.adsbexchange.com"><img src="icons/color/adsbexchange.png" width="64" height="64" alt="ADS-B Exchange"/></a><br/><sub><a href="https://globe.adsbexchange.com">ADS-B Exchange</a></sub></td><td align="center" width="110"><a href="https://github.com/adsblol"><img src="icons/color/adsblol.png" width="64" height="64" alt="adsb.lol"/></a><br/><sub><a href="https://github.com/adsblol">adsb.lol</a></sub></td><td align="center" width="110"><a href="https://github.com/adsbfi"><img src="icons/color/adsbfi.png" width="64" height="64" alt="adsb.fi"/></a><br/><sub><a href="https://github.com/adsbfi">adsb.fi</a></sub></td><td align="center" width="110"><a href="https://github.com/wiedehopf/tar1090"><img src="icons/color/custom.png" width="64" height="64" alt="My ADS-B receiver (tar1090)"/></a><br/><sub><a href="https://github.com/wiedehopf/tar1090">My ADS-B receiver (tar1090)</a></sub></td></tr>
+</table>
+
+**Marine**
+
+<table>
+<tr><td align="center" width="110"><a href="https://www.marinetraffic.com/en/ais/home"><img src="icons/color/marinetraffic.png" width="64" height="64" alt="MarineTraffic"/></a><br/><sub><a href="https://www.marinetraffic.com/en/ais/home">MarineTraffic</a></sub></td><td align="center" width="110"><a href="https://www.vesselfinder.com"><img src="icons/color/vesselfinder.png" width="64" height="64" alt="VesselFinder"/></a><br/><sub><a href="https://www.vesselfinder.com">VesselFinder</a></sub></td><td align="center" width="110"><a href="https://www.myshiptracking.com"><img src="icons/color/myshiptracking.png" width="64" height="64" alt="MyShipTracking"/></a><br/><sub><a href="https://www.myshiptracking.com">MyShipTracking</a></sub></td><td align="center" width="110"><a href="https://github.com/jvde-github/AIS-catcher"><img src="icons/color/custom.png" width="64" height="64" alt="My AIS receiver (AIS-catcher)"/></a><br/><sub><a href="https://github.com/jvde-github/AIS-catcher">My AIS receiver (AIS-catcher)</a></sub></td></tr>
+</table>
+
+**Weather**
+
+<table>
+<tr><td align="center" width="110"><a href="https://www.windy.com"><img src="icons/color/windy.png" width="64" height="64" alt="Windy"/></a><br/><sub><a href="https://www.windy.com">Windy</a></sub></td><td align="center" width="110"><a href="https://map.blitzortung.org"><img src="icons/color/blitzortung.png" width="64" height="64" alt="Lightning map"/></a><br/><sub><a href="https://map.blitzortung.org">Lightning map</a></sub></td><td align="center" width="110"><a href="https://www.swpc.noaa.gov/"><img src="icons/color/custom.png" width="64" height="64" alt="NOAA Space Weather"/></a><br/><sub><a href="https://www.swpc.noaa.gov/">NOAA Space Weather</a></sub></td></tr>
+</table>
+
+**Other**
+
+<table>
+<tr><td align="center" width="110"><img src="icons/color/custom.png" width="64" height="64" alt="Other web page"/><br/><sub>Other web page</sub></td></tr>
+</table>
+
+Names starting with "My" or "your own" are for your own server or device. Applications without their own icon yet show the generic one.
+<!-- /apps -->
 
 ### Pages inside an application
 

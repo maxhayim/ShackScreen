@@ -94,6 +94,7 @@ These are built into the app, so a change ships with the next release.
 - [ ] Logo inside the middle 70%
 - [ ] Dark version: dark tile, light logo. Light version: light tile, dark logo
 - [ ] You made it, or the logo's owner allows its use (official brand logos used to identify the service are fine). Say where it came from in the PR or issue.
+- [ ] Run `python3 tools/readme-apps.py` so the README shows the new icon
 - [ ] If it shows a service's logo or name, add a row for it to [TRADEMARKS.md](../TRADEMARKS.md). Don't change the logo in a way that suggests the service endorses ShackScreen.
 
 Thank you, and 73!
