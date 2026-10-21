@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -75,8 +76,14 @@ final class Sync {
                         new JSONObject().put("user", l.user).put("pass", l.pass).put("auto", l.auto));
             }
         }
+        // The order is one item of its own, so moving one app doesn't count as changing all the others.
         List<Store.Instance> apps = Store.load(c);
-        for (int i = 0; i < apps.size(); i++) out.put("a|" + apps.get(i).id, apps.get(i).toJson().put("pos", i));
+        JSONArray order = new JSONArray();
+        for (Store.Instance in : apps) {
+            out.put("a|" + in.id, in.toJson());
+            order.put(in.id);
+        }
+        out.put("order", new JSONObject().put("ids", order));
         for (Maps.Style s : Maps.custom(c)) {
             out.put("m|" + s.url, new JSONObject().put("name", s.name).put("url", s.url).put("provider", s.provider).put("key", s.key));
         }
@@ -320,10 +327,8 @@ final class Sync {
             if (!activeKept) CallSigns.use(c, CallSigns.profiles(c).get(0));
         }
 
-        // Applications, in the other TV's order.
+        // Applications.
         List<Store.Instance> apps = Store.load(c);
-        Map<String, Integer> pos = new HashMap<>();
-        for (int i = 0; i < apps.size(); i++) pos.put(apps.get(i).id, i);
         boolean appsChanged = false;
         for (String k : gone) {
             if (!k.startsWith("a|")) continue;
@@ -342,14 +347,21 @@ final class Sync {
                 }
             }
             if (!replaced) apps.add(got);
-            pos.put(got.id, e.getValue().optInt("pos", apps.size()));
             appsChanged = true;
         }
-        if (appsChanged) {
+        // In the other TV's order; apps it doesn't list keep their place after the listed ones.
+        JSONObject order = in.get("order");
+        if (order != null && order.optJSONArray("ids") != null) {
+            Map<String, Integer> pos = new HashMap<>();
+            JSONArray ids = order.getJSONArray("ids");
+            for (int i = 0; i < ids.length(); i++) pos.put(ids.getString(i), i);
+            List<Store.Instance> before = new ArrayList<>(apps);
             java.util.Collections.sort(apps, (a, b) -> Integer.compare(
-                    pos.containsKey(a.id) ? pos.get(a.id) : Integer.MAX_VALUE, pos.containsKey(b.id) ? pos.get(b.id) : Integer.MAX_VALUE));
-            Store.save(c, apps);
+                    pos.containsKey(a.id) ? pos.get(a.id) : ids.length() + before.indexOf(a),
+                    pos.containsKey(b.id) ? pos.get(b.id) : ids.length() + before.indexOf(b)));
+            appsChanged = true;
         }
+        if (appsChanged) Store.save(c, apps);
 
         // Saved logins (after the apps, whose deletion would otherwise prune them).
         for (String k : gone) {
