@@ -101,6 +101,72 @@ final class Backup {
         }
     }
 
+    // --- USB drives -----------------------------------------------------------------------------
+
+    /**
+     * ShackScreen's folder on each USB drive (or SD card) plugged in. Android lets an app write
+     * there without asking: Android/data/com.maxhayim.shackscreen/files/ShackScreen on the drive.
+     */
+    static List<File> usbFolders(Context c) {
+        List<File> out = new ArrayList<>();
+        File[] dirs = c.getExternalFilesDirs(null);
+        for (File d : dirs) {
+            if (d == null) continue;
+            boolean removable;
+            try {
+                removable = android.os.Environment.isExternalStorageRemovable(d);
+            } catch (IllegalArgumentException e) {
+                removable = false;
+            }
+            if (!removable) continue;
+            File f = new File(d, "ShackScreen");
+            if (f.isDirectory() || f.mkdirs()) out.add(f);
+        }
+        return out;
+    }
+
+    /** A new backup file name, so older ones on the drive are kept: shackscreen-backup-20261020-1915.ssb. */
+    static String datedName() {
+        return "shackscreen-backup-" + new java.text.SimpleDateFormat("yyyyMMdd-HHmm", java.util.Locale.US).format(new java.util.Date()) + ".ssb";
+    }
+
+    /** Writes an encrypted backup into a USB folder; returns the file. Blocking. */
+    static File saveToUsb(Context c, File folder) throws Exception {
+        File f = new File(folder, datedName());
+        writeTo(c, new FileOutputStream(f));
+        return f;
+    }
+
+    /** Writes an encrypted backup to any stream (a USB folder, or a file the user picked), then closes it. */
+    static void writeTo(Context c, OutputStream out) throws Exception {
+        try (OutputStream o = out) {
+            o.write(seal(collect(c), passphrase(c)));
+        }
+    }
+
+    /** Backup files in the USB folders, newest first. */
+    static List<File> usbBackups(Context c) {
+        List<File> out = new ArrayList<>();
+        for (File d : usbFolders(c)) {
+            File[] fs = d.listFiles((dir, name) -> name.endsWith(".ssb"));
+            if (fs != null) out.addAll(java.util.Arrays.asList(fs));
+        }
+        java.util.Collections.sort(out, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+        return out;
+    }
+
+    static byte[] readAll(java.io.InputStream in) throws IOException {
+        try (java.io.InputStream i = in) {
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[16 * 1024];
+            for (int n; (n = i.read(buf)) > 0; ) {
+                out.write(buf, 0, n);
+                if (out.size() > 32 * 1024 * 1024) throw new IOException("File too large for a ShackScreen backup");
+            }
+            return out.toByteArray();
+        }
+    }
+
     /** Fetches the backup from the service and opens it; null if there's none. Blocking. */
     static JSONObject fetch(Context c, String passphrase) throws Exception {
         byte[] file = Cloud.download(c);

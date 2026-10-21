@@ -36,7 +36,7 @@ public class SettingsActivity extends BaseActivity {
     private TextView updateStatus;
 
     // The app whose icon is being picked from the device's files, while the picker is open.
-    private static final int PICK_ICON = 7;
+    private static final int PICK_ICON = 7, SAVE_BACKUP = 8, OPEN_BACKUP = 9;
     private Store.Instance iconFor;
     private boolean iconIsNew;
     private Button iconButton;
@@ -532,6 +532,15 @@ public class SettingsActivity extends BaseActivity {
             setValue(auto, getString(Backup.auto(this) ? R.string.on : R.string.off));
         });
         pane.addView(auto);
+        View toUsb = row(R.drawable.ic_usb, getString(R.string.usb_save), "");
+        toUsb.setOnClickListener(v -> {
+            if (Backup.passphrase(this).isEmpty()) editPassphrase(this::saveToUsb);
+            else saveToUsb();
+        });
+        pane.addView(toUsb);
+        View fromUsb = row(0, getString(R.string.usb_restore), "");
+        fromUsb.setOnClickListener(v -> restoreFromUsb());
+        pane.addView(fromUsb);
         View restore = row(0, getString(R.string.backup_restore), "");
         restore.setOnClickListener(v -> {
             if (Cloud.service(this).isEmpty()) {
@@ -541,6 +550,95 @@ public class SettingsActivity extends BaseActivity {
             askRestorePassphrase();
         });
         pane.addView(restore);
+    }
+
+    private boolean hasPicker(String action) {
+        Intent i = new Intent(action).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
+        return i.resolveActivity(getPackageManager()) != null;
+    }
+
+    /**
+     * Saves the encrypted backup to a USB drive: with Android's file picker where the device has one
+     * (any folder on the drive), otherwise straight into ShackScreen's folder on the drive.
+     */
+    private void saveToUsb() {
+        if (hasPicker(Intent.ACTION_CREATE_DOCUMENT)) {
+            try {
+                startActivityForResult(new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("application/octet-stream")
+                        .addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE, Backup.datedName()), SAVE_BACKUP);
+                return;
+            } catch (RuntimeException ignored) {
+                // No picker after all: use the drive's folder below.
+            }
+        }
+        List<java.io.File> folders = Backup.usbFolders(this);
+        if (folders.isEmpty()) {
+            toast(R.string.usb_none);
+            return;
+        }
+        java.io.File[] saved = new java.io.File[1];
+        toast(R.string.backup_working);
+        bgThen(() -> saved[0] = Backup.saveToUsb(getApplicationContext(), folders.get(0)), err -> {
+            if (err != null) toast(getString(R.string.backup_failed, err));
+            else usbSavedDialog(saved[0]);
+        });
+    }
+
+    private void usbSavedDialog(java.io.File f) {
+        String where = f.getAbsolutePath();
+        int cut = where.indexOf("/Android/");
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.usb_saved)
+                .setMessage(getString(R.string.usb_saved_where, cut >= 0 ? where.substring(cut + 1) : where))
+                .setPositiveButton(R.string.close, null)
+                .show();
+    }
+
+    /** Restores from a backup file on a USB drive: picked with Android's file picker, or found in ShackScreen's folder. */
+    private void restoreFromUsb() {
+        if (hasPicker(Intent.ACTION_OPEN_DOCUMENT)) {
+            try {
+                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE), OPEN_BACKUP);
+                return;
+            } catch (RuntimeException ignored) {
+                // Fall back to the drive's folder.
+            }
+        }
+        List<java.io.File> files = Backup.usbBackups(this);
+        if (files.isEmpty()) {
+            toast(Backup.usbFolders(this).isEmpty() ? R.string.usb_none : R.string.usb_no_backups);
+            return;
+        }
+        String[] names = new String[files.size()];
+        for (int i = 0; i < names.length; i++) names[i] = files.get(i).getName();
+        new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.usb_restore)
+                .setItems(names, (d, which) -> askFilePassphrase(() -> Backup.readAll(new java.io.FileInputStream(files.get(which)))))
+                .show();
+    }
+
+    interface Source { byte[] read() throws Exception; }
+
+    /** Asks for the passphrase a backup file was made with, then opens it and offers to restore. */
+    private void askFilePassphrase(Source source) {
+        LinearLayout form = form();
+        EditText a = field(getString(R.string.backup_passphrase), Backup.passphrase(this), InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        form.addView(a);
+        Appearance.font(form);
+        quiet(new AlertDialog.Builder(this, R.style.Dialog)
+                .setTitle(R.string.backup_restore)
+                .setMessage(R.string.backup_restore_help)
+                .setView(form)
+                .setPositiveButton(R.string.backup_open, (d, w) -> {
+                    String p = a.getText().toString();
+                    org.json.JSONObject[] found = new org.json.JSONObject[1];
+                    bgThen(() -> found[0] = Backup.open(source.read(), p), err -> {
+                        if (err != null) toast(getString(R.string.backup_failed, err));
+                        else confirmRestore(found[0], p);
+                    });
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show());
     }
 
     private String backupStatus() {
@@ -1297,6 +1395,16 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
+        if ((request == SAVE_BACKUP || request == OPEN_BACKUP) && result == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            if (request == SAVE_BACKUP) {
+                bgThen(() -> Backup.writeTo(getApplicationContext(), getContentResolver().openOutputStream(uri, "wt")), err ->
+                        toast(err == null ? getString(R.string.backup_done) : getString(R.string.backup_failed, err)));
+            } else {
+                askFilePassphrase(() -> Backup.readAll(getContentResolver().openInputStream(uri)));
+            }
+            return;
+        }
         if (request != PICK_ICON || result != RESULT_OK || data == null || data.getData() == null || iconFor == null) return;
         Store.Instance in = iconFor;
         boolean isNew = iconIsNew;

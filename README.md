@@ -259,7 +259,7 @@ Some devices (Fire TV, newer Google TV) don't let you change the home screen; th
 
 ## Backup
 
-**Settings → Backup** keeps an encrypted copy of your setup on a cloud service, and puts it back on a new or reset TV.
+**Settings → Backup** keeps an encrypted copy of your setup on a cloud service, a server on your own network or a USB drive, and puts it back on a new or reset TV.
 
 - **What's in it:** your profiles and each profile's saved logins, your applications (with their addresses and tokens), widgets, location, theme, map keys and custom icons.
 - **Encrypted on the TV** with a passphrase you choose (PBKDF2, then AES-256-GCM), before it's sent. The service only stores a file it can't read. Write the passphrase down: nobody can recover it, and you need it to restore.
@@ -271,6 +271,10 @@ Some devices (Fire TV, newer Google TV) don't let you change the home screen; th
 | **Dropbox** | Scan a QR code, allow ShackScreen, then type the code Dropbox shows. Saved in Apps/ShackScreen. |
 | **S3-compatible** | AWS S3, Backblaze B2, Cloudflare R2 or MinIO: an endpoint, bucket and access key. Use a key that can only reach that bucket. |
 | **WebDAV** | Nextcloud, Synology, ownCloud or any WebDAV server: a folder address, user name and password. |
+| **USB drive** | **Save a backup to a USB drive** and **Restore from a USB drive**: no account and no network. Where the device has a file picker you choose the folder; otherwise it goes in `Android/data/com.maxhayim.shackscreen/files/ShackScreen` on the drive. |
+
+- **No internet needed:** a USB drive, or a WebDAV or MinIO server on your home network (a Synology, a Nextcloud box, a Raspberry Pi), keeps everything inside your network. Plain `http://192.168.x.x` addresses work. Together with self-hosted applications (MeshMonitor, OpenHamClock, tar1090, AIS-catcher), ShackScreen can run entirely offline from the internet.
+- USB backups are saved with the date in the name, so older ones are kept. Copy them somewhere safe: Android deletes ShackScreen's folder on the drive if the app is uninstalled while the drive is plugged in.
 
 - **Back up every day** is on once a service and passphrase are set. **Back up now** does it straight away.
 - **Restore from backup:** choose the same service, enter the passphrase, and confirm. It replaces what's on the TV, then reopens the dashboard.
