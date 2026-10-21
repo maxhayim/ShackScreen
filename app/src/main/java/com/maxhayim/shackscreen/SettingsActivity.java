@@ -554,7 +554,9 @@ public class SettingsActivity extends BaseActivity {
 
     private boolean hasPicker(String action) {
         Intent i = new Intent(action).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
-        return i.resolveActivity(getPackageManager()) != null;
+        android.content.ComponentName c = i.resolveActivity(getPackageManager());
+        // Android TV answers with a stub that only says "not supported"; that's no picker.
+        return c != null && !c.getPackageName().contains("frameworkpackagestubs");
     }
 
     /**
