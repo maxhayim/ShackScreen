@@ -49,6 +49,8 @@ These changes are made only so the icons look consistent and readable in ShackSc
 | `windy.png` | Windy | [windy.com](https://www.windy.com) |
 | `blitzortung.png` | Blitzortung.org | [map.blitzortung.org](https://map.blitzortung.org) |
 
+Applications without an icon in this repository yet (shown with the site's own icon or a category symbol): HamClock (Clear Sky Institute), DX Summit, Reverse Beacon Network, WSPR Rocks, KC2G Propagation, SOTA and SOTLAS, and NOAA Space Weather Prediction Center.
+
 "Parks on the Air" and POTA, "Meshtastic", "MeshCore" and "ADS-B Exchange", like every name above, are trademarks of their respective owners.
 
 When ShackScreen has no icon of its own for an application, it shows the site's own icon (its favicon or app icon), fetched from that site on the device at the time. Those images are not stored in this repository and remain the site's property.

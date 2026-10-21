@@ -31,8 +31,11 @@ final class Catalog {
     static final class Type {
         final String id, name, url, icon, category;
         final int port;          // default port for a self-hosted server, 0 if none
+        final String path;       // added to a self-hosted address typed without one, e.g. "/live.html"
+        final String note;       // shown when adding it, e.g. what the server needs
         final boolean token;     // the API needs a token (MeshMonitor)
         final boolean audio;     // plays sound, so autoplay is allowed in the viewer
+        final boolean realAgent; // keep the browser's own identity: bot checks reject the desktop one
         final boolean home;      // starts on the home row when added as a default
         final int zoom;          // page size in percent; under 100 shows more of a site laid out large
         final int seed;          // added to everyone's apps in this round of defaults; 0 = never
@@ -45,8 +48,11 @@ final class Catalog {
             url = o.optString("url", "");
             icon = o.optString("icon", "");
             port = o.optInt("port", 0);
+            path = o.optString("path", "");
+            note = o.optString("note", "");
             token = o.optBoolean("token");
             audio = o.optBoolean("audio");
+            realAgent = o.optBoolean("realAgent");
             home = o.optBoolean("home");
             zoom = o.optInt("zoom", 100);
             // Older catalogs said "seed": true for the first round.

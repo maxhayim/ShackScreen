@@ -168,6 +168,14 @@ final class Store {
         return s;
     }
 
+    /** An address typed without a path gets the app's own start page (HamClock's /live.html). */
+    static String withPath(String url, String path) {
+        if (url.isEmpty() || path.isEmpty()) return url;
+        String p = Uri.parse(url).getEncodedPath();
+        if (p != null && !p.isEmpty() && !p.equals("/")) return url;
+        return (url.endsWith("/") ? url.substring(0, url.length() - 1) : url) + path;
+    }
+
     /** Base URL plus an API path, without doubling the slash. */
     static String join(String base, String path) {
         Uri u = Uri.parse(base);

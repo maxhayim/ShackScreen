@@ -78,7 +78,7 @@ public class ViewerActivity extends BaseActivity {
         // WebSDR and Broadcastify play sound, and there is no touch to unlock audio on a TV.
         s.setMediaPlaybackRequiresUserGesture(!type.audio);
         // These dashboards are laid out for a desktop, which suits a TV better than the phone layout.
-        s.setUserAgentString(s.getUserAgentString()
+        if (!type.realAgent) s.setUserAgentString(s.getUserAgentString()
                 .replaceAll("\\(Linux; Android[^)]*\\)", "(X11; Linux x86_64)")
                 .replace("; wv", "")
                 .replace(" Mobile", "") + " ShackScreen/" + BuildConfig.VERSION_NAME);
@@ -86,6 +86,10 @@ public class ViewerActivity extends BaseActivity {
         s.setSaveFormData(false);
         if (!in.id.isEmpty() && Logins.supported()) web.addJavascriptInterface(new LoginBridge(), "ShackScreenLogin");
 
+        // Bot checks (Cloudflare's "Verify you are human") run in a frame from their own domain and
+        // need its cookie, or they ask again forever.
+        CookieManager.getInstance().setAcceptCookie(true);
+        CookieManager.getInstance().setAcceptThirdPartyCookies(web, true);
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient() {
             @Override

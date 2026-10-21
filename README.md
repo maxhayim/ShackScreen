@@ -167,14 +167,14 @@ The home row holds your favourites, with **All applications** at the end. Press 
 
 | Category | Applications |
 |---|---|
-| Ham radio | [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [APRS.fi](https://aprs.fi), [PSKReporter](https://pskreporter.info), [RepeaterBook](https://www.repeaterbook.com), [POTA](https://pota.app) |
+| Ham radio | [OpenHamClock](https://github.com/accius/openhamclock), [ShackBoard](https://shackboard.com), [APRS.fi](https://aprs.fi), [PSKReporter](https://pskreporter.info), [RepeaterBook](https://www.repeaterbook.com), [POTA](https://pota.app), your own [HamClock](https://www.clearskyinstitute.com/ham/HamClock/), [DX Summit](https://www.dxsummit.fi), [Reverse Beacon Network](https://www.reversebeacon.net), [WSPR Rocks](https://wspr.rocks), [KC2G propagation](https://prop.kc2g.com), [SOTLAS](https://sotl.as) |
 | GMRS | [GMRS Hub](https://gmrshub.com), [myGMRS](https://mygmrs.com) |
 | Satellites | [N2YO](https://www.n2yo.com), [Heavens-Above](https://www.heavens-above.com), [AMSAT status](https://www.amsat.org/status/), [SatNOGS](https://github.com/satnogs), [TinyGS](https://github.com/tinygs/tinyGS), [Satellite map](https://satellitemap.space), [ISS Tracker](https://isstracker.pl/en) |
 | Mesh | [MeshMonitor](https://github.com/Yeraze/meshmonitor), [MeshMap (Meshtastic)](https://github.com/brianshea2/meshmap.net), [MeshCore Map](https://github.com/meshcore-dev/map.meshcore.io), [your Meshtastic node](https://github.com/meshtastic/firmware) |
 | SDR & scanners | [WebSDR](http://websdr.org), [KiwiSDR map](http://rx.linkfanel.net), [Broadcastify](https://www.broadcastify.com) |
 | Aviation | [Flightradar24](https://www.flightradar24.com), [FlightAware](https://www.flightaware.com), [ADS-B Exchange](https://www.adsbexchange.com), [ADSB.lol](https://github.com/adsblol), [adsb.fi](https://github.com/adsbfi), [your tar1090](https://github.com/wiedehopf/tar1090) |
 | Marine | [MarineTraffic](https://www.marinetraffic.com), [VesselFinder](https://www.vesselfinder.com), [MyShipTracking](https://www.myshiptracking.com), [your AIS-catcher](https://github.com/jvde-github/AIS-catcher) |
-| Weather | [Windy](https://www.windy.com), [Lightning map](https://www.blitzortung.org) |
+| Weather | [Windy](https://www.windy.com), [Lightning map](https://www.blitzortung.org), [NOAA Space Weather](https://www.swpc.noaa.gov) |
 | Other | any web page |
 
 ### Pages inside an application

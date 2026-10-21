@@ -169,7 +169,7 @@ final class Icons {
             // While the icon loads, the one shown before (another style, or an older copy) stays,
             // never a placeholder that then jumps to the real icon.
             Bitmap before = previous(c, in);
-            view.setImageBitmap(before);
+            view.setImageBitmap(before != null ? before : tile); // the category tile only for an app never shown before
         }
         // A site with no usable icon is remembered for a day rather than asked on every visit.
         File miss = new File(cached.getPath() + ".none");

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 8,
+  "revision": 9,
   "categories": [
     "Ham radio",
     "GMRS",
@@ -61,7 +61,42 @@
       "id": "repeaterbook",
       "name": "RepeaterBook",
       "category": "Ham radio",
-      "url": "https://www.repeaterbook.com/"
+      "url": "https://www.repeaterbook.com/",
+      "pages": [
+        {
+          "name": "Home",
+          "url": "https://www.repeaterbook.com/"
+        },
+        {
+          "name": "Map Search",
+          "url": "https://www.repeaterbook.com/global_repeaters/map_search.php"
+        },
+        {
+          "name": "US Repeaters",
+          "url": "https://www.repeaterbook.com/repeaters/index.php?state_id=none"
+        },
+        {
+          "name": "GMRS Repeaters",
+          "url": "https://www.repeaterbook.com/gmrs/index.php?state_id=none"
+        },
+        {
+          "name": "International",
+          "url": "https://www.repeaterbook.com/row_repeaters/index.php?state_id=none"
+        },
+        {
+          "name": "Live Nodes",
+          "url": "https://www.repeaterbook.com/apollo/nodes.php"
+        },
+        {
+          "name": "Guides (Wiki)",
+          "url": "https://www.repeaterbook.com/wiki/doku.php?id=start"
+        },
+        {
+          "name": "Articles",
+          "url": "https://www.repeaterbook.com/resources/articles"
+        }
+      ],
+      "realAgent": true
     },
     {
       "id": "pota",
@@ -86,6 +121,68 @@
         {
           "name": "Stats",
           "url": "https://pota.app/#/stats"
+        }
+      ]
+    },
+    {
+      "id": "hamclock",
+      "name": "HamClock (your own)",
+      "category": "Ham radio",
+      "port": 8081,
+      "path": "/live.html",
+      "note": "For a HamClock you run on a Raspberry Pi or computer. The original HamClock server closed in 2026, so point your clock at a community backend (hamclock.com or Open HamClock Backend) to keep its data coming."
+    },
+    {
+      "id": "dxsummit",
+      "name": "DX Summit",
+      "category": "Ham radio",
+      "url": "https://www.dxsummit.fi/"
+    },
+    {
+      "id": "rbn",
+      "name": "Reverse Beacon Network",
+      "category": "Ham radio",
+      "url": "https://www.reversebeacon.net/main.php"
+    },
+    {
+      "id": "wsprrocks",
+      "name": "WSPR Rocks",
+      "category": "Ham radio",
+      "url": "https://wspr.rocks/"
+    },
+    {
+      "id": "kc2g",
+      "name": "KC2G Propagation",
+      "category": "Ham radio",
+      "url": "https://prop.kc2g.com/",
+      "pages": [
+        {
+          "name": "MUF Map",
+          "url": "https://prop.kc2g.com/"
+        },
+        {
+          "name": "foF2 Map",
+          "url": "https://prop.kc2g.com/?map=fof2"
+        }
+      ]
+    },
+    {
+      "id": "sotlas",
+      "name": "SOTA (SOTLAS)",
+      "category": "Ham radio",
+      "url": "https://sotl.as/",
+      "pages": [
+        {
+          "name": "Map",
+          "url": "https://sotl.as/map"
+        },
+        {
+          "name": "Spots",
+          "url": "https://sotl.as/spots"
+        },
+        {
+          "name": "Activations",
+          "url": "https://sotl.as/activations"
         }
       ]
     },
@@ -347,6 +444,26 @@
       "name": "Lightning map",
       "category": "Weather",
       "url": "https://map.blitzortung.org"
+    },
+    {
+      "id": "swpc",
+      "name": "NOAA Space Weather",
+      "category": "Weather",
+      "url": "https://www.swpc.noaa.gov/",
+      "pages": [
+        {
+          "name": "Home",
+          "url": "https://www.swpc.noaa.gov/"
+        },
+        {
+          "name": "Aurora",
+          "url": "https://www.swpc.noaa.gov/products/aurora-30-minute-forecast"
+        },
+        {
+          "name": "Space Weather Scales",
+          "url": "https://www.swpc.noaa.gov/noaa-scales-explanation"
+        }
+      ]
     },
     {
       "id": "custom",

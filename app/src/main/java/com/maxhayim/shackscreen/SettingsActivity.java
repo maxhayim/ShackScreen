@@ -1249,7 +1249,13 @@ public class SettingsActivity extends BaseActivity {
         form.addView(url);
         if (type.token) form.addView(token);
         if (type.port > 0) {
-            form.addView(text(getString(R.string.port_hint, type.port), 13, R.color.dim));
+            form.addView(text(type.path.isEmpty() ? getString(R.string.port_hint, type.port)
+                    : getString(R.string.port_path_hint, type.port, type.path), 13, R.color.dim));
+        }
+        if (!type.note.isEmpty()) {
+            TextView note = text(type.note, 13, R.color.dim);
+            note.setPadding(0, dp(6), 0, 0);
+            form.addView(note);
         }
         // Extra pages: more hub URLs, a second dashboard, anything to switch to from inside the app.
         Button pagesButton = button(pagesLabel(in));
@@ -1287,7 +1293,7 @@ public class SettingsActivity extends BaseActivity {
                 .setPositiveButton(R.string.save, (d, w) -> {
                     in.name = name.getText().toString().trim();
                     if (in.name.isEmpty()) in.name = type.name;
-                    in.url = Store.normalise(url.getText().toString(), type.port);
+                    in.url = Store.withPath(Store.normalise(url.getText().toString(), type.port), type.path);
                     in.token = token.getText().toString().trim();
                     if (isNew) {
                         in.home = true; // something you just added belongs where you'll see it
