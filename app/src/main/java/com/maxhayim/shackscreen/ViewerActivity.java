@@ -307,6 +307,8 @@ public class ViewerActivity extends BaseActivity {
                     if (!Logins.save(this, in.id, l)) {
                         android.widget.Toast.makeText(this, R.string.login_failed, android.widget.Toast.LENGTH_LONG).show();
                     }
+                    android.content.Context app = getApplicationContext();
+                    new Thread(() -> Sync.touch(app), "shackscreen-sync").start(); // sent with the next sync
                 })
                 .setNeutralButton(R.string.login_never, (d, w) -> Logins.setNever(this, in.id, host))
                 .setNegativeButton(R.string.login_not_now, null)

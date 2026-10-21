@@ -78,7 +78,8 @@ final class CallSigns {
         return out;
     }
 
-    private static void save(Context c, List<Profile> list) {
+    /** Saves the user's profiles (Demo is never stored). */
+    static void save(Context c, List<Profile> list) {
         JSONArray a = new JSONArray();
         try {
             for (Profile p : list) {

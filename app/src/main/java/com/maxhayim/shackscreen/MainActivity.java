@@ -1,5 +1,6 @@
 package com.maxhayim.shackscreen;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -134,6 +135,7 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         new Thread(() -> Backup.ifDue(getApplicationContext()), "shackscreen-backup").start();
+        ui.post(tickSync);
         // Settings may have changed while we were away, so rebuild from the stores each time.
         instances = Store.load(this);
         List<String> now = Widgets.shown(this);
@@ -155,6 +157,27 @@ public class MainActivity extends BaseActivity {
                 ui.post(this::showUpdateBadge);
             }, "shackscreen-update").start();
         }
+    }
+
+    /** Picks up changes from the other TVs on opening and every 15 minutes, and shows them. */
+    private final Runnable tickSync = new Runnable() {
+        @Override
+        public void run() {
+            Context app = getApplicationContext();
+            new Thread(() -> {
+                if (Sync.ifDue(app)) ui.post(MainActivity.this::reloadStores);
+            }, "shackscreen-sync").start();
+            ui.postDelayed(this, 15 * 60 * 1000L);
+        }
+    };
+
+    /** Redraws what comes from the settings stores, after another TV changed them. */
+    private void reloadStores() {
+        if (isFinishing()) return;
+        instances = Store.load(this);
+        fetched.clear();
+        buildAppRow();
+        CallSigns.show(this, callSigns);
     }
 
     @Override

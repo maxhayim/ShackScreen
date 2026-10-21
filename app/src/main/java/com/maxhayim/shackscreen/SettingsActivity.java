@@ -129,6 +129,23 @@ public class SettingsActivity extends BaseActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        // Anything changed here goes to the other TVs as Settings closes.
+        if (Sync.enabled(this)) {
+            Context app = getApplicationContext();
+            new Thread(() -> {
+                Sync.touch(app);
+                try {
+                    Sync.now(app);
+                } catch (Exception ignored) {
+                    // Shown in Settings → Backup; tried again later.
+                }
+            }, "shackscreen-sync").start();
+        }
+    }
+
+    @Override
     public boolean dispatchKeyEvent(android.view.KeyEvent e) {
         int k = e.getKeyCode();
         if (e.getAction() == android.view.KeyEvent.ACTION_DOWN && (k == android.view.KeyEvent.KEYCODE_DPAD_UP || k == android.view.KeyEvent.KEYCODE_DPAD_DOWN)) {
@@ -532,6 +549,33 @@ public class SettingsActivity extends BaseActivity {
             setValue(auto, getString(Backup.auto(this) ? R.string.on : R.string.off));
         });
         pane.addView(auto);
+        View sync = row(R.drawable.ic_update, getString(R.string.sync), syncStatus());
+        sync.setOnClickListener(v -> {
+            if (Sync.enabled(this)) {
+                Sync.setEnabled(this, false);
+                setValue(sync, syncStatus());
+                return;
+            }
+            if (!Backup.ready(this)) {
+                toast(Cloud.service(this).isEmpty() ? R.string.backup_need_service : R.string.backup_need_passphrase);
+                return;
+            }
+            new AlertDialog.Builder(this, R.style.Dialog)
+                    .setTitle(R.string.sync)
+                    .setMessage(R.string.sync_explain)
+                    .setPositiveButton(R.string.sync_turn_on, (d, w) -> {
+                        Sync.setEnabled(this, true);
+                        syncNow(sync);
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+        });
+        pane.addView(sync);
+        if (Sync.enabled(this)) {
+            View syncNow = row(0, getString(R.string.sync_now), "");
+            syncNow.setOnClickListener(v -> syncNow(sync));
+            pane.addView(syncNow);
+        }
         View toUsb = row(R.drawable.ic_usb, getString(R.string.usb_save), "");
         toUsb.setOnClickListener(v -> {
             if (Backup.passphrase(this).isEmpty()) editPassphrase(this::saveToUsb);
@@ -641,6 +685,27 @@ public class SettingsActivity extends BaseActivity {
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .show());
+    }
+
+    private String syncStatus() {
+        if (!Sync.enabled(this)) return getString(R.string.off);
+        if (!Sync.lastError(this).isEmpty()) return getString(R.string.sync_failed_short);
+        long last = Sync.last(this);
+        return last == 0 ? getString(R.string.on) : getString(R.string.sync_on_last, android.text.format.DateUtils.getRelativeTimeSpanString(last));
+    }
+
+    private void syncNow(View row) {
+        setValue(row, getString(R.string.sync_working));
+        int[] got = new int[1];
+        bgThen(() -> got[0] = Sync.now(getApplicationContext()), err -> {
+            if (err != null) {
+                setValue(row, syncStatus());
+                toast(getString(R.string.sync_failed, err));
+                return;
+            }
+            toast(got[0] == 0 ? getString(R.string.sync_done_none) : getResources().getQuantityString(R.plurals.sync_done, got[0], got[0]));
+            buildPane(); // what arrived may show here (profiles, applications, location)
+        });
     }
 
     private String backupStatus() {

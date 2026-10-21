@@ -252,4 +252,17 @@
     <string name="usb_no_backups">No ShackScreen backups on the USB drive. They\'re kept in Android/data/com.maxhayim.shackscreen/files/ShackScreen on the drive.</string>
     <string name="usb_saved">Saved to the USB drive</string>
     <string name="usb_saved_where">The encrypted backup is at:\n\n%1$s\n\nCopy it somewhere safe, such as a computer. Android deletes this folder if ShackScreen is uninstalled while the drive is plugged in. To restore on another TV, put the file in the same folder on a drive.</string>
+    <string name="sync">Sync with other TVs</string>
+    <string name="sync_explain">Every TV with the same backup service and passphrase, and sync on, shares profiles, saved logins, applications (with their tokens), map keys and the location. A change on one TV reaches the others within 15 minutes, or when Settings closes. Each TV keeps its own theme, icons, widgets, launcher mode and the profile in use.\n\nOn a TV joining for the first time, what the other TVs have comes first; anything only this TV has is added for the others.</string>
+    <string name="sync_turn_on">Turn on</string>
+    <string name="sync_now">Sync now</string>
+    <string name="sync_working">Syncing…</string>
+    <string name="sync_on_last">On   ·   synced %1$s</string>
+    <string name="sync_failed_short">On   ·   last sync failed</string>
+    <string name="sync_failed">Sync didn\'t work: %1$s</string>
+    <string name="sync_done_none">In sync. Nothing new from the other TVs.</string>
+    <plurals name="sync_done">
+        <item quantity="one">In sync. %d change came from another TV.</item>
+        <item quantity="other">In sync. %d changes came from other TVs.</item>
+    </plurals>
 </resources>

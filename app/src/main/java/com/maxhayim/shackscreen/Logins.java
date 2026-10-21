@@ -97,6 +97,41 @@ final class Logins {
         ne.commit();
     }
 
+    /** Saves one login in a profile (from another TV, by sync). */
+    static void saveFor(Context c, String profile, String id, Login l) {
+        if (!supported()) return;
+        try {
+            JSONObject o = new JSONObject().put("user", l.user).put("pass", l.pass).put("auto", l.auto);
+            prefs(c, profile).edit().putString(id + SEP + l.host, encrypt(o.toString())).commit();
+        } catch (Exception ignored) {
+            // Left out rather than stored in the clear; the next sync tries again.
+        }
+    }
+
+    static void deleteFor(Context c, String profile, String id, String host) {
+        prefs(c, profile).edit().remove(id + SEP + host).commit();
+    }
+
+    /** An app took another id (the same app found on another TV): its logins follow it, in every profile. */
+    static void renameApp(Context c, String from, String to) {
+        List<SharedPreferences> files = new ArrayList<>();
+        for (CallSigns.Profile pr : CallSigns.profiles(c)) {
+            files.add(prefs(c, pr.id));
+            files.add(never(c, pr.id));
+        }
+        for (SharedPreferences p : files) {
+            SharedPreferences.Editor ed = p.edit();
+            for (Map.Entry<String, ?> e : p.getAll().entrySet()) {
+                if (!e.getKey().startsWith(from + SEP)) continue;
+                String k = to + e.getKey().substring(from.length());
+                if (e.getValue() instanceof String) ed.putString(k, (String) e.getValue());
+                else if (e.getValue() instanceof Boolean) ed.putBoolean(k, (Boolean) e.getValue());
+                ed.remove(e.getKey());
+            }
+            ed.commit();
+        }
+    }
+
     /** A deleted profile's logins go with it. */
     static void deleteProfile(Context c, String profile) {
         prefs(c, profile).edit().clear().commit();

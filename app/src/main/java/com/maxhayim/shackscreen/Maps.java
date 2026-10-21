@@ -146,7 +146,7 @@ final class Maps {
         if (s.id.equals(prefs(c).getString("style", ""))) prefs(c).edit().remove("style").apply();
     }
 
-    private static void saveCustom(Context c, List<Style> list) {
+    static void saveCustom(Context c, List<Style> list) {
         JSONArray a = new JSONArray();
         try {
             for (Style s : list) {

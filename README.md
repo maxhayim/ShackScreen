@@ -278,6 +278,7 @@ Some devices (Fire TV, newer Google TV) don't let you change the home screen; th
 
 - **Back up every day** is on once a service and passphrase are set. **Back up now** does it straight away.
 - **Restore from backup:** choose the same service, enter the passphrase, and confirm. It replaces what's on the TV, then reopens the dashboard.
+- **Sync with other TVs:** turn it on in Settings → Backup on each TV, with the same service and passphrase. Profiles, saved logins, applications (with their tokens), map keys and the location then stay the same everywhere: a change on one TV reaches the others when Settings closes or within 15 minutes. Each TV keeps its own theme, icon style, widgets, launcher mode and the profile in use. Changes merge item by item; if the same thing changed on two TVs, the later change wins, and a deletion on one TV deletes it everywhere. A TV joining for the first time takes what the others have and adds anything only it has. It uses its own encrypted file on the service (`shackscreen-sync.ssb`), so your backup is untouched, and it works over a home-network WebDAV or MinIO server without the internet.
 - Sign-ins to the service, and the passphrase, are kept encrypted on the TV only. **Stop backing up** forgets them; the backup stays on the service.
 - Needs Android 6 or later.
 

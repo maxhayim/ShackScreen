@@ -83,7 +83,7 @@ final class Cloud {
     static void forget(Context c) {
         prefs(c).edit().remove("service").remove("s3_endpoint").remove("s3_region").remove("s3_bucket").remove("s3_access")
                 .remove("s3_secret").remove("dav_url").remove("dav_user").remove("dav_pass").remove("google_refresh")
-                .remove("google_file").remove("dropbox_refresh").remove("passphrase").remove("last").remove("error").apply();
+                .remove("google_file").remove("google_file_" + Sync.FILE_NAME).remove("dropbox_refresh").remove("passphrase").remove("last").remove("error").apply();
     }
 
     static String secret(Context c, String key) {
@@ -93,22 +93,31 @@ final class Cloud {
     // --- Sending and fetching the backup --------------------------------------------------------
 
     static void upload(Context c, byte[] data) throws IOException {
+        upload(c, Backup.FILE_NAME, data);
+    }
+
+    /** Sends a file by name (the backup, or the sync file shared by every TV). */
+    static void upload(Context c, String name, byte[] data) throws IOException {
         switch (service(c)) {
-            case S3: s3(c, "PUT", data); return;
-            case WEBDAV: dav(c, "PUT", data); return;
-            case GOOGLE: googleUpload(c, data); return;
-            case DROPBOX: dropboxUpload(c, data); return;
+            case S3: s3(c, "PUT", name, data); return;
+            case WEBDAV: dav(c, "PUT", name, data); return;
+            case GOOGLE: googleUpload(c, name, data); return;
+            case DROPBOX: dropboxUpload(c, name, data); return;
             default: throw new IOException("No backup service chosen");
         }
     }
 
     /** The backup on the service, or null if there's none yet. */
     static byte[] download(Context c) throws IOException {
+        return download(c, Backup.FILE_NAME);
+    }
+
+    static byte[] download(Context c, String name) throws IOException {
         switch (service(c)) {
-            case S3: return s3(c, "GET", null);
-            case WEBDAV: return dav(c, "GET", null);
-            case GOOGLE: return googleDownload(c);
-            case DROPBOX: return dropboxDownload(c);
+            case S3: return s3(c, "GET", name, null);
+            case WEBDAV: return dav(c, "GET", name, null);
+            case GOOGLE: return googleDownload(c, name);
+            case DROPBOX: return dropboxDownload(c, name);
             default: throw new IOException("No backup service chosen");
         }
     }
@@ -121,13 +130,13 @@ final class Cloud {
                 .putString("dav_pass", Logins.seal(pass)).apply();
     }
 
-    private static byte[] dav(Context c, String method, byte[] body) throws IOException {
+    private static byte[] dav(Context c, String method, String name, byte[] body) throws IOException {
         SharedPreferences p = prefs(c);
         String auth = Base64.encodeToString((p.getString("dav_user", "") + ":" + secret(c, "dav_pass"))
                 .getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
         Map<String, String> h = new TreeMap<>();
         h.put("Authorization", "Basic " + auth);
-        return expect(method, p.getString("dav_url", "") + Backup.FILE_NAME, h, body, method.equals("GET"));
+        return expect(method, p.getString("dav_url", "") + name, h, body, method.equals("GET"));
     }
 
     // --- S3-compatible --------------------------------------------------------------------------
@@ -141,7 +150,7 @@ final class Cloud {
     }
 
     /** One object, signed with AWS Signature Version 4, which B2, R2 and MinIO all accept. */
-    private static byte[] s3(Context c, String method, byte[] body) throws IOException {
+    private static byte[] s3(Context c, String method, String name, byte[] body) throws IOException {
         SharedPreferences p = prefs(c);
         String endpoint = p.getString("s3_endpoint", ""), region = p.getString("s3_region", "us-east-1");
         String bucket = p.getString("s3_bucket", ""), access = p.getString("s3_access", "");
@@ -150,7 +159,7 @@ final class Cloud {
         boolean aws = e.getHost() != null && e.getHost().endsWith("amazonaws.com") && !bucket.contains(".");
         String host = aws ? bucket + "." + e.getHost() : e.getHost();
         if (e.getPort() > 0) host += ":" + e.getPort();
-        String path = (aws ? "" : "/" + bucket) + "/ShackScreen/" + Backup.FILE_NAME;
+        String path = (aws ? "" : "/" + bucket) + "/ShackScreen/" + name;
         String url = e.getScheme() + "://" + host + path;
         try {
             SimpleDateFormat f = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.US);
@@ -216,7 +225,7 @@ final class Cloud {
                 return false; // access_denied or expired_token
             }
             prefs(c).edit().putString("service", GOOGLE).putString("google_refresh", Logins.seal(o.optString("refresh_token")))
-                    .remove("google_file").apply();
+                    .remove("google_file").remove("google_file_" + Sync.FILE_NAME).apply();
             return true;
         }
         return false;
@@ -229,8 +238,12 @@ final class Cloud {
     }
 
     /** The backup's id in Drive: remembered, or found in the ShackScreen folder; null if there's none. */
-    private static String googleFile(Context c, String token, boolean create) throws IOException {
-        String known = prefs(c).getString("google_file", "");
+    private static String fileKey(String name) {
+        return name.equals(Backup.FILE_NAME) ? "google_file" : "google_file_" + name;
+    }
+
+    private static String googleFile(Context c, String token, String name, boolean create) throws IOException {
+        String known = prefs(c).getString(fileKey(name), "");
         if (!known.isEmpty()) return known;
         String folder = googleFind(token, "name='ShackScreen' and mimeType='application/vnd.google-apps.folder' and trashed=false");
         if (folder == null) {
@@ -240,17 +253,17 @@ final class Cloud {
             folder = json(expect("POST", "https://www.googleapis.com/drive/v3/files", h,
                     "{\"name\":\"ShackScreen\",\"mimeType\":\"application/vnd.google-apps.folder\"}".getBytes(StandardCharsets.UTF_8), true)).optString("id");
         }
-        String file = googleFind(token, "name='" + Backup.FILE_NAME + "' and '" + folder + "' in parents and trashed=false");
+        String file = googleFind(token, "name='" + name + "' and '" + folder + "' in parents and trashed=false");
         if (file == null && create) {
             String boundary = "shackscreen" + System.nanoTime();
-            String meta = "{\"name\":\"" + Backup.FILE_NAME + "\",\"parents\":[\"" + folder + "\"]}";
+            String meta = "{\"name\":\"" + name + "\",\"parents\":[\"" + folder + "\"]}";
             byte[] body = ("--" + boundary + "\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" + meta + "\r\n--" + boundary
                     + "\r\nContent-Type: application/octet-stream\r\n\r\n\r\n--" + boundary + "--").getBytes(StandardCharsets.UTF_8);
             Map<String, String> h = bearer(token);
             h.put("Content-Type", "multipart/related; boundary=" + boundary);
             file = json(expect("POST", "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", h, body, true)).optString("id");
         }
-        if (file != null) prefs(c).edit().putString("google_file", file).apply();
+        if (file != null) prefs(c).edit().putString(fileKey(name), file).apply();
         return file;
     }
 
@@ -260,9 +273,9 @@ final class Cloud {
         return files != null && files.length() > 0 ? files.optJSONObject(0).optString("id") : null;
     }
 
-    private static void googleUpload(Context c, byte[] data) throws IOException {
+    private static void googleUpload(Context c, String name, byte[] data) throws IOException {
         String token = googleToken(c);
-        String id = googleFile(c, token, true);
+        String id = googleFile(c, token, name, true);
         Map<String, String> h = bearer(token);
         h.put("Content-Type", "application/octet-stream");
         h.put("X-HTTP-Method-Override", "PATCH"); // HttpURLConnection can't send PATCH itself
@@ -270,14 +283,14 @@ final class Cloud {
             expect("POST", "https://www.googleapis.com/upload/drive/v3/files/" + id + "?uploadType=media", h, data, false);
         } catch (HttpError e) {
             if (e.code != 404) throw e;
-            prefs(c).edit().remove("google_file").apply(); // deleted in Drive: make a new one
-            googleUpload(c, data);
+            prefs(c).edit().remove(fileKey(name)).apply(); // deleted in Drive: make a new one
+            googleUpload(c, name, data);
         }
     }
 
-    private static byte[] googleDownload(Context c) throws IOException {
+    private static byte[] googleDownload(Context c, String name) throws IOException {
         String token = googleToken(c);
-        String id = googleFile(c, token, false);
+        String id = googleFile(c, token, name, false);
         if (id == null) return null;
         return expect("GET", "https://www.googleapis.com/drive/v3/files/" + id + "?alt=media", bearer(token), null, true);
     }
@@ -311,16 +324,16 @@ final class Cloud {
                 + enc(secret(c, "dropbox_refresh")) + "&client_id=" + enc(BuildConfig.DROPBOX_APP_KEY)).optString("access_token");
     }
 
-    private static void dropboxUpload(Context c, byte[] data) throws IOException {
+    private static void dropboxUpload(Context c, String name, byte[] data) throws IOException {
         Map<String, String> h = bearer(dropboxToken(c));
         h.put("Content-Type", "application/octet-stream");
-        h.put("Dropbox-API-Arg", "{\"path\":\"/" + Backup.FILE_NAME + "\",\"mode\":\"overwrite\",\"mute\":true}");
+        h.put("Dropbox-API-Arg", "{\"path\":\"/" + name + "\",\"mode\":\"overwrite\",\"mute\":true}");
         expect("POST", "https://content.dropboxapi.com/2/files/upload", h, data, false);
     }
 
-    private static byte[] dropboxDownload(Context c) throws IOException {
+    private static byte[] dropboxDownload(Context c, String name) throws IOException {
         Map<String, String> h = bearer(dropboxToken(c));
-        h.put("Dropbox-API-Arg", "{\"path\":\"/" + Backup.FILE_NAME + "\"}");
+        h.put("Dropbox-API-Arg", "{\"path\":\"/" + name + "\"}");
         try {
             return expect("POST", "https://content.dropboxapi.com/2/files/download", h, new byte[0], true);
         } catch (HttpError e) {
